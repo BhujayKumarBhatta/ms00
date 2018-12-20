@@ -1,3 +1,5 @@
+please follow the installation and configuration steps
+
 virtualenv -p python3 ~/venvp3
 
 source ~/venvp3/bin/activate
