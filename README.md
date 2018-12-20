@@ -1,4 +1,4 @@
-please follow the installation and configuration steps
+Please follow the installation and configuration steps
 
 virtualenv -p python3 ~/venvp3
 
