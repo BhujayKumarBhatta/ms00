@@ -27,8 +27,9 @@ node()
             	stage('Build-Test') 
             	{
                  
-                     echo 'Test code'
+                     echo 'dos2unix conversion of shell'
                      sh "ssh tokenleader 'dos2unix /home/jenkins/tokenleader-pipe/jenkins.sh'"
+                     echo 'Build the virtual env and test'
                      sh "ssh  tokenleader '/home/jenkins/tokenleader-pipe/jenkins.sh'"
                      
                  
