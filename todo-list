@@ -37,7 +37,7 @@ Step3: Create an endpoint allows admin to create/update/delete a user using http
 In summary,  user curd operation end point to have a check which allows operation only if the user name is admin and role is admin . the retrieval if role and usr id  is done using the  token authentication module as described I the section above
 
 
-Microservice to Microservice communication
+Microservice to Microservice communication step by step
 M1-->T1 Request for token against M2 
 T1--> M1 Provide token
 M1-->M2 M1 connect to M2 with token
