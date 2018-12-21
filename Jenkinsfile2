@@ -20,23 +20,19 @@ node()
                      echo 'Copy repo from jenkins server to remote machine'
                      sh "scp -r /var/lib/jenkins/workspace/tokenleader-pipe jenkins@tokenleader:~"
                      sh "ssh tokenleader 'chmod +x ~/tokenleader-pipe/jenkins.sh'"
-                     echo 'dos2unix conversion of shell'
-                     sh "ssh tokenleader 'dos2unix ~/tokenleader-pipe/jenkins.sh'"           
+                                
                  
                  }
             	
             	stage('Build-Test') 
             	{
-                 def retryAttempt = 0
-				 retry(2) {
-				    if (retryAttempt > 0) {
-				       sleep(1000 * 2 + 2000 * retryAttempt)
-				    }
-				
-				    retryAttempt = retryAttempt + 1
-				    echo 'Build the virtual environment and test the code'
-                    sh "ssh  tokenleader '~/tokenleader-pipe/jenkins.sh'"
-				 }
+                 
+                     echo 'dos2unix conversion of shell'
+                     sh "ssh tokenleader 'dos2unix ~/tokenleader-pipe/jenkins.sh'"
+                     echo 'Build the virtual environment and test the code'
+                     sh "ssh  tokenleader '~/tokenleader-pipe/jenkins.sh'"
+                     
+                 
             	}
         
     }
