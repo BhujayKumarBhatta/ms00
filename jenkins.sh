@@ -3,6 +3,7 @@ if [ -d "$DIR" ]; then
 	printf '%s\n' "Removing venv old ($DIR)"
 	rm -rf "$DIR"
 fi
+chown jenkins /tmp/*.db
 virtualenv -p python3 ~/venvp3
 source ~/venvp3/bin/activate
 pip install --upgrade pip
