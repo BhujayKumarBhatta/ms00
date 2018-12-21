@@ -4,7 +4,7 @@ virtualenv -p python3 ~/venvp3
 
 source ~/venvp3/bin/activate
 
-git clone ....
+git clone <your project>
 
 cd tokenleader
 
