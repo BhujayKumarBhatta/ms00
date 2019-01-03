@@ -1,5 +1,4 @@
 *.pyc
 *.db
-.project
 .pydevproject
 venvp3
