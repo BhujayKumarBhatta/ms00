@@ -12,6 +12,9 @@ pip install -r ~/tokenleader-pipe/requirement.txt
 cd ~/tokenleader-pipe
 python3 -m unittest discover tests
 export FLASK_APP=app_run.py
+flask db init
+flask db migrate -m "DB Migration"
+flask db upgrade
 nohup flask run --port=9898 & 
 export FLASK_APP=app_register_login_user.py
 nohup flask run --port=9999 &
