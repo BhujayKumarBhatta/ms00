@@ -4,6 +4,7 @@ if [ -d "$DIR" ]; then
 	rm -rf "$DIR"
 fi
 chown jenkins /tmp/*.db
+rm -f /tmp/auth.db
 virtualenv -p python3 ~/venvp3
 source ~/venvp3/bin/activate
 pip install --upgrade pip
