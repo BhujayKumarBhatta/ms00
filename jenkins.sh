@@ -10,6 +10,7 @@ pip install --upgrade pip
 echo -e "\n\n\n" | ssh-keygen -t rsa
 pip install -r ~/tokenleader-pipe/requirement.txt
 cd ~/tokenleader-pipe
+rm -rf migrations
 python3 -m unittest discover tests
 export FLASK_APP=app_run.py
 flask db init
