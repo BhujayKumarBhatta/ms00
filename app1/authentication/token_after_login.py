@@ -1,4 +1,4 @@
-from flask import request, Blueprint, jsonify, current_app,make_response
+from flask import request, Blueprint, jsonify,json, current_app,make_response
 import jwt
 import datetime
 from app1.authentication.models import User 
@@ -31,9 +31,8 @@ def decrypt_n_verify_token(auth_token, pub_key):
             pub_key,
             algorithm=['RS512']
         )
-        
         return payload
-#         
+ 
     except jwt.ExpiredSignatureError:
             return 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
@@ -46,10 +45,11 @@ def get_token():
      -H "Content-Type: Application/json"  localhost:5000/token/gettoken
      '''
     if request.method == 'POST':
+        request.get_json(force=True)
         if 'username' in request.json and 'password' in request.json:
             username = request.json['username']
-            password = request.json['password'] 
-            
+            password = request.json['password']
+
             if username is None or password is None:
                 responseObject = {
                         'status': 'missing authentication info ',
@@ -107,6 +107,7 @@ def verify_token():
     '''
     publickey = current_app.config.get('public_key') 
     if request.method == 'POST':
+        request.get_json(force=True)
         if 'auth_token' in request.json:
             auth_token = request.json['auth_token']
             
