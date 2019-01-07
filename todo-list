@@ -23,19 +23,24 @@ Client to Microservice
 Step1: C1--> T1 : 	C1 provide Domain name, user name , password and intended api operation request for token 
 Step2: T1-->C1 : 	a.T1 checks the user name and password against LDAP if domain is ITC else against local database. 
 b. After matching the username and password it retrieves the roles / access level of the user
+ Status: Done
 c. Generates the token with username and role encrypted within token
+ Status: Done
 d. Also returns whole URL path of intended API operation (http://FQDN:port/<Api>)
 
 Step3: C1--> M1 	C1 receive the token and issue a fresh request to M1 url path using the received token / along with the token. 
 Step4: M1-->T1 		M1 calls T1 to unencrypt the token and retrieves access/ role information
+Status: Done
 Step5: M1-->C1 		return result
 
 ***END POINT FOR USER MANAGEMENT ON T1 DB***
 Step1: Read from settings.ini, token admin section about the token admin username and encrypted password
+Status: Done
 Step2: Create a CLI utility to register token admin in T1 DB
+Status: Done
 Step3: Create an endpoint allows admin to create/update/delete a user using http API operation with token authentication
 In summary,  user curd operation end point to have a check which allows operation only if the user name is admin and role is admin . the retrieval if role and usr id  is done using the  token authentication module as described I the section above
-
+Status: WIP. 'Create' Done 
 
 Microservice to Microservice communication step by step
 M1-->T1 Request for token against M2 
