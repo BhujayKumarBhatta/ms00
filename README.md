@@ -20,7 +20,9 @@ python -m unittest discover tests
 
 export FLASK_APP='app_run.py'
 
-flask run
+flask run -p port number 
+
+ensure  the port  of the server is open from security group
 
 
 To generate token :
