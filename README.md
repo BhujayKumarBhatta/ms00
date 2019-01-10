@@ -12,9 +12,9 @@ cd tokenleader
 
 pip install --upgrade pip
 
-pip install -r requirement.txt
+pip install -r requirement.txt ( pycrypto failed)
 
-sshkeygen < press enter to select all defaults>
+ssh-keygen < press enter to select all defaults>
 
 python -m unittest discover tests
 
