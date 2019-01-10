@@ -4,6 +4,8 @@ virtualenv -p python3 ~/venvp3
 
 source ~/venvp3/bin/activate
 
+git config --global http.sslVerify false ( in case of server ssl cert verification error)
+
 git clone <your project>
 
 cd tokenleader
