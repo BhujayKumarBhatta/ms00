@@ -4,21 +4,25 @@ virtualenv -p python3 ~/venvp3
 
 source ~/venvp3/bin/activate
 
+git config --global http.sslVerify false ( in case of server ssl cert verification error)
+
 git clone <your project>
 
 cd tokenleader
 
 pip install --upgrade pip
 
-pip install -r requirement.txt
+pip install -r requirement.txt ( pycrypto failed)
 
-sshkeygen < press enter to select all defaults>
+ssh-keygen < press enter to select all defaults>
 
 python -m unittest discover tests
 
 export FLASK_APP='app_run.py'
 
-flask run
+flask run -p port number 
+
+ensure  the port  of the server is open from security group
 
 
 To generate token :
