@@ -26,7 +26,7 @@ marshmallow-jsonapi==0.20.5
 packaging==18.0
 pkg-resources==0.0.0
 pycparser==2.19
-pycrypto==2.6.1
+#pycrypto==2.6.1
 Pygments==2.2.0
 PyJWT==1.7.0
 pyparsing==2.3.0
