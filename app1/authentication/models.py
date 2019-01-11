@@ -20,7 +20,7 @@ class User(db.Model):
         return  check_password_hash(self.password_hash, password)
     
     def is_admin(self):
-        if self.role == 'admin':
+        if self.role == 'admin' or self.role=='Admin' or self.role=='ADMIN':
             return True 
     
     def to_dict(self):

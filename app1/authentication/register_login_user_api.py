@@ -1,3 +1,4 @@
+''' Client for user to register login, access, logout'''
 from functools import wraps
 from flask import request, render_template, Blueprint, flash, session, jsonify, json, redirect, url_for
 from app1.authentication.models import User
