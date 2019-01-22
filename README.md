@@ -18,6 +18,9 @@ ssh-keygen < press enter to select all defaults>
 
 python -m unittest discover tests
 
+register an admin user 
+/mnt/c/mydev/microservice-tsp-billing/tokenleader$ ./register_admin.sh  -u admin -e admin@itc.in -p admin
+
 export FLASK_APP='app_run.py'
 
 flask run -p port number 
@@ -27,7 +30,7 @@ ensure  the port  of the server is open from security group
 
 To generate token :
 
-curl -X POST -d '{"username": "susan", "password": "mysecret"}'  \
+curl -X POST -d '{"username": "admin", "password": "admin"}'  \
 -H "Content-Type: Application/json"  localhost:5000/token/gettoken
 
 To verify token:

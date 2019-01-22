@@ -72,8 +72,7 @@ if __name__ == '__main__':
 	main()
 	
 '''
-./password-encrypt.sh -k /mnt/c/mydev/flask-tutorial/flaskr/encry
-ption-learning/bhujaykey/info-ops-secret-key  -c /mnt/c/mydev/flask-tutorial/flaskr/encryption-learning/mysettings.ini -s database -o password
+/mnt/c/mydev/microservice-tsp-billing/tokenleader$ ./register_admin.sh  -u admin -e admin@itc.in -p admin
 '''
 	
     
