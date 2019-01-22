@@ -23,37 +23,48 @@ def list_admin_users(name='all'):
             ulist = User.query.filter_by(role='admin')
             for u in ulist:
                 print(u.username, u.email)
+            return ulist
         else:
             u = User.query.filter_by(username=name).first()
             print(u)
             print(u.username, u.email)
+            return u
+
+def get_input(text):
+    return input(text)
 
 def delete_admin_user(uname, email, role='admin'):
     with app.app_context():
         try:        
             u1 = User.query.filter_by(username=uname).first()
         except Exception as e:
-            print('user is not found in the database due to error {}'.format(e))  
+            status = 'user is not found in the database due to error {}'.format(e)
+            print(status)  
         if u1:
             message = ('Are you sure to delete user :{}, {}  with id {} \n'
                          'Type \'yes\' to confirm  deleting user or no to abort:  '.format(
                              u1.username, u1.email , u1.id))
             
-            uinput = input(message)
+            uinput = get_input(message)
        
             if uinput == 'yes':          
                 try:
                     db.session.delete(u1)        
                     db.session.commit()
-                    print(" User {} has been  deleted sucessfully".format(uname))
+                    status = " User {} has been  deleted sucessfully".format(uname) 
+                    print(status)
                 except  Exception as e:
-                         print("user  could not be deleted , the erro is: \n  {}".format(e))
+                        status = "user  could not be deleted , the erro is: \n  {}".format(e)
+                        print(status)
             else:
-                print('\n Aborting deletion')
+                status = 'Aborting deletion'
+                print(status)
         else:
-            print('User  not found in database')
-            sys.exit(1)
+            status = 'User  not found in database'
+            print(status)
             
+            
+        return status    
          
                 
         
