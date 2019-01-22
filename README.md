@@ -18,10 +18,16 @@ ssh-keygen < press enter to select all defaults>
 
 python -m unittest discover tests
 
+to run single unit test 
+python -m unittest tests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes
+
 register an admin user 
  ./tokenadmin.sh list  -a
  ./tokenadmin.sh list  -a  -u admin -e admin@itc.in -p admin
  ./tokenadmin.sh list  -h to get help
+
+
+
 
 export FLASK_APP='app_run.py'
 

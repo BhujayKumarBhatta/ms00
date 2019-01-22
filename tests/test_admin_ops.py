@@ -6,8 +6,6 @@ from app1.authentication.models import User
 from collections.abc import Iterable
 
 
-
-
 #app.app_context().push()
 
 class TestAdminOps(BaseTestCase):
@@ -48,16 +46,5 @@ class TestAdminOps(BaseTestCase):
         status = admin_ops.delete_admin_user('susan', 'susan@itc.in' 'admin')
         self.assertTrue(status, "Aborting deletion")
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    
-
     
     
