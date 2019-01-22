@@ -1,6 +1,19 @@
 write tests
 handle authentication failure
 
+token accept using header not body
+
+admin_ops: 
+user add  - done
+user list -  list all users done , specific user to be rectified
+user delete  - 
+password change
+fixed python path in the cli shell script file to be removed
+
+ 
+ 
+normal user registration api 
+
 register user in db
 password change 
 register role 
@@ -12,6 +25,7 @@ based on domain choose authentication backend as ldap or db
 client for 
 	a. sending the auth info and getting token 
 	b. connecting to other micro services using the token
+	
 
 other microservoce to have client for connecting to auth service to verify the token 
 
@@ -51,5 +65,11 @@ M2--> M1 return result
  
  
 
+ ================================================
+ 
+ 
+ 
+ 
+ 
  
 

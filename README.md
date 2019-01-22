@@ -1,14 +1,14 @@
 Please follow the installation and configuration steps
 
-virtualenv -p python3 ~/venvp3
-
-source ~/venvp3/bin/activate
-
 git config --global http.sslVerify false ( in case of server ssl cert verification error)
 
 git clone <your project>
 
 cd tokenleader
+
+virtualenv -p python3 venv
+
+source venv/bin/activate
 
 pip install --upgrade pip
 
@@ -19,7 +19,9 @@ ssh-keygen < press enter to select all defaults>
 python -m unittest discover tests
 
 register an admin user 
-/mnt/c/mydev/microservice-tsp-billing/tokenleader$ ./register_admin.sh  -u admin -e admin@itc.in -p admin
+ ./tokenadmin.sh list  -a
+ ./tokenadmin.sh list  -a  -u admin -e admin@itc.in -p admin
+ ./tokenadmin.sh list  -h to get help
 
 export FLASK_APP='app_run.py'
 
