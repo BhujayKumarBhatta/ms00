@@ -19,8 +19,98 @@ password change
 register role 
 asssign role to user
 retrive role after authentication in sub
-
+        
 based on domain choose authentication backend as ldap or db 
+
+"catalog": [
+            {
+                "service-endpoints": [
+                    {
+                        "id": "",  "interface": "admin", "url": "http://127.0.0.1:8776/v1/64b6f3fbcc53435e8a60fcf89bb6617a",
+                        "region": "regionOne"
+                    },
+                    {
+                        "id": "", "interface": "internal", "url": "http://127.0.0.1:8776/v1/64b6f3fbcc53435e8a60fcf89bb6617a",
+                        "region": "regionOne"
+                    },
+                                    ],
+                "service-type": "volume",
+                "service-name": "volume",
+                "service-id":""
+            },
+
+
+organization: 
+
+division:
+
+department:
+
+work-fucntion: 
+
+user:  will have  org , div, depart, workfunc 
+
+user is mapped with role  - many to many , one user can be mapped to many role and vise vesa
+
+
+token should return all the  above attributes
+
+
+authorization at each servie 
+====================================== 
+
+policy_rule.yml defined in  each service
+
+service name: "micros1"
+   	 api: "/firstapi1"
+   	 rule_name: "can_read_all_entry_on_micros1"
+   	 
+service name: "micros1"
+   	 api: "/firstapi1/<id>"
+   	 rule_name: "can_read_single_entry_on_micros1"   	 
+
+service name: "micros1"
+   	 api: "/firstapi1/<id>"
+   	 rule_name: "can_add_new_entry_on_micros1"
+   	 
+role.yml
+===============
+
+-role: "micros1-author"
+ 
+  - can_read_all_entry_on_micros1:
+              permission: "allow"
+                         
+  - can_read_single_entry_on_micros1
+  
+route api 
+==================
+1. segregate methods by GET , POST , PUT , PATCH, DELETE
+2. decorator to  accept rule_name as var 
+   unack token to get the role 
+    read the role.yml to check if the role acl list has the rule and its permission 
+    returns the original function once true
+
+scope filtering
+===================
+bsed on user org , div , dept a context to be created and stored in user session
+this context will act as filter for persistenace and data filtration
+
+
+
+
+
+    
+    
+
+
+   	 
+ 
+	
+
+
+
+
 
 client for 
 	a. sending the auth info and getting token 
