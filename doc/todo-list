@@ -59,29 +59,41 @@ token should return all the  above attributes
 authorization at each servie 
 ====================================== 
 
-policy_rule.yml defined in  each service
+service_access_to_policy.yml defined in  each service
 
-service name: "micros1"
-   	 api: "/firstapi1"
-   	 rule_name: "can_read_all_entry_on_micros1"
+- "micros1:firstapi:read_all_entries"
+    
+- "micros1:firstapi:read_single_entry"
+   
+- "micros1:firstapi:add_new_entry"
+    
    	 
-service name: "micros1"
-   	 api: "/firstapi1/<id>"
-   	 rule_name: "can_read_single_entry_on_micros1"   	 
-
-service name: "micros1"
-   	 api: "/firstapi1/<id>"
-   	 rule_name: "can_add_new_entry_on_micros1"
-   	 
-role.yml
+role_to_acl_map.yml
 ===============
-
--role: "micros1-author"
+- name: micros1_author
+  allow:
+  - micros1:firstapi:read_all_entries
+  - micros1:firstapi:read_single_entry
+  
+- name: micros1_author
+  allow:
+  - micros1:firstapi:read_all_entries
+  - micros1:firstapi:read_single_entry
+  
  
-  - can_read_all_entry_on_micros1:
-              permission: "allow"
-                         
-  - can_read_single_entry_on_micros1
+ 
+  
+  
+>>> b
+{'roles': [{'name': 'micros1_author', 'allow': ['micros1:firstapi:read_all_entries', 'micros1:firstapi:read_single_entry']}, {'name': 'micros1_author', 'allow': ['micros1:firstapi:read_all_entries', 'micros1:firstapi:read_single_entry']}]}
+>>>
+
+
+@enforce_acees_rule('micros1:firstapi:read_all_entries') 
+get the users role list 
+with the role list if micros1_author is present
+read role_to_acl_map and check if that role has the var passed in enforce_acees_rule which is 'micros1:firstapi:read_all_entries'
+loading roles shd check from database that the role name is valid
   
 route api 
 ==================
