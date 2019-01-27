@@ -88,6 +88,10 @@ role_to_acl_map.yml
 {'roles': [{'name': 'micros1_author', 'allow': ['micros1:firstapi:read_all_entries', 'micros1:firstapi:read_single_entry']}, {'name': 'micros1_author', 'allow': ['micros1:firstapi:read_all_entries', 'micros1:firstapi:read_single_entry']}]}
 >>>
 
+how does a verifed token look
+-------------------------------
+{"message":"Token has been successfully decrypted","payload":{"exp":1548487022,"iat":1548483422,"sub":{"email":"admin@itc.in","id":1,"role":"admin","username":"admin"}},"status":"Verification Successful"}
+
 
 @enforce_acees_rule('micros1:firstapi:read_all_entries') 
 get the users role list 

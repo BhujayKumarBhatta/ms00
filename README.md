@@ -1,53 +1,54 @@
-Please follow the installation and configuration steps
+Please follow the installation and configuration steps  
 
-git config --global http.sslVerify false ( in case of server ssl cert verification error)
+git config --global http.sslVerify false ( in case of server ssl cert verification error)  
 
-git clone <your project>
+git clone <your project>      
 
-cd tokenleader
+e.g.   git clone  git@github.com:microservice-tsp-billing/tokenleader.git  
 
-virtualenv -p python3 venv
+cd tokenleader    
 
-source venv/bin/activate
+virtualenv -p python3 venv  
 
-pip install --upgrade pip
+source venv/bin/activate  
 
-pip install -r requirement.txt ( pycrypto failed)
+pip install --upgrade pip  
 
-ssh-keygen < press enter to select all defaults>
+pip install -r requirement.txt ( pycrypto failed)    
 
-python -m unittest discover tests
+ssh-keygen < press enter to select all defaults>    
 
-to run single unit test 
-python -m unittest tests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes
+python -m unittest discover tests    
 
-register an admin user 
- ./tokenadmin.sh list  -a
- ./tokenadmin.sh list  -a  -u admin -e admin@itc.in -p admin
- ./tokenadmin.sh list  -h to get help
+to run single unit test  
+python -m unittest tests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
 
-
-
-
-export FLASK_APP='app_run.py'
-
-flask run -p port number 
-
-ensure  the port  of the server is open from security group
+register an admin user   
+ ./tokenadmin.sh list  -a  
+ ./tokenadmin.sh list  -a  -u admin -e admin@itc.in -p admin  
+ ./tokenadmin.sh list  -h to get help  
 
 
-To generate token :
+
+
+export FLASK_APP='app_run.py'  
+
+flask run -p 5001  
+
+ensure  the port  of the server is open from security group  
+
+
+To generate token :  
 
 curl -X POST -d '{"username": "admin", "password": "admin"}'  \
--H "Content-Type: Application/json"  localhost:5000/token/gettoken
+-H "Content-Type: Application/json"  localhost:5001/token/gettoken
 
-To verify token:
+To verify token:  
+ curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
 
-curl -X POST -d '{"auth_token":"<paste the token here> "}'  -H "Content-Type: Application/json"  localhost:5000/token/verify_token
 
+for db migration   
 
-for db migration 
-
-flask db init 
-flask db migrate -m < COMMENT >
-flask db upgrde 
+flask db init   
+flask db migrate -m < COMMENT >  
+flask db upgrde   

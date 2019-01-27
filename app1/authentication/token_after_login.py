@@ -2,6 +2,7 @@ from flask import request, Blueprint, jsonify, current_app,make_response
 import jwt
 import datetime
 from app1.authentication.models import User 
+# from flask.globals import session
 
 
 token_login_bp = Blueprint('token_login_bp', __name__)
@@ -42,7 +43,7 @@ def decrypt_n_verify_token(auth_token, pub_key):
 @token_login_bp.route('/token/gettoken', methods=['POST'])
 def get_token():
     '''        
-     curl -X POST -d '{"username": "susan", "password": "mysecret"}'  \
+     curl -X POST -d '{"username": "addmin", "password": "admin"}'  \
      -H "Content-Type: Application/json"  localhost:5000/token/gettoken
      '''
     if request.method == 'POST':
@@ -100,27 +101,32 @@ def get_token():
             
                 
     
-@token_login_bp.route('/token/verify_token', methods=['POST'])
+@token_login_bp.route('/token/verify_token', methods=['GET'])
 def verify_token():    
     '''
-    curl -X POST -d '{"auth_token":" "}'  -H "Content-Type: Application/json"  localhost:5000/token/verify_token
+    curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5000/token/verify_token
     '''
-    publickey = current_app.config.get('public_key') 
-    if request.method == 'POST':
-        if 'auth_token' in request.json:
-            auth_token = request.json['auth_token']
-            
-    payload = decrypt_n_verify_token(auth_token, publickey) 
+    publickey = current_app.config.get('public_key')
     
-    if payload == "Signature expired. Please log in again." :
-        status = "Signature expired"
-        message = "Signature expired. Please log in and get a fresh token and send it for reverify."
-    elif payload == "Invalid token. Please log in again.":
-        status = "Invalid token"
-        message = "Invalid token. obtain a valid token and send it for verifiaction"
+    if 'X-Auth-Token' in request.headers:
+        auth_token = request.headers.get('X-Auth-Token')
+        payload = decrypt_n_verify_token(auth_token, publickey) 
+        
+        if payload == "Signature expired. Please log in again." :
+            status = "Signature expired"
+            message = "Signature expired. Please log in and get a fresh token and send it for reverify."
+        elif payload == "Invalid token. Please log in again.":
+            status = "Invalid token"
+            message = "Invalid token. obtain a valid token and send it for verifiaction"
+        else:
+            status = "Verification Successful"
+            message = "Token has been successfully decrypted"    
+        
     else:
-        status = "Verification Successful"
-        message = "Token has been successfully decrypted"        
+        status = "request header  missing 'X-Auth-Token' key or token value"
+        message = "The request header must carry a 'X-Auth-Token' key whose value should be a valid JWT token  "
+        payload = {}    
+        
         
     responseObject = {
                         'status': status,
@@ -128,15 +134,7 @@ def verify_token():
                         'payload': payload}
             #         return auth_token
     return make_response(jsonify(responseObject)), 201       
-#     print(payload.get('sub'))
-#     print(payload)
-#         subject_in_token = "decrypted token data is %s" % payload.get('subject')
-#         name = subject_in_token.get('name')#         
-    #return "Data in token is %s \nand subject in payload is %s \n" % (payload, payload.get('sub'))
-    #return jsonify(payload)
-    
-
-
+#    
 
 
 # '''
