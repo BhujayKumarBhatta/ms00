@@ -79,12 +79,10 @@ class TestToken(BaseTestCase):
             self.assertTrue('auth_token' in data)
             mytoken = data['auth_token']
         with self.client:
-            response = self.client.post(
-                '/token/verify_token',
-                data=json.dumps(dict(
-                    auth_token=mytoken,
-                    )),
-                content_type='application/json')
+            self.headers = {'X-Auth-Token': mytoken}
+            response = self.client.get(
+                '/token/verify_token',                
+                headers=self.headers)
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
             #print(data)
@@ -95,10 +93,10 @@ class TestToken(BaseTestCase):
     def test_invalid_token(self):
         junk_token = "11eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiaWQiOjEsInVzZXJuYW1lIjoic3VzYW4iLCJlbWFpbCI6InN1c2FuQGFiYy5jb20ifSwiaWF0IjoxNTQ3ODI0ODcyLCJleHAiOjE1NDc4Mjg0NzJ9.h8w8NzCC7FGGBo1nUrBKHRrYiFI0KrXujLx-GpThOzk8Gqcw-bWAy_jng-EllHJAay7aWw8u6K3B7T62OrZ5Hkj0qKMcwtZPQMySooTSWGW-I1LI3_vKSYhaXjXwayl--Ke3ZPBI1fFN61wUXDJsMuNydlE4eUv60MIAI5eT7o5GjSwfXETT1uv4mO5uHb-Yxf_tU13UMDt8nHX99h2s8WNZarLr3e5lJv786Y6aB4satzKTE3IhQ2HDqhnlRkxT00kRyd-dBeTzpZeA0SiCSUqF6pRbWHEgEGJPr_p-upxBAc_IP_zfUkyygGsRcUNM_lMF5RGLCRSFzeQ4TxBtDQ"
         with self.client:
-            response = self.client.post(
-                '/token/verify_token',
-                data=json.dumps(dict(auth_token=junk_token)),
-                content_type='application/json')
+            self.headers = {'X-Auth-Token': junk_token}
+            response = self.client.get(
+                '/token/verify_token',                
+                headers=self.headers)
             data = json.loads(response.data.decode())
             print(data)
             #self.assertTrue(data['status'] == 'Invalid token')
@@ -107,10 +105,10 @@ class TestToken(BaseTestCase):
     def test_expired_token(self):
         expired_token = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiaWQiOjEsInVzZXJuYW1lIjoic3VzYW4iLCJlbWFpbCI6InN1c2FuQGFiYy5jb20ifSwiaWF0IjoxNTQ3ODI0ODcyLCJleHAiOjE1NDc4Mjg0NzJ9.h8w8NzCC7FGGBo1nUrBKHRrYiFI0KrXujLx-GpThOzk8Gqcw-bWAy_jng-EllHJAay7aWw8u6K3B7T62OrZ5Hkj0qKMcwtZPQMySooTSWGW-I1LI3_vKSYhaXjXwayl--Ke3ZPBI1fFN61wUXDJsMuNydlE4eUv60MIAI5eT7o5GjSwfXETT1uv4mO5uHb-Yxf_tU13UMDt8nHX99h2s8WNZarLr3e5lJv786Y6aB4satzKTE3IhQ2HDqhnlRkxT00kRyd-dBeTzpZeA0SiCSUqF6pRbWHEgEGJPr_p-upxBAc_IP_zfUkyygGsRcUNM_lMF5RGLCRSFzeQ4TxBtDQ"
         with self.client:
-            response = self.client.post(
-                '/token/verify_token',
-                data=json.dumps(dict(auth_token=expired_token)),
-                content_type='application/json')
+            self.headers = {'X-Auth-Token': expired_token}
+            response = self.client.get(
+                '/token/verify_token',                
+                headers=self.headers)
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'Signature expired')
             self.assertTrue(isinstance('payload', str))

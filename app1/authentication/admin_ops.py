@@ -18,16 +18,20 @@ def register_admin_user(uname, email, pwd, role='admin'):
             print("user  could not be registered , the erro is: \n  {}".format(e))
     
 def list_admin_users(name='all'):
-    with app.app_context():
+    with app.app_context():               
         if name == 'all':
             ulist = User.query.filter_by(role='admin')
+            #ulist = User.query.all()
             for u in ulist:
-                print(u.username, u.email)
+                print(u)
+                if u:    
+                    print(u.username, u.email, u.role)
             return ulist
         else:
             u = User.query.filter_by(username=name).first()
             print(u)
-            print(u.username, u.email)
+            if u:
+                print(u.username, u.email)
             return u
 
 def get_input(text):
