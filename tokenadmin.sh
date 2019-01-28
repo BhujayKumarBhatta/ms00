@@ -45,6 +45,12 @@ add_parser.add_argument('-e', '--emailid',
                   required = True,
                   help = "email id of the admin user",
                   default = "") 
+
+add_parser.add_argument('-r', '--rolename', 
+                  action = "store", dest = "rolename",
+                  required = True,
+                  help = "role name of the  user",
+                  default = "") 
                   
 add_parser.add_argument('-p', '--password', 
                   action = "store", dest = "password",
@@ -80,10 +86,36 @@ delete_parser.add_argument('-e', '--emailid',
                   required = True,
                   help = "email id of the admin user",
                   default = "") 
+                  
+##############Role Additon and Deletion #############################################################################                  
+addrole_parser = subparsers.add_parser('addrole', help='help for addrole command') 
+
+addrole_parser.add_argument('-n', '--rolename', 
+                  action = "store", dest = "rolename",
+                  required = False,
+                  help = "name of the role e.g. admin",
+                  )
+
+listrole_parser = subparsers.add_parser('listrole', help='help for addrole command') 
+
+listrole_parser.add_argument('-n', '--rolename', 
+                  action = "store", dest = "rolename",
+                  required = False,
+                  help = "name of the role e.g. admin",
+                  )
+
+
+deleterole_parser = subparsers.add_parser('deleterole', help='help for deleterole command') 
+
+deleterole_parser.add_argument('-n', '--rolename', 
+                  action = "store", dest = "rolename",
+                  required = True,
+                  help = "name of the role e.g. admin",
+                  )
 
 try:                    
     options = parser.parse_args()
-    print('executing {arg} command with options {opt} :'.format(arg=sys.argv[1], opt=options))
+    #print('executing {arg} command with options {opt} :'.format(arg=sys.argv[1], opt=options))
     
 except:
     #print usage help when no argument is provided
@@ -96,11 +128,15 @@ def main():
         password = options.password
         username = options.username
         emailid = options.emailid
-        admin_ops.register_admin_user(username, emailid, password)
+        rolename = options.rolename
+        if rolename:
+        	admin_ops.register_user(username, emailid, password, rolename)
+        else:
+        	admin_ops.register_user(username, emailid, password)
     	
     if (sys.argv[1] == 'list'):
      	if options.all:
-     	    admin_ops.list_admin_users('all')
+     	    admin_ops.list_admin_users()
      	if options.username:
      		admin_ops.list_admin_users(options.username)
     
@@ -108,6 +144,21 @@ def main():
         username = options.username
         emailid = options.emailid
         admin_ops.delete_admin_user(username, emailid)
+        
+    if  (sys.argv[1] == 'addrole'):        
+        role_name = options.rolename        
+        admin_ops.register_role(role_name)
+        
+    if  (sys.argv[1] == 'listrole'):        
+        if  options.rolename:       
+        	admin_ops.list_roles(options.rolename)
+        else:
+        	admin_ops.list_roles()
+        
+    if  (sys.argv[1] == 'deleterole'):        
+        role_name = options.rolename        
+        admin_ops.delete_role(role_name)
+    		
     		
   
     

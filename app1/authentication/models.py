@@ -16,6 +16,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     roles = db.relationship('Role', secondary=roles_n_user_map, lazy='dynamic' ,
         backref=db.backref('users', lazy='dynamic' ))
+#     roles = db.relationship('Role', lazy='dynamic' ,
+#         backref=db.backref('users', lazy='dynamic' ))
     
     def __repr__(self):
         return '<User {}>'.format(self.username)
