@@ -16,7 +16,13 @@ def create_app(config_map_list=None, blue_print_list=None):
             app.config.update(m)
         
     db.init_app(app)
-    migrate.init_app(app, db)
+    with app.app_context():
+
+        if db.engine.url.drivername == 'sqlite':
+            migrate.init_app(app, db, render_as_batch=True)
+        else:
+            migrate.init_app(app, db)
+        #migrate.init_app(app, db, render_as_batch=True)
     
     if blue_print_list:
         for bp in blue_print_list:

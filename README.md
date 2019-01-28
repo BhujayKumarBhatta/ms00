@@ -52,3 +52,41 @@ for db migration
 flask db init   
 flask db migrate -m < COMMENT >  
 flask db upgrde   
+
+if there is a change in db structure, and a migration is done , commit and push the migration directory to the git  
+from the  machine where migration was done.  
+
+For  development machine with sqllite db , there are chalenges in migration due to lil8mitiaton of database
+alter capabilities inherent to sqllite. So sometimes , delelting the migration folder and and  recreating a   
+fresh migartion helped.
+
+to test the db operation  :  
+
+(venv) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/microservice-tsp-billing/tokenleader$ flask shell
+
+from app1 import db  
+from app1.authentication.models import User, Role  
+r1 = Role(rolename='role1')  
+db.session.add(r1)  
+db.session.commit()  
+
+u = User(username='john', email='john@example.com')  
+db.session.add(u)  
+db.session.commit()  
+u = User.query.filter_by(username='john').first()  
+u
+#<User john>  
+u.roles  
+#<sqlalchemy.orm.dynamic.AppenderBaseQuery object at 0x7fb94faa2e48>  
+u.roles=[r1]  
+db.session.commit()  
+u.roles  
+#<sqlalchemy.orm.dynamic.AppenderBaseQuery object at 0x7fb94fa8bf98>  
+for l in u.roles:  
+    print(l.rolename)  
+
+#role1  
+
+
+
+
