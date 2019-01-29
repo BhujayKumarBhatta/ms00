@@ -27,7 +27,7 @@ class User(db.Model):
      
     def check_password(self, password):
         return  check_password_hash(self.password_hash, password)
-    
+    #Todo: need changes as well
     def is_admin(self):
         if self.role == 'admin' or self.role=='Admin' or self.role=='ADMIN':
             return True 
@@ -37,7 +37,7 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email':  self.email,
-            'role': self.role
+            'roles': [role.rolename for role in self.roles]
             }
         return data
     

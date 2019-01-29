@@ -49,7 +49,7 @@ add_parser.add_argument('-e', '--emailid',
 add_parser.add_argument('-r', '--rolename', 
                   action = "store", dest = "rolename",
                   required = True,
-                  help = "role name of the  user",
+                  help = "comma separated role names without any blank space e.g. role1,role2 ",
                   default = "") 
                   
 add_parser.add_argument('-p', '--password', 
@@ -93,7 +93,7 @@ addrole_parser = subparsers.add_parser('addrole', help='help for addrole command
 addrole_parser.add_argument('-n', '--rolename', 
                   action = "store", dest = "rolename",
                   required = False,
-                  help = "name of the role e.g. admin",
+                  help = "rolename  e.g role1",
                   )
 
 listrole_parser = subparsers.add_parser('listrole', help='help for addrole command') 
@@ -123,6 +123,10 @@ except:
     sys.exit(1)
 
 def main():
+    if len(sys.argv)==1:
+	    # display help message when no args are passed.
+	    parser.print_help()
+	    sys.exit(1)
         
     if  (sys.argv[1] == 'add'):
         password = options.password
@@ -130,7 +134,12 @@ def main():
         emailid = options.emailid
         rolename = options.rolename
         if rolename:
-        	admin_ops.register_user(username, emailid, password, rolename)
+        	role_list = []
+        	if  not ',' in rolename:
+        		role_list.append(rolename)
+        	else:
+        		role_list = rolename.split(',')
+        	admin_ops.register_user(username, emailid, password, role_list)
         else:
         	admin_ops.register_user(username, emailid, password)
     	

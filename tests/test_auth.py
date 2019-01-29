@@ -8,7 +8,8 @@ from app1.authentication.token_after_login import \
 
 from tests.base_test import  BaseTestCase
 from app1 import db
-from app1.authentication.models import User
+from app1.authentication.models import User, Role
+from app1.authentication import admin_ops
 
 #app.app_context().push()
 
@@ -18,12 +19,13 @@ class TestToken(BaseTestCase):
     (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
     '''
 #       
-    def test_auth_token_with_actual_rsa_keys(self):
+    def test_auth_token_with_actual_rsa_keys_fake_user(self):
           
         user_from_db = {
             'id': 1,
             'username': 'susan',
-            'email':  'susan@abc.com',            
+            'email':  'susan@abc.com',
+            'roles': ['role1', 'role2']          
             }
   
         payload = {
@@ -45,6 +47,31 @@ class TestToken(BaseTestCase):
 #         print('end of  jwt token function.....................')
 #     
 #   
+
+    def test_get_token(self): 
+        r1 = Role(rolename='test_role_1')
+        r2 = Role(rolename='test_role_2')
+        db.session.add(r1)
+        db.session.add(r2)
+        db.session.commit()
+        input_roles = ['test_role_1', 'test_role_2']         
+        u1 = admin_ops.register_user('susan', 'susan@itc.in', 'mysecret', input_roles)
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken',
+                data=json.dumps(dict(
+                    username='susan',
+                    password='mysecret' )),
+                content_type='application/json')
+#             print('response is {}'.format(response))
+            data = json.loads(response.data.decode())
+            #print(data['message'])
+            self.assertTrue(data['status'] == 'success')
+            self.assertTrue('auth_token' in data)
+            mytoken = data['auth_token']
+            return mytoken
+
+    #this method is used again in the token verification test
     def test_token_gen_failed_for_unregistered_user(self):
         with self.client:
             response = self.client.post(
@@ -58,8 +85,27 @@ class TestToken(BaseTestCase):
             #print(data['message'])
             self.assertTrue(data['status'] == 'User not registered')
             self.assertFalse('auth_token' in data)
+    
+    def test_token_gen_n_verify_success_for_registered_user_with_role(self):
+        mytoken = self.test_get_token()
+        with self.client:
+            self.headers = {'X-Auth-Token': mytoken}
+            response = self.client.get(
+                '/token/verify_token',                
+                headers=self.headers)
+            #print('response is {}'.format(response))
+            data = json.loads(response.data.decode())
+            #print(data)
+            self.assertTrue(data['status'] == 'Verification Successful')
+            self.assertTrue('payload' in data)
+            roles_retrived_from_token = data['payload'].get('sub').get('roles')
+            self.assertTrue(data['payload'].get('sub').get('username') == 'susan')
+            self.assertTrue(roles_retrived_from_token, list)#== ['test_role_1', 'test_role_2'])
+            self.assertTrue(sorted(roles_retrived_from_token) == sorted(['test_role_1', 'test_role_2']))
+#             print(data)
+#             print(response.data.decode())
             
-    def test_token_gen_n_verify_success_for_registered_user(self):
+    def test_token_gen_n_verify_success_for_registered_user_without_role(self):
         u1 = User(username='susan', email='susan@abc.com')
         u1.set_password('mysecret')       
         self.assertTrue(u1.check_password('mysecret'))
@@ -89,6 +135,8 @@ class TestToken(BaseTestCase):
             self.assertTrue(data['status'] == 'Verification Successful')
             self.assertTrue('payload' in data)
             self.assertTrue(data['payload'].get('sub').get('username') == 'susan')
+    
+    
     
     def test_invalid_token(self):
         junk_token = "11eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiaWQiOjEsInVzZXJuYW1lIjoic3VzYW4iLCJlbWFpbCI6InN1c2FuQGFiYy5jb20ifSwiaWF0IjoxNTQ3ODI0ODcyLCJleHAiOjE1NDc4Mjg0NzJ9.h8w8NzCC7FGGBo1nUrBKHRrYiFI0KrXujLx-GpThOzk8Gqcw-bWAy_jng-EllHJAay7aWw8u6K3B7T62OrZ5Hkj0qKMcwtZPQMySooTSWGW-I1LI3_vKSYhaXjXwayl--Ke3ZPBI1fFN61wUXDJsMuNydlE4eUv60MIAI5eT7o5GjSwfXETT1uv4mO5uHb-Yxf_tU13UMDt8nHX99h2s8WNZarLr3e5lJv786Y6aB4satzKTE3IhQ2HDqhnlRkxT00kRyd-dBeTzpZeA0SiCSUqF6pRbWHEgEGJPr_p-upxBAc_IP_zfUkyygGsRcUNM_lMF5RGLCRSFzeQ4TxBtDQ"

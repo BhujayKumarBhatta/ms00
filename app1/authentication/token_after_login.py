@@ -43,8 +43,8 @@ def decrypt_n_verify_token(auth_token, pub_key):
 @token_login_bp.route('/token/gettoken', methods=['POST'])
 def get_token():
     '''        
-     curl -X POST -d '{"username": "addmin", "password": "admin"}'  \
-     -H "Content-Type: Application/json"  localhost:5000/token/gettoken
+     curl -X POST -d '{"username": "admin", "password": "admin"}'  \
+     -H "Content-Type: Application/json"  localhost:5001/token/gettoken
      '''
     if request.method == 'POST':
         if 'username' in request.json and 'password' in request.json:
@@ -104,7 +104,8 @@ def get_token():
 @token_login_bp.route('/token/verify_token', methods=['GET'])
 def verify_token():    
     '''
-    curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5000/token/verify_token
+    curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token    
+    
     '''
     publickey = current_app.config.get('public_key')
     

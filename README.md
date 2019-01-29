@@ -23,9 +23,26 @@ python -m unittest discover tests
 to run single unit test  
 python -m unittest tests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
 
-register an admin user   
- ./tokenadmin.sh list  -a  
- ./tokenadmin.sh list  -a  -u admin -e admin@itc.in -p admin  
+for token generation and verification  testing this is a useful test  
+python -m unittest tests.test_auth.TestToken.test_token_gen_n_verify_success_for_registered_user_with_role   
+
+register a role from the root directory of  tokenleader
+========================================
+
+./tokenadmin.sh addrole -n role1  
+./tokenadmin.sh addrole -n role2  
+./tokenadmin.sh addrole -n admin  
+
+ ./tokenadmin.sh list  -h to get help  
+
+
+register an  user 
+=====================
+./tokenadmin.sh add  -u user10 -e user10@itc.in -p user10 -r role1,role2    
+
+ ./tokenadmin.sh list  -a  -u admin -e admin@itc.in -p admin   -r admin  
+ 
+  ./tokenadmin.sh list  -a    
  ./tokenadmin.sh list  -h to get help  
 
 
