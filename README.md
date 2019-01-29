@@ -40,7 +40,7 @@ register an  user
 =====================
 ./tokenadmin.sh add  -u user10 -e user10@itc.in -p user10 -r role1,role2    
 
- ./tokenadmin.sh list  -a  -u admin -e admin@itc.in -p admin   -r admin  
+ ./tokenadmin.sh list  -a  
  
   ./tokenadmin.sh list  -a    
  ./tokenadmin.sh list  -h to get help  
