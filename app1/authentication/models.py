@@ -16,6 +16,10 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     roles = db.relationship('Role', secondary=roles_n_user_map, lazy='dynamic' ,
         backref=db.backref('users', lazy='dynamic' ))
+    org = db.relationship('Organization', backref = 'user', uselist=False, lazy = True)
+    orgunit = db.relationship('OrgUnit', backref = 'user', uselist=False, lazy = True)
+    org = db.relationship('Department', backref = 'user', uselist=False, lazy = True)
+    
 #     roles = db.relationship('Role', lazy='dynamic' ,
 #         backref=db.backref('users', lazy='dynamic' ))
     
@@ -49,7 +53,24 @@ class Role(db.Model):
     
     def __repr__(self):
         return '<Role {}>'.format(self.rolename)
+
+class Organization(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True, unique=True, nullable=False)
+    orgtype = db.Column(db.String(64))
+    auth_backend = db.Column(db.String(64))
+
+class OrgUnit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True, unique=True, nullable=False)
+
+class Department(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     
+
+
+
 '''
 (venv) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/microservice-tsp-billing/tokenleader$ flask shell
 
