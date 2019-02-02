@@ -16,9 +16,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     roles = db.relationship('Role', secondary=roles_n_user_map, lazy='dynamic' ,
         backref=db.backref('users', lazy='dynamic' ))
-    org = db.relationship('Organization', backref = 'user', uselist=False, lazy = True)
-    orgunit = db.relationship('OrgUnit', backref = 'user', uselist=False, lazy = True)
-    org = db.relationship('Department', backref = 'user', uselist=False, lazy = True)
+    
+
     
 #     roles = db.relationship('Role', lazy='dynamic' ,
 #         backref=db.backref('users', lazy='dynamic' ))
@@ -34,7 +33,8 @@ class User(db.Model):
     #Todo: need changes as well
     def is_admin(self):
         if self.role == 'admin' or self.role=='Admin' or self.role=='ADMIN':
-            return True 
+            return True
+        
     
     def to_dict(self):
         data = {
@@ -43,30 +43,60 @@ class User(db.Model):
             'email':  self.email,
             'roles': [role.rolename for role in self.roles]
             }
-        return data
+        return data    
+    
     
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rolename = db.Column(db.String(64), index=True, unique=True)
-#     users = db.relationship('User', secondary=roles_n_user_map, lazy='dynamic' ,
-#         backref=db.backref('roles', lazy='dynamic' ))
-    
+    functional_context = db.relationship('Workfunctioncontext', backref = 'role', uselist=False, lazy = True)
+
     def __repr__(self):
         return '<Role {}>'.format(self.rolename)
+    
+    
+class Workfunctioncontext(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True, unique=True, nullable=False)
+    org = db.relationship('Organization', backref = 'org', uselist=False, lazy = True)
+    orgunit = db.relationship('OrgUnit', backref = 'orgunit', uselist=False, lazy = True)
+    department = db.relationship('Department', backref = 'department', uselist=False, lazy = True)
+    roleid = db.Column(db.Integer, db.ForeignKey('role.id'))
+    
+    def __repr__(self):
+        return '<WorkFunctionContext {}>'.format(self.name)
+    
 
 class Organization(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     orgtype = db.Column(db.String(64))
     auth_backend = db.Column(db.String(64))
+    work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
+    
+    def __repr__(self):
+        return '<Organization {}>'.format(self.name)
+    
 
 class OrgUnit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
+    work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
+    
+    def __repr__(self):
+        return '<OrgUnit {}>'.format(self.name)
+    
 
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
+    work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
+    
+    def __repr__(self):
+        return '<Department {}>'.format(self.name)
+    
+    
+
     
 
 
@@ -75,7 +105,7 @@ class Department(db.Model):
 (venv) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/microservice-tsp-billing/tokenleader$ flask shell
 
 from app1 import db
-from app1.authentication.models import User, Role
+from app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
 r1 = Role(rolename='role1')
 db.session.add(r1)
 db.session.commit()

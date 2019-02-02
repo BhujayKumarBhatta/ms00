@@ -4,8 +4,9 @@ from app_run import app
 from app1 import db
 from sqlalchemy import exc
 from app1.authentication import models
-from app1.authentication.models import User, Role
+from app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
 
+  
 
 def register_role(rname):
     with app.app_context():
