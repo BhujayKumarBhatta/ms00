@@ -64,7 +64,10 @@ class Workfunctioncontext(db.Model):
     roleid = db.Column(db.Integer, db.ForeignKey('role.id'))
     
     def __repr__(self):
-        return '<WorkFunctionContext {}>'.format(self.name)
+        return '<WorkFunctionContext {} {} {} {} >'.format(self.name,
+                                                           self.org,
+                                                           self.orgunit,
+                                                           self.department)
     
 
 class Organization(db.Model):

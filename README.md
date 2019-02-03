@@ -28,6 +28,53 @@ python -m unittest tests.test_auth.TestToken.test_token_gen_n_verify_success_for
 
 register a role from the root directory of  tokenleader
 ========================================
+./adminops.sh   add  org   -n org1  
+./adminops.sh   add  ou   -n ou2  
+./adminops.sh   add  dept   -n  dept1  
+ ./adminops.sh   addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 
+ ./adminops.sh   list  wfc  -n wfc2  
+ #3 wfc2 <WorkFunctionContext wfc2 <Organization org1> <OrgUnit ou1> <Department dept1> >  
+  
+ ./adminops.sh   add  role  -n role1 --wfcname wfc1   
+ 
+ check that the wfc has been assigned correctly   
+ ./adminops.sh   list  role  -n role1  
+id: 1,  name: role1 , wfc: wfc1 , wfcorg: org1, wfcou: ou1, wfcdept: dept1    
+ 
+ ./adminops.sh adduser -n user10 --password user10 --emailid user10 --rolenames role10  
+ 
+ ./adminops.sh   list  wfc  -n all
+ ./adminops.sh   list  dept  -n all   or  ./adminops.sh   list  dept  -n dept1 
+ 
+ ./adminops.sh delete user -n user10
+ 
+ 
+ To check the database objects from shell, and to see  that the relational properties are working properly   
+ use the follwoing :  
+ ==================================================
+ /microservice-tsp-billing/tokenleader$ flask shell    
+from app1.authentication import models  
+from app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department  
+r1 = Role.query.filter_by('role1').first()  
+r1 = Role.query.filter_by(rolename='role1').first()  
+r1 
+#<Role role1>  
+r1.functional_context  
+#<WorkFunctionContext wfc1>  
+r1.functional_context.org  
+#<Organization org1>  
+r1.functional_context.org.name  
+#'org1'  
+r1.functional_context.orgunit  
+#<OrgUnit ou1>  
+r1.functional_context.orgunit.name  
+#'ou1'  
+r1.functional_context.department.name  
+#'dept1'  
+
+ 
+
+
 
 ./tokenadmin.sh addrole -n role1  
 ./tokenadmin.sh addrole -n role2  

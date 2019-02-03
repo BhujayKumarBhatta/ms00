@@ -25,7 +25,7 @@ class TestUserModel(BaseTestCase):
         return af.register_org('org1')
     
     def create_orgunit_for_test(self):
-        return af.register_orgunit('ou1')
+        return af.register_ou('ou1')
     
     def create_dept_for_test(self):
         return af.register_dept('dept1')
