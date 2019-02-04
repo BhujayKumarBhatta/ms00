@@ -1,3 +1,42 @@
+How it works:
+============================
+tokenleader has two simple operations:
+1) recieves users request ,  autehnticate his and provides a  token  which carries  more users informations such as 
+	a) user's roles ( one user can have multiple roles, although most of the cases one will suffice)  
+	b) role  is mapped with  a wfc ( work function context)   
+	c) wfc is a combination of  organization name, organization unit name and departname 
+
+A typical token request call is :   
+curl -X POST -d '{"username": "admin", "password": "admin"}'  \
+-H "Content-Type: Application/json"  localhost:5001/token/gettoken
+
+The validity period of the token can be set through the settings.ini in future , currently it is fixed as one hour.
+
+2) receives a token from user , can validate and unencrypt the users information. 
+
+token can be used for authenticating an user wiithout the need for user
+To verify token:  
+ curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
+ 
+ 
+ in situtaions where a service or a client need to make several  http /REST call to the server or to multiple server , 
+ sending the user name and password repeatedly over the http traffic is not desiarable, neither it is good
+ to store the user name and password in servers session for a stateless application. In thses cases token based 
+ authentication helps.
+ 
+ Once an user or service obtain a token, subsequent calls to the server or even to different servers can be made
+ using the token instead of username and password. The server then will make a validation call to tokenleader for 
+ authentication and also will retrieve role name and wfc information. 
+ 
+ 
+ The information retrieved  from the token leader then can be used by the server for granting proper authorization to the 
+ server resource . Therefore authentication is handled  by the tokenleader application whereas the authorization is handled 
+ by the applicaion being served to the user. 
+ 
+ each application uses a local role to acl map. For each api route there is one acl name which either deny or permits the 
+ http call to the  api route . further  to control how much data to be given access to the user , the wfc details  will be 
+ used for filtering  the data query ( mainly data persistance and query)
+
 Please follow the installation and configuration steps  
 
 git config --global http.sslVerify false ( in case of server ssl cert verification error)  
@@ -21,13 +60,17 @@ ssh-keygen < press enter to select all defaults>
 python -m unittest discover tests    
 
 to run single unit test  
-python -m unittest tests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
+python -m unittest tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
 
 for token generation and verification  testing this is a useful test  
 python -m unittest tests.test_auth.TestToken.test_token_gen_n_verify_success_for_registered_user_with_role   
 
-register a role from the root directory of  tokenleader
+
+TO set up the tokenleqder the following entities need to be registered in sequence   
+from the root directory of  tokenleader  
 ========================================
+./adminops.sh  -h  provides help to understand the various options of admin funciton os tokenleader  
+
 ./adminops.sh   add  org   -n org1  
 ./adminops.sh   add  ou   -n ou2  
 ./adminops.sh   add  dept   -n  dept1  
@@ -73,25 +116,6 @@ r1.functional_context.department.name
 #'dept1'  
 
  
-
-
-
-./tokenadmin.sh addrole -n role1  
-./tokenadmin.sh addrole -n role2  
-./tokenadmin.sh addrole -n admin  
-
- ./tokenadmin.sh list  -h to get help  
-
-
-register an  user 
-=====================
-./tokenadmin.sh add  -u user10 -e user10@itc.in -p user10 -r role1,role2    
-
- ./tokenadmin.sh list  -a  
- 
-  ./tokenadmin.sh list  -a    
- ./tokenadmin.sh list  -h to get help  
-
 
 
 
