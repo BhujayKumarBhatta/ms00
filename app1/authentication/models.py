@@ -42,6 +42,7 @@ class User(db.Model):
             'username': self.username,
             'email':  self.email,
             'roles': [role.rolename for role in self.roles]
+#             'roles': [role for role in self.roles]
             }
         return data    
     
@@ -158,6 +159,14 @@ from app1.authentication.models import User
 u1 = User.query.filter_by(username='susan').first()
 u1.check_password('mysecret')
 
+
+>>> data = { 'roles': [ {'rolename': role.rolename, 'wfcname': role.functional_context.name, 'org': role.functional_context.org,}  for role in roles] }
+>>> data
+{'roles': [{'org': <Organization org10>, 'rolename': 'role10', 'wfcname': 'wfc10'}]}
+>>> data = { 'roles': [ {'rolename': role.rolename, 'wfcname': role.functional_context.name, 'org': role.functional_context.org.name,}  for role in roles] }
+>>> data
+{'roles': [{'org': 'org10', 'rolename': 'role10', 'wfcname': 'wfc10'}]}
+>>>
 
 
 

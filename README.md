@@ -1,5 +1,5 @@
-How it works:
-============================
+What it does 
+===================================================================
 tokenleader has two simple operations:
 1) recieves users request ,  autehnticate his and provides a  token  which carries  more users informations such as 
 	a) user's roles ( one user can have multiple roles, although most of the cases one will suffice)  
@@ -18,8 +18,10 @@ token can be used for authenticating an user wiithout the need for user
 To verify token:  
  curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
  
- 
- in situtaions where a service or a client need to make several  http /REST call to the server or to multiple server , 
+ Why token service and how it works
+ ======================================================================================
+ in situtaions where a service or a client need to make several  http /REST call to an 
+ application/service(microservice)/server or  to multiple applications/services/servers, 
  sending the user name and password repeatedly over the http traffic is not desiarable, neither it is good
  to store the user name and password in servers session for a stateless application. In thses cases token based 
  authentication helps.
@@ -30,7 +32,7 @@ To verify token:
  
  
  The information retrieved  from the token leader then can be used by the server for granting proper authorization to the 
- server resource . Therefore authentication is handled  by the tokenleader application whereas the authorization is handled 
+ server resources . Therefore authentication is handled  by the tokenleader application whereas the authorization is handled 
  by the applicaion being served to the user. 
  
  each application uses a local role to acl map. For each api route there is one acl name which either deny or permits the 
@@ -38,7 +40,7 @@ To verify token:
  used for filtering  the data query ( mainly data persistance and query)
 
 Please follow the installation and configuration steps  
-
+======================================================================================
 git config --global http.sslVerify false ( in case of server ssl cert verification error)  
 
 git clone <your project>      
@@ -68,7 +70,7 @@ python -m unittest tests.test_auth.TestToken.test_token_gen_n_verify_success_for
 
 TO set up the tokenleqder the following entities need to be registered in sequence   
 from the root directory of  tokenleader  
-========================================
+====================================================================================
 ./adminops.sh  -h  provides help to understand the various options of admin funciton os tokenleader  
 
 ./adminops.sh   add  org   -n org1  
@@ -174,6 +176,33 @@ for l in u.roles:
     print(l.rolename)  
 
 #role1  
+
+
+
+Todo:
+===================================
+User model to_dict , roles: to return role_sql_obj instead of role.name ===> 
+ 'roles': [role.rolename for role in self.roles]  to be changed to    'roles': [role for role in self.roles]
+----------------------------------------------------------------------------------
+
+testing to be done/changes to  get the role obj from the  roles list instead of role name as string
+----------------------------------------------------------------------------------------------------
+micros1 authclient ==> extract_roles_from_verified_token_n_compare_acl_map ==>
+for user_role_in_token in roles_in_token:
+        #for role_sql_obj in roles_in_token:
+            #user_role_in_token = role_sql_obj.rolename
+#             work_context_dict = {'wfcname': role.functional_context.name,
+#                                  'org': role.functional_context.org.name,
+#                                  'ou': role.functional_context.orgunit.name,
+#                                  'dept':  role.functional_context.department.name
+#                                  }
+---------------------------------------------------------------------------------------------------------
+tesing to be done/changes to that affect
+
+workcontext to be instantiated as a class 
+
+workcontext to be made avilable to  api route function when required
+
 
 
 
