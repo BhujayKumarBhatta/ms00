@@ -88,7 +88,7 @@ def get_token():
                 #print(auth_token)
                 responseObject = {
                         'status': 'success',
-                        'message': '',
+                        'message': 'success',
                         'auth_token': auth_token.decode()}
             #         return auth_token
                 return make_response(jsonify(responseObject)), 201

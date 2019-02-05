@@ -42,32 +42,33 @@ def register_ops1(obj, cname, orgname=None, ou_name=None, dept_name=None, wfc_na
         record =  OrgUnit(name=cname)
     if obj == 'Department' :
         record =  Department(name=cname)
+    if obj == 'Role' :
+        record = Role(rolename=cname)
     if obj == 'Workfunctioncontext' :
         try:
             o = Organization.query.filter_by(name=orgname).first()
             ou = OrgUnit.query.filter_by(name=ou_name).first()
             dept = Department.query.filter_by(name=dept_name).first()        
         except Exception as e:
-            msg = "Organization, organization Unit or department name \
+            msg = "Organization, organization Unit or department name not found\
                    register them first in the respective master db, \
                    the error is {}".format(e)
             print(msg)
             return None      
-        record =  Workfunctioncontext(name=cname, org=o, orgunit=ou, department=dept )
-    if obj == 'Role':
-        try: 
-            wfc_db = Workfunctioncontext.query.filter_by(name=wfc_name).first()   
-        except Exception as e:
-            msg = ("no work function context by name {} is found in db. "
-                   "you may have to register it first or  there is a db"
-                   " error {}".format(wfc_name, e))
-            print(msg)
-            return None       
-        record = Role(rolename=cname, functional_context=wfc_db)
-    if obj == 'User':        
+        record =  Workfunctioncontext(name=cname, org=o, orgunit=ou, department=dept ) 
+    if obj == 'User':
+        if wfc_name:
+            try:
+                wfc = Workfunctioncontext.query.filter_by(name=wfc_name).first()
+            except Exception as e:
+                msg = "wfc  not found in database\
+                   register them first in the wfc master db, \
+                   the error is {}".format(e)
+                print(msg)
+                return None   
         if roles:
             valid_role_objects = get_validated_roles(roles)            
-            record = User(username=cname, email=email, roles=valid_role_objects)
+            record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc)
         else:            
             record = User(username=cname, email=email)
         record.set_password(pwd)   
@@ -183,11 +184,7 @@ def list_ops(obj, cname=None, *args, **kwargs):
            
     if record:
         if obj == 'Role':
-            print("id: {},  name: {} , wfc: {} ".format(record.id,
-                                                           record.rolename, 
-                                                           record.functional_context
-                                                           
-                                                           )) 
+            print("id: {},  name: {}  ".format(record.id, record.rolename )) 
         elif obj == 'User':
             print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
         else:            
@@ -199,11 +196,7 @@ def list_ops(obj, cname=None, *args, **kwargs):
     if record_list:        
         for record in record_list:
             if obj == 'Role':
-                print("id: {},  name: {} , wfc: {} ".format(record.id,
-                                                           record.rolename, 
-                                                           record.functional_context
-                                                           
-                                                           ))
+                print("id: {},  name: {}  ".format(record.id, record.rolename )) 
             elif obj == 'User':
 #                 print("id: {},  name: {}".format(record.id, record.username))
                 print(record.username, record.email, ','.join([r.rolename for r in record.roles]))

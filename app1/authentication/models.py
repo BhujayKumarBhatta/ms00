@@ -14,8 +14,11 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)    
     password_hash = db.Column(db.String(128))
-    roles = db.relationship('Role', secondary=roles_n_user_map, lazy='dynamic' ,
-        backref=db.backref('users', lazy='dynamic' ))
+#     roles = db.relationship('Role', secondary=roles_n_user_map, lazy='dynamic' ,
+#         backref=db.backref('users', lazy='dynamic' ))
+    roles = db.relationship('Role', secondary=roles_n_user_map, 
+        backref=db.backref('users' ))
+    wfc = db.relationship('Workfunctioncontext', backref = 'user', uselist=False, lazy = True)
     
 
     
@@ -41,8 +44,9 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email':  self.email,
-            'roles': [role.rolename for role in self.roles]
-#             'roles': [role for role in self.roles]
+            'roles': [role.rolename for role in self.roles],
+            #'roles': [role for role in self.roles] flsk is not able to return sql object , expecting string
+            'wfc': user.wfc.to_dict()
             }
         return data    
     
@@ -50,7 +54,7 @@ class User(db.Model):
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rolename = db.Column(db.String(64), index=True, unique=True)
-    functional_context = db.relationship('Workfunctioncontext', backref = 'role', uselist=False, lazy = True)
+#     functional_context = db.relationship('Workfunctioncontext', backref = 'role', uselist=False, lazy = True)
 
     def __repr__(self):
         return '<Role {}>'.format(self.rolename)
@@ -62,14 +66,22 @@ class Workfunctioncontext(db.Model):
     org = db.relationship('Organization', backref = 'org', uselist=False, lazy = True)
     orgunit = db.relationship('OrgUnit', backref = 'orgunit', uselist=False, lazy = True)
     department = db.relationship('Department', backref = 'department', uselist=False, lazy = True)
-    roleid = db.Column(db.Integer, db.ForeignKey('role.id'))
+    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
     
     def __repr__(self):
         return '<WorkFunctionContext {} {} {} {} >'.format(self.name,
                                                            self.org,
                                                            self.orgunit,
                                                            self.department)
-    
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'org':  self.org,
+            'orgunit':  self.orgunit,
+            'department':  self.department            
+            }
+        return data    
 
 class Organization(db.Model):
     id = db.Column(db.Integer, primary_key=True)

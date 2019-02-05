@@ -66,10 +66,7 @@ add_parser.add_argument('--orgtype' , action = "store", dest = "orgtype",
                   required = False,
                   help = "internal or external org , to be used while registtering org ",
                   default = "internal")
-add_parser.add_argument('--wfcname' , action = "store", dest = "wfcname",
-                  required = False,
-                  help = "wfc name linked with the role , to be used while registtering role ",
-                  )
+                  
 
 
 addwfc_parser = subparser.add_parser('addwfc', help='add a wfc , work function context ')
@@ -112,6 +109,10 @@ adduser_parser.add_argument('--rolenames' , action = "store", dest = "rolenames"
                    there should not be any space beteween the role names. \
                    examaple  , --rolenames role1,role2,role3 " 
                   )  
+adduser_parser.add_argument('--wfc' , action = "store", dest = "wfc",
+                  required = True,
+                  help = "wfc or work function context name " 
+                  )  
 
 try:                    
     options = parser.parse_args()  
@@ -144,7 +145,7 @@ def main():
           
                 
         if options.entity == 'role':
-            af.register_role(entity_name, options.wfcname)
+            af.register_role(entity_name)
             
     if  sys.argv[1] == 'addwfc':
         af.register_work_func_context(entity_name, options.wfcorg, options.wfcou, options.wfcdept)
@@ -160,9 +161,9 @@ def main():
                 role_list.append(rolenames)
             else:
                 role_list = rolenames.split(',')
-            af.register_user(username, emailid, password, role_list)
+            af.register_user(username, emailid, password, role_list, options.wfc)
         else:
-            af.register_user(username, emailid, password) 
+            af.register_user(username, emailid, password, options.wfc) 
         #af.delete_user(entity_name, options.email, options.password, options.roles)      
     
     if  sys.argv[1] == 'list':

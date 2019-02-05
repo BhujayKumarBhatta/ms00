@@ -180,6 +180,11 @@ for l in u.roles:
 
 
 Todo:
+
+
+role and wfc shd not have any relation
+user can have only one wfc 
+
 ===================================
 User model to_dict , roles: to return role_sql_obj instead of role.name ===> 
  'roles': [role.rolename for role in self.roles]  to be changed to    'roles': [role for role in self.roles]

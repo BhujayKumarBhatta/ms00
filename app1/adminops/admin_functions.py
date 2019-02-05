@@ -53,8 +53,8 @@ def delete_wfc(wfcname):
    return  bops.delete_ops('Workfunctioncontext', wfcname)
     
 
-def register_role(rname, wfc_name):
-    return bops.register_ops1('Role', rname, wfc_name=wfc_name)
+def register_role(rname):
+    return bops.register_ops1('Role', rname)
 
 
 def list_role(rolename=None):
@@ -64,8 +64,8 @@ def delete_role(rolename):
     return bops.delete_ops('Role', rolename)   
 
     
-def register_user(uname, email, pwd, roles=None):
-    return bops.register_ops1('User', uname, email=email, pwd=pwd, roles=roles)   
+def register_user(uname, email, pwd, roles=None, wfc_name=None):
+    return bops.register_ops1('User', uname, email=email, pwd=pwd, roles=roles, wfc_name=wfc_name)   
 #  
 
 def list_users(uname=None):
