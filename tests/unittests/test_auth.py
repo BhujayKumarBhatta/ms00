@@ -21,20 +21,17 @@ class TestToken(TestUserModel):
     (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
     '''
 #       
-    def test_auth_token_with_actual_rsa_keys_fake_user(self):
+    def test_auth_token_with_actual_rsa_keys_fake_user(self):         
           
-#         user_from_db = {
-#             'id': 1,
-#             'username': 'susan',
-#             'email':  'susan@abc.com',
-#             'roles': ['role1', 'role2']          
-#             }
-        
-        user_from_db = { 'id': 1,
-                        'email': 'u1@abc.com',
-                        'username': 'u1',
-                        'roles': [{'ou': 'ou1', 'dept': 'dept1', 'rolename': 'role1', 'wfcname': 'wfc1', 'org': 'org1'}
-                                  ],
+        user_from_db = {'id': 1,
+                        'username': 'u1', 
+                        'email': 'u1@abc.com', 
+                        'roles': ['role1'], 
+                        'wfc': {'department': 'dept1', 
+                                'name': 'wfc1', 
+                                'orgunit': 'ou1',
+                                'id': 1, 
+                                'org': 'org1'}                       
                         }
   
         payload = {
@@ -52,7 +49,8 @@ class TestToken(TestUserModel):
           
         np = decrypt_n_verify_token(auth_token, __publickey)
         self.assertTrue(isinstance(np, dict))
-        print(np.get('sub'))
+        #print(np.get('sub'))
+        self.assertTrue((np.get('sub').get('wfc').get('org')) == 'org1')
         #self.assertEqual(np.get('sub'), payload.get('sub'))
 #         print('end of  jwt token function.....................')
 #     
@@ -64,7 +62,7 @@ class TestToken(TestUserModel):
         this method registers an user with name as u1 
         '''             
         u1 = self.user_creation_for_test()
-        #print(u1.to_dict())
+        print(u1.to_dict())
         with self.client:
             response = self.client.post(
                 '/token/gettoken',
@@ -106,47 +104,48 @@ class TestToken(TestUserModel):
                 headers=self.headers)
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-            print(data)
-#             self.assertTrue(data['status'] == 'Verification Successful')
-#             self.assertTrue('payload' in data)
-#             roles_retrived_from_token = data['payload'].get('sub').get('roles')
-#             self.assertTrue(data['payload'].get('sub').get('username') == 'susan')
-#             self.assertTrue(roles_retrived_from_token, list)#== ['test_role_1', 'test_role_2'])
-#             self.assertTrue(sorted(roles_retrived_from_token) == sorted(['test_role_1', 'test_role_2']))
-#             print(data)
-#             print(response.data.decode())
-            
-    def test_token_gen_n_verify_success_for_registered_user_without_role(self):
-        u1 = User(username='susan', email='susan@abc.com')
-        u1.set_password('mysecret')       
-        self.assertTrue(u1.check_password('mysecret'))
-        db.session.add(u1)        
-        db.session.commit()
-        with self.client:
-            response = self.client.post(
-                '/token/gettoken',
-                data=json.dumps(dict(
-                    username='susan',
-                    password='mysecret' )),
-                content_type='application/json')
-#             print('response is {}'.format(response))
-            data = json.loads(response.data.decode())
-            #print(data['message'])
-            self.assertTrue(data['status'] == 'success')
-            self.assertTrue('auth_token' in data)
-            mytoken = data['auth_token']
-        with self.client:
-            self.headers = {'X-Auth-Token': mytoken}
-            response = self.client.get(
-                '/token/verify_token',                
-                headers=self.headers)
-            #print('response is {}'.format(response))
-            data = json.loads(response.data.decode())
             #print(data)
             self.assertTrue(data['status'] == 'Verification Successful')
             self.assertTrue('payload' in data)
-            self.assertTrue(data['payload'].get('sub').get('username') == 'susan')
-    
+            roles_retrived_from_token = data['payload'].get('sub').get('roles')
+            self.assertTrue(data['payload'].get('sub').get('username') == 'u1')
+            self.assertTrue(roles_retrived_from_token, list)#== ['test_role_1', 'test_role_2'])
+            self.assertTrue(sorted(roles_retrived_from_token) == sorted(['role1']))
+            self.assertTrue((data['payload'].get('sub').get('wfc').get('org')) == 'org1')
+            #print(data)
+            print(response.data.decode())
+            
+#     def test_token_gen_n_verify_success_for_registered_user_without_role(self):
+#         u1 = User(username='susan', email='susan@abc.com')
+#         u1.set_password('mysecret')       
+#         self.assertTrue(u1.check_password('mysecret'))
+#         db.session.add(u1)        
+#         db.session.commit()
+#         with self.client:
+#             response = self.client.post(
+#                 '/token/gettoken',
+#                 data=json.dumps(dict(
+#                     username='susan',
+#                     password='mysecret' )),
+#                 content_type='application/json')
+# #             print('response is {}'.format(response))
+#             data = json.loads(response.data.decode())
+#             #print(data['message'])
+#             self.assertTrue(data['status'] == 'success')
+#             self.assertTrue('auth_token' in data)
+#             mytoken = data['auth_token']
+#         with self.client:
+#             self.headers = {'X-Auth-Token': mytoken}
+#             response = self.client.get(
+#                 '/token/verify_token',                
+#                 headers=self.headers)
+#             #print('response is {}'.format(response))
+#             data = json.loads(response.data.decode())
+#             #print(data)
+#             self.assertTrue(data['status'] == 'Verification Successful')
+#             self.assertTrue('payload' in data)
+#             self.assertTrue(data['payload'].get('sub').get('username') == 'susan')
+#     
     
     
     def test_invalid_token(self):

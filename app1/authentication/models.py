@@ -77,9 +77,9 @@ class Workfunctioncontext(db.Model):
         data = {
             'id': self.id,
             'name': self.name,
-            'org':  self.org,
-            'orgunit':  self.orgunit,
-            'department':  self.department            
+            'org':  self.org.name,
+            'orgunit':  self.orgunit.name,
+            'department':  self.department.name            
             }
         return data    
 

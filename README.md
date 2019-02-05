@@ -111,14 +111,50 @@ ensure  the port  of the server is open from security group
 
 
 To generate token :  
-
+===================================================
 curl -X POST -d '{"username": "admin", "password": "admin"}'  \
 -H "Content-Type: Application/json"  localhost:5001/token/gettoken
 
+what you get from tokenleader:
+========================================
+{'message': 'success', 'status': 'success', 'auth_token': 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NDkzNzg3MDgsImV4cCI6MTU0OTM4MjMwOCwic3ViIjp7IndmYyI6eyJpZCI6MSwibmFtZSI6IndmYzEiLCJkZXBhcnRtZW50IjoiZGVwdDEiLCJvcmciOiJvcmcxIiwib3JndW5pdCI6Im91MSJ9LCJpZCI6MSwidXNlcm5hbWUiOiJ1MSIsInJvbGVzIjpbInJvbGUxIl0sImVtYWlsIjoidTFAYWJjLmNvbSJ9fQ.I2VL1bND5IPynnjGjqOm18IeQsVDJItP9OObPU6817BqTTfk9uTe825fbOX5Zz1-SRm6yKxOOHYzwCUwt7UC1DNyrepV6UlN14RI990xLrfwX1cGAGT7ppW8rTUZks8d5NdcE9DjMfilUwN2dJ15YxsBHgsjYvuV8jBPR-y1gV7ArBcnE2ejY7pVMAxnzzBQz4OtmKARErdYd7BsE6wTqYCdoDV-T_M1ZUe_0u4kJ5vgkxyoWumCHXkt8-S75dxMrq8BePrLd3W-Y9kQjGpmEFX9Xr55oTqexlCtJ9i8920Lh3tyDDb79IPbzSt516PBrjaql98eL1ijuM83IXQhuA'}
+
+
+
 To verify token:  
+================================================
  curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
 
+How the verified toekn data looks like :
+===========================================================================
+{
+  "message": "Token has been successfully decrypted",
+  "payload": {
+    "exp": 1549382308,
+    "iat": 1549378708,
+    "sub": {
+      "email": "u1@abc.com",
+      "id": 1,
+      "roles": [
+        "role1"
+      ],
+      "username": "u1",
+      "wfc": {
+        "department": "dept1",
+        "id": 1,
+        "name": "wfc1",
+        "org": "org1",
+        "orgunit": "ou1"
+      }
+    }
+  },
+  "status": "Verification Successful"
+}
 
+
+
+for initial setup or when db model is changed
+===================================================================
 for db migration   
 
 flask db init   
@@ -133,7 +169,7 @@ alter capabilities inherent to sqllite. So sometimes , delelting the migration f
 fresh migartion helped.
 
 to test the db operation  :  
-
+========================================================================================
 (venv) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/microservice-tsp-billing/tokenleader$ flask shell
 
 from app1 import db  
@@ -166,7 +202,8 @@ role and wfc shd not have any relation - done
 user can have only one wfc  - done 
 user to dict now gives wfc dictionary as well
 
-tesing to be done/changes to that affect
+tesing to be done/changes to that affect  - upto verification unit test is passed 
+
 
 workcontext to be instantiated as a class 
 
