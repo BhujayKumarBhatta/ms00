@@ -3,7 +3,7 @@ What it does
 tokenleader has two simple operations:
 1) recieves users request ,  autehnticate his and provides a  token  which carries  more users informations such as 
 	a) user's roles ( one user can have multiple roles, although most of the cases one will suffice)  
-	b) role  is mapped with  a wfc ( work function context)   
+	b) user is  alos mapped with  a wfc ( work function context)   
 	c) wfc is a combination of  organization name, organization unit name and departname 
 
 A typical token request call is :   
@@ -80,18 +80,15 @@ from the root directory of  tokenleader
  ./adminops.sh   list  wfc  -n wfc2  
  #3 wfc2 <WorkFunctionContext wfc2 <Organization org1> <OrgUnit ou1> <Department dept1> >  
   
- ./adminops.sh   add  role  -n role1 --wfcname wfc1   
+ ./adminops.sh   add  role  -n role1   
+  
+ ./adminops.sh adduser -n user10 --password user10 --emailid user10 --rolenames role10  --wfc wfc1
  
- check that the wfc has been assigned correctly   
- ./adminops.sh   list  role  -n role1  
-id: 1,  name: role1 , wfc: wfc1 , wfcorg: org1, wfcou: ou1, wfcdept: dept1    
+ ./adminops.sh   list  user  -n all  or   ./adminops.sh   list  user  -n user1
  
- ./adminops.sh adduser -n user10 --password user10 --emailid user10 --rolenames role10  
- 
- ./adminops.sh   list  wfc  -n all
  ./adminops.sh   list  dept  -n all   or  ./adminops.sh   list  dept  -n dept1 
  
- ./adminops.sh delete user -n user10
+ ./adminops.sh delete user -n user10  for deleting the user 
  
  
  To check the database objects from shell, and to see  that the relational properties are working properly   
@@ -104,21 +101,6 @@ r1 = Role.query.filter_by('role1').first()
 r1 = Role.query.filter_by(rolename='role1').first()  
 r1 
 #<Role role1>  
-r1.functional_context  
-#<WorkFunctionContext wfc1>  
-r1.functional_context.org  
-#<Organization org1>  
-r1.functional_context.org.name  
-#'org1'  
-r1.functional_context.orgunit  
-#<OrgUnit ou1>  
-r1.functional_context.orgunit.name  
-#'ou1'  
-r1.functional_context.department.name  
-#'dept1'  
-
- 
-
 
 
 export FLASK_APP='app_run.py'  
@@ -180,28 +162,10 @@ for l in u.roles:
 
 
 Todo:
+role and wfc shd not have any relation - done
+user can have only one wfc  - done 
+user to dict now gives wfc dictionary as well
 
-
-role and wfc shd not have any relation
-user can have only one wfc 
-
-===================================
-User model to_dict , roles: to return role_sql_obj instead of role.name ===> 
- 'roles': [role.rolename for role in self.roles]  to be changed to    'roles': [role for role in self.roles]
-----------------------------------------------------------------------------------
-
-testing to be done/changes to  get the role obj from the  roles list instead of role name as string
-----------------------------------------------------------------------------------------------------
-micros1 authclient ==> extract_roles_from_verified_token_n_compare_acl_map ==>
-for user_role_in_token in roles_in_token:
-        #for role_sql_obj in roles_in_token:
-            #user_role_in_token = role_sql_obj.rolename
-#             work_context_dict = {'wfcname': role.functional_context.name,
-#                                  'org': role.functional_context.org.name,
-#                                  'ou': role.functional_context.orgunit.name,
-#                                  'dept':  role.functional_context.department.name
-#                                  }
----------------------------------------------------------------------------------------------------------
 tesing to be done/changes to that affect
 
 workcontext to be instantiated as a class 

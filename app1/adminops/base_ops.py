@@ -186,9 +186,11 @@ def list_ops(obj, cname=None, *args, **kwargs):
         if obj == 'Role':
             print("id: {},  name: {}  ".format(record.id, record.rolename )) 
         elif obj == 'User':
-            print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
+#             print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
+            print(record.to_dict())
         else:            
-            print("id: {},  name: {} , {}".format(record.id, record.name, record)) 
+            print("id: {},  name: {} , {}".format(record.id, record.name, record))
+            
     
 #     else:
 #         print("Not Found  any record by that name, try full lisitng")       
@@ -199,7 +201,8 @@ def list_ops(obj, cname=None, *args, **kwargs):
                 print("id: {},  name: {}  ".format(record.id, record.rolename )) 
             elif obj == 'User':
 #                 print("id: {},  name: {}".format(record.id, record.username))
-                print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
+#                 print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
+                print(record.to_dict())
             else:            
                 print(record.id, record.name , record) 
     if record:

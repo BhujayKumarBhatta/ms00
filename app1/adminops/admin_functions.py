@@ -64,8 +64,8 @@ def delete_role(rolename):
     return bops.delete_ops('Role', rolename)   
 
     
-def register_user(uname, email, pwd, roles=None, wfc_name=None):
-    return bops.register_ops1('User', uname, email=email, pwd=pwd, roles=roles, wfc_name=wfc_name)   
+def register_user(uname, email, pwd, wfc_name, roles=None ):
+    return bops.register_ops1('User', uname, email=email, pwd=pwd, wfc_name=wfc_name, roles=roles, )   
 #  
 
 def list_users(uname=None):

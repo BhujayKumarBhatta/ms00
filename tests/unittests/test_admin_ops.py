@@ -38,13 +38,13 @@ class TestUserModel(BaseTestCase):
     
     def role_creation_for_test(self):       
         wfc = self.register_work_function_for_test()
-        r = af.register_role('role1', 'wfc1')
+        r = af.register_role('role1')
         return r
     
     def user_creation_for_test(self):
         self.role_creation_for_test()
         roles = ['role1',]        
-        u = af.register_user('u1', 'u1@abc.com', 'secret', roles=roles)
+        u = af.register_user('u1', 'u1@abc.com', 'secret', roles=roles, wfc_name='wfc1')
         return u
        
     def test_register_org(self):

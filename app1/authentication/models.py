@@ -46,7 +46,7 @@ class User(db.Model):
             'email':  self.email,
             'roles': [role.rolename for role in self.roles],
             #'roles': [role for role in self.roles] flsk is not able to return sql object , expecting string
-            'wfc': user.wfc.to_dict()
+            'wfc': self.wfc.to_dict()
             }
         return data    
     
