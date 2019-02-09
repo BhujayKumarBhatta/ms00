@@ -1,7 +1,7 @@
 What it does 
 ===================================================================
 tokenleader has two simple operations:
-1) recieves users request ,  autehnticate his and provides a  token  which carries  more users informations such as 
+1) recieves users request ,  autehnticates her and provides a  token  which carries  more users informations such as 
 	a) user's roles ( one user can have multiple roles, although most of the cases one will suffice)  
 	b) user is  alos mapped with  a wfc ( work function context)   
 	c) wfc is a combination of  organization name, organization unit name and departname 
@@ -38,6 +38,41 @@ To verify token:
  each application uses a local role to acl map. For each api route there is one acl name which either deny or permits the 
  http call to the  api route . further  to control how much data to be given access to the user , the wfc details  will be 
  used for filtering  the data query ( mainly data persistance and query)
+ 
+ 
+ For the developer
+ ==============================================================================================
+ For authorization , there is a enforcer decorator to be used by each microservice .  
+ A sample microsdervice with this decoraator has been shown in  micros1 repo . Any api route which is bind 
+ with this decorator will retrieve role and wfc from the tokenleader service.   
+ The role will be used by the decorator to compare with the local acl map yml file for allowing or denying the  
+ access to api route url. 
+ The wfc will be passed to the api route function for later usage by the function for database query filtering. 
+ The api route function must have a keyword argument 'wfc'  for the enforcer decorator to work. 
+ 
+ Example :
+    @bp1.route('/test1', methods=[ 'POST'])
+	@authclient.enforce_access_rule_with_token('service1:first_api:rulename1', 
+	                                           role_acl_map_file, sample_token)
+	def acl_enforcer_func_for_test(wfc=None):
+	    msg = ("enforcer decorator working ok with wfc org = {},"
+	            "orgunit={}, dept={}".format(wfc.org, wfc.orgunit, wfc.department))
+	  
+	    return msg
+	  
+In the above example, the decorator  impose aceess control on the route /test1 . 
+
+role name for the user  is retrived from the token leader , compared with the rule to acl map yml file 
+(role_acl_map_file) which is maintained locally in the server where the service is running .
+
+decorator alos retrived work function context for the  user from tokenleader and passed it to 
+original route function acl_enforcer_func_for_test .   The route function mandatorily to have a 
+parameter called wfc as argument for the wfc , to get the value from the decorator.
+
+now within the acl_enforcer_func_for_test  funtion  , wfc attributes like org, orgunit and department is used
+to display a message. They actually  to be used for database query filtering so that based on the work function
+user is able to view only relevant information.
+
 
 Please follow the installation and configuration steps  
 ======================================================================================
@@ -196,7 +231,7 @@ for l in u.roles:
 #role1  
 
 
-
+1)operation scope filtering based on users org, div, dept details 
 Todo:
 role and wfc shd not have any relation - done
 user can have only one wfc  - done 
@@ -209,7 +244,10 @@ workcontext to be instantiated as a class
 
 workcontext to be made avilable to  api route function when required
 
-
+ext  important works:
+ 
+2) centralized catalogue for all microservice endpoints and 
+3) client for tokenleader
 
 
 
