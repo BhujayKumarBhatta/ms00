@@ -29,6 +29,7 @@ from app_run import app
 app.app_context().push()
 
 from app1.adminops import  admin_functions as af
+from app1.catalog import  catalog_functions as cf
 
 # parser = argparse.ArgumentParser(add_help=False)
 
@@ -112,7 +113,51 @@ adduser_parser.add_argument('--rolenames' , action = "store", dest = "rolenames"
 adduser_parser.add_argument('--wfc' , action = "store", dest = "wfc",
                   required = True,
                   help = "wfc or work function context name " 
-                  )  
+                  ) 
+
+
+addservice_parser = subparser.add_parser('addservice', help='add a service in the service catalog')
+addservice_parser.add_argument('-n', '--name', 
+                  action = "store", dest = "name",
+                  required = True,
+                  help = "Name of the microservice",
+                  )
+addservice_parser.add_argument('--password' , action = "store", dest = "password",
+                  required = True,
+                  help = "service account name password, this password will \
+                  be used for intra service communication",
+                  ) 
+addservice_parser.add_argument('--urlext' , action = "store", dest = "urlext",
+                  required = False,
+                  help = "url of the service endpoint , that is avilable to all users ",
+                  ) 
+addservice_parser.add_argument('--urlint' , action = "store", dest = "urlint",
+                  required = True,
+                  help = "url of the service endpoint , that is used for service to service \
+                  communication and is not avilable to all users. This is useful when service network and \
+                  user network is different",
+                  )
+addservice_parser.add_argument('--urladmin' , action = "store", dest = "urladmin",
+                  required = False,
+                  help = "url of the service endpoint , that is used for admin activities. \
+                  This is useful to segregte the admin network from user and service network",
+                  ) 
+
+
+deletservice_parser = subparser.add_parser('deletservice', help='delete a service from service catalog')
+deletservice_parser.add_argument('-n', '--name', 
+                  action = "store", dest = "name",
+                  required = True,
+                  help = "Name of the microservice",
+                  )
+
+listservice_parser = subparser.add_parser('listservice', help='List a service from service catalog')
+listservice_parser.add_argument('-n', '--name', 
+                  action = "store", dest = "name",
+                  required = True,
+                  help = "Name of the microservice",
+                  )
+ 
 
 try:                    
     options = parser.parse_args()  
@@ -235,7 +280,20 @@ def main():
                 
         if options.entity == 'user':      
             af.delete_user(entity_name)           
-            
+         
+    if  sys.argv[1] == 'addservice':
+        cf.add_service(options.name, options.password, options.urlext, options.urlint, options.urladmin)
+        
+        
+    if  sys.argv[1] == 'listservice': 
+        if options.name == 'all':
+            cf.list_services()
+        else:
+            cf.list_services(options.name)
+          
+    
+    if  sys.argv[1] == 'deletservice': 
+        cf.delete_service(options.name)           
     
 if __name__ == '__main__':
     main()

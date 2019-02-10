@@ -25,11 +25,13 @@ sys.path.insert(0, apppath)
 
 #print(sys.path)
 
-from app1.adminops import admin_cli_parser	
+from app1.adminops import admin_cli_parser
+# from app1.catalog import catalog_cli_parser
   
     
 if __name__ == '__main__':
 	admin_cli_parser.main()
+# 	catalog_cli_parser.main()
 	
 
 	

@@ -1,6 +1,6 @@
 What it does 
 ===================================================================
-tokenleader has two simple operations:
+tokenleader has three  simple operations:
 1) recieves users request ,  autehnticates her and provides a  token  which carries  more users informations such as 
 	a) user's roles ( one user can have multiple roles, although most of the cases one will suffice)  
 	b) user is  alos mapped with  a wfc ( work function context)   
@@ -13,6 +13,15 @@ curl -X POST -d '{"username": "admin", "password": "admin"}'  \
 The validity period of the token can be set through the settings.ini in future , currently it is fixed as one hour.
 
 2) receives a token from user , can validate and unencrypt the users information. 
+
+3) maintains a catalog for all the microservies . The entry for services , it includes service name ,
+   servie account password ( we have to see if this is required at all) , url for the service endpoint.
+   A client can query tokenleader by service name and will thus get the url for the service .
+   
+   For each service end point three url can be registered , one for internal , this is  the default url .
+   External url , when you want to segregate the users network from service network 
+   and another is admin network , which can be further separated from the above two network
+   
 
 token can be used for authenticating an user wiithout the need for user
 To verify token:  
@@ -125,6 +134,14 @@ from the root directory of  tokenleader
  
  ./adminops.sh delete user -n user10  for deleting the user 
  
+ 
+  ./adminops.sh  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
+
+
+./adminops.sh listservice -n all
+#{'name': 'micros1', 'endpoint_url_internal': None, 'id': 1, 'endpoint_url_external': 'localhost:5002', 'endpoint_url_admin': None}
+
+ ./adminops.sh deletservice -n servie1
  
  To check the database objects from shell, and to see  that the relational properties are working properly   
  use the follwoing :  
