@@ -59,7 +59,8 @@ To verify token:
  The wfc will be passed to the api route function for later usage by the function for database query filtering. 
  The api route function must have a keyword argument 'wfc'  for the enforcer decorator to work. 
  
- Example :
+ Example :  
+ 
 	    @bp1.route('/test1', methods=[ 'POST'])
 		@authclient.enforce_access_rule_with_token('service1:first_api:rulename1', 
 		                                           role_acl_map_file, sample_token)
