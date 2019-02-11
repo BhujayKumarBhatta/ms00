@@ -22,7 +22,8 @@ def add_service(name, pwd=None, urlint=None, urlext=None, urladmin=None ):
     record = ServiceCatalog(name=name, endpoint_url_internal=urlint, 
                        endpoint_url_external=urlext,
                        endpoint_url_admin=urladmin)
-    record.set_password(pwd)
+    if pwd:
+        record.set_password(pwd)
     try:
         db.session.add(record)        
         db.session.commit()

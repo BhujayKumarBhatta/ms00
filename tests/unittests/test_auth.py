@@ -12,9 +12,11 @@ from app1 import db
 from app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
 #from app1.authentication import admin_ops
 from app1.adminops import admin_functions as admin_ops
+from tests.unittests.test_catalog_ops import TestCatalog , service_catalog 
 
 #app.app_context().push()
 
+tc = TestCatalog()
 
 class TestToken(TestUserModel):
     '''
@@ -33,7 +35,7 @@ class TestToken(TestUserModel):
                                 'id': 1, 
                                 'org': 'org1'}                       
                         }
-  
+        
         payload = {
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                     'iat': datetime.datetime.utcnow(),
@@ -62,20 +64,28 @@ class TestToken(TestUserModel):
         this method registers an user with name as u1 
         '''             
         u1 = self.user_creation_for_test()
-        print(u1.to_dict())
+        tc.add_service()
+        #print(u1.to_dict())
+        data=json.dumps(dict(
+                    username='u1',
+                    password='secret' ,
+                ))
+        #print(data)
         with self.client:
             response = self.client.post(
-                '/token/gettoken',
-                data=json.dumps(dict(
-                    username='u1',
-                    password='secret' )),
+                '/token/gettoken', 
+                data=data,
                 content_type='application/json')
+                
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
             print(data)
             #print(data['message'])
             self.assertTrue(data['status'] == 'success')
             self.assertTrue('auth_token' in data)
+            #print(service_catalog)
+            #print(data['service_catalog'])
+            self.assertTrue(data['service_catalog'] == service_catalog )
             
             mytoken = data['auth_token']
             return mytoken

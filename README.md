@@ -143,6 +143,7 @@ from the root directory of  tokenleader
 
  ./adminops.sh deletservice -n servie1
  
+ 
  To check the database objects from shell, and to see  that the relational properties are working properly   
  use the follwoing :  
  ==================================================

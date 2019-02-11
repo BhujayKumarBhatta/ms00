@@ -2,6 +2,7 @@ from flask import request, Blueprint, jsonify, current_app,make_response
 import jwt
 import datetime
 from app1.authentication.models import User 
+from app1.catalog.models_catalog import ServiceCatalog
 # from flask.globals import session
 
 
@@ -58,6 +59,11 @@ def get_token():
                 return jsonify(responseObject) 
                       
             user = User.query.filter_by(username=username).first()
+            svcs = ServiceCatalog.query.all()
+            service_catalog = {}
+            for s in svcs:
+                service_catalog[s.name]=s.to_dict()
+               
             if user is None:
                 responseObject = {
                         'status': 'User not registered',
@@ -89,7 +95,8 @@ def get_token():
                 responseObject = {
                         'status': 'success',
                         'message': 'success',
-                        'auth_token': auth_token.decode()}
+                        'auth_token': auth_token.decode(),
+                        'service_catalog': service_catalog}
             #         return auth_token
                 return make_response(jsonify(responseObject)), 201
             else:
