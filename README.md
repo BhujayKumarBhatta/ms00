@@ -170,7 +170,15 @@ curl -X POST -d '{"username": "admin", "password": "admin"}'  \
 
 what you get from tokenleader:
 ========================================
-{'message': 'success', 'status': 'success', 'auth_token': 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NDkzNzg3MDgsImV4cCI6MTU0OTM4MjMwOCwic3ViIjp7IndmYyI6eyJpZCI6MSwibmFtZSI6IndmYzEiLCJkZXBhcnRtZW50IjoiZGVwdDEiLCJvcmciOiJvcmcxIiwib3JndW5pdCI6Im91MSJ9LCJpZCI6MSwidXNlcm5hbWUiOiJ1MSIsInJvbGVzIjpbInJvbGUxIl0sImVtYWlsIjoidTFAYWJjLmNvbSJ9fQ.I2VL1bND5IPynnjGjqOm18IeQsVDJItP9OObPU6817BqTTfk9uTe825fbOX5Zz1-SRm6yKxOOHYzwCUwt7UC1DNyrepV6UlN14RI990xLrfwX1cGAGT7ppW8rTUZks8d5NdcE9DjMfilUwN2dJ15YxsBHgsjYvuV8jBPR-y1gV7ArBcnE2ejY7pVMAxnzzBQz4OtmKARErdYd7BsE6wTqYCdoDV-T_M1ZUe_0u4kJ5vgkxyoWumCHXkt8-S75dxMrq8BePrLd3W-Y9kQjGpmEFX9Xr55oTqexlCtJ9i8920Lh3tyDDb79IPbzSt516PBrjaql98eL1ijuM83IXQhuA'}
+{'service_catalog': {  
+	'microservice1': {'id': 1,  
+						'name': 'microservice1',  
+						'endpoint_url_external': 'localhost/5000',  
+						'endpoint_url_admin': 'localhost/5000',  
+						'endpoint_url_internal': 'localhost/5000'}},   
+'message': 'success',   
+'auth_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1NDk4Njg5MDYsInN1YiI6eyJpZCI6MSwiZW1haWwiOiJ1MUBhYmMuY29tIiwicm9sZXMiOlsicm9sZTEiXSwid2ZjIjp7ImlkIjoxLCJuYW1lIjoid2ZjMSIsIm9yZyI6Im9yZzEiLCJvcmd1bml0Ijoib3UxIiwiZGVwYXJ0bWVudCI6ImRlcHQxIn0sInVzZXJuYW1lIjoidTEifSwiZXhwIjoxNTQ5ODcyNTA2fQ.BBtTUcu8kUz__sbHmC8sB111C4Yzk6Fth5DjOoLCCTygqDjj-gQOS3x6T7e8rpKmHtf0LrDWPWFCmhIIqD2I8DuK4U4b-Hk7gbKYIVsvqL3DksOVF2SSe_6v4nNbJR50Q8mYrYQz0yijj-KQHj0Gc1FVCaBSXeIbA-uAUmSpQKCBDRqJbayK85e4dSoILpKL_Q1_JT4qqM7OwnGq05akJrosohNGKxp46gBex9l5iTPkoRgvQk-p1H61MMTdLKZIr9CmjIReXBBzfla6LoX8Siur_Lb4o1r0PJUcok-w69h_QCEqLe9VX9e4zFWnXIpDj5nwKqnj0JRKNvMw5VTcHA', 
+'status': 'success'}  
 
 
 
