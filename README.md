@@ -60,14 +60,14 @@ To verify token:
  The api route function must have a keyword argument 'wfc'  for the enforcer decorator to work. 
  
  Example :
-    @bp1.route('/test1', methods=[ 'POST'])
-	@authclient.enforce_access_rule_with_token('service1:first_api:rulename1', 
-	                                           role_acl_map_file, sample_token)
-	def acl_enforcer_func_for_test(wfc=None):
-	    msg = ("enforcer decorator working ok with wfc org = {},"
-	            "orgunit={}, dept={}".format(wfc.org, wfc.orgunit, wfc.department))
-	  
-	    return msg
+	    @bp1.route('/test1', methods=[ 'POST'])
+		@authclient.enforce_access_rule_with_token('service1:first_api:rulename1', 
+		                                           role_acl_map_file, sample_token)
+		def acl_enforcer_func_for_test(wfc=None):
+		    msg = ("enforcer decorator working ok with wfc org = {},"
+		            "orgunit={}, dept={}".format(wfc.org, wfc.orgunit, wfc.department))
+		  
+		    return msg
 	  
 In the above example, the decorator  impose aceess control on the route /test1 . 
 
