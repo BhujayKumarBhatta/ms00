@@ -61,17 +61,20 @@ def register_ops1(obj, cname, orgname=None, ou_name=None, dept_name=None, wfc_na
             try:
                 wfc = Workfunctioncontext.query.filter_by(name=wfc_name).first()
             except Exception as e:
-                msg = "wfc  not found in database\
-                   register them first in the wfc master db, \
-                   the error is {}".format(e)
+                msg = ("wfc  not found in database register them first in the wfc master db"
+                       "the error is ")
                 print(msg)
                 return None   
         if roles:
-            valid_role_objects = get_validated_roles(roles)            
-            record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc)
+            valid_role_objects = get_validated_roles(roles)
+            if  isinstance(valid_role_objects, list):          
+                record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc)
+                record.set_password(pwd)
+            else:
+                msg = "user registration aborted"  
         else:            
             record = User(username=cname, email=email)
-        record.set_password(pwd)   
+            record.set_password(pwd)   
                    
     if record:
         try:

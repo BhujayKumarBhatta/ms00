@@ -206,9 +206,9 @@ def main():
                 role_list.append(rolenames)
             else:
                 role_list = rolenames.split(',')
-            af.register_user(username, emailid, password, role_list, options.wfc)
+            af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc, roles=role_list,)
         else:
-            af.register_user(username, emailid, password, options.wfc) 
+            af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc) 
         #af.delete_user(entity_name, options.email, options.password, options.roles)      
     
     if  sys.argv[1] == 'list':

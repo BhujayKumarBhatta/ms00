@@ -3,8 +3,8 @@ What it does
 tokenleader has three  simple operations:
 1) recieves users request ,  autehnticates her and provides a  token  which carries  more users informations such as 
 	a) user's roles ( one user can have multiple roles, although most of the cases one will suffice)  
-	b) user is  alos mapped with  a wfc ( work function context)   
-	c) wfc is a combination of  organization name, organization unit name and departname 
+	b) user is  also mapped with  a wfc ( work function context)  
+	 wfc is a combination of  organization name, organization unit name   departname 
 
 A typical token request call is :   
 curl -X POST -d '{"username": "admin", "password": "admin"}'  \
@@ -23,7 +23,8 @@ The validity period of the token can be set through the settings.ini in future ,
    and another is admin network , which can be further separated from the above two network
    
 
-token can be used for authenticating an user wiithout the need for user
+token can be used for authenticating an user wiithout the need for user to enter password  
+
 To verify token:  
  curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
  
