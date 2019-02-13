@@ -6,9 +6,10 @@ tokenleader has three  simple operations:
 	b) user is  also mapped with  a wfc ( work function context)  
 	 wfc is a combination of  organization name, organization unit name   departname 
 
-A typical token request call is :   
-curl -X POST -d '{"username": "admin", "password": "admin"}'  \
--H "Content-Type: Application/json"  localhost:5001/token/gettoken
+A typical token request call is : 
+  
+	curl -X POST -d '{"username": "admin", "password": "admin"}'  \
+	-H "Content-Type: Application/json"  localhost:5001/token/gettoken
 
 The validity period of the token can be set through the settings.ini in future , currently it is fixed as one hour.
 
@@ -25,8 +26,17 @@ The validity period of the token can be set through the settings.ini in future ,
 
 token can be used for authenticating an user wiithout the need for user to enter password  
 
-To verify token:  
- curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
+To verify token:
+  
+ 	curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
+ 	
+ tokenleader has a client which is automatically installed with the server , this provides a python api for 
+ making hte call and verifying the token. The client also has the RBAC enforcer for authorization.
+ read more about the client here -
+  
+   https://pypi.org/project/tokenleaderclient  
+   https://github.com/microservice-tsp-billing/tokenleaderclient  
+   
  
  Why token service and how it works
  ======================================================================================
@@ -86,133 +96,143 @@ user is able to view only relevant information.
 
 
 Please follow the installation and configuration steps  
-======================================================================================
-git config --global http.sslVerify false ( in case of server ssl cert verification error)  
+======================================================================================  
 
-git clone <your project>      
+	virtualenv -p python3 venv  
+	
+	source venv/bin/activate  
+	
+	pip install --upgrade pip  
+	
+	pip install tokenleader 
+	
+	ssh-keygen < press enter to select all defaults>  
+	
+all tokens will be encrypted by the private key and the  tokenleaderclient should have the public key in the 
+general_settings.yml file so that token leader client can unencrypt the token using the public key
 
-e.g.   git clone  git@github.com:microservice-tsp-billing/tokenleader.git  
 
-cd tokenleader    
 
-virtualenv -p python3 venv  
 
-source venv/bin/activate  
 
-pip install --upgrade pip  
+Testing 
+===========================================================================
+clone from git and then run 
 
-pip install -r requirement.txt ( pycrypto failed)    
+	python -m unittest discover tests    
 
-ssh-keygen < press enter to select all defaults>    
-
-python -m unittest discover tests    
-
-to run single unit test  
-python -m unittest tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
+to run single unit test 
+ 
+	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
 
 for token generation and verification  testing this is a useful test  
-python -m unittest tests.test_auth.TestToken.test_token_gen_n_verify_success_for_registered_user_with_role   
+
+	python -m unittest tokenleader.tests.test_auth.TestToken.test_token_gen_n_verify_success_for_registered_user_with_role   
 
 
 TO set up the tokenleqder the following entities need to be registered in sequence   
 from the root directory of  tokenleader  
 ====================================================================================
-./adminops.sh  -h  provides help to understand the various options of admin funciton os tokenleader  
-
-./adminops.sh   add  org   -n org1  
-./adminops.sh   add  ou   -n ou2  
-./adminops.sh   add  dept   -n  dept1  
- ./adminops.sh   addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 
- ./adminops.sh   list  wfc  -n wfc2  
- #3 wfc2 <WorkFunctionContext wfc2 <Organization org1> <OrgUnit ou1> <Department dept1> >  
-  
- ./adminops.sh   add  role  -n role1   
-  
- ./adminops.sh adduser -n user10 --password user10 --emailid user10 --rolenames role10  --wfc wfc1
- 
- ./adminops.sh   list  user  -n all  or   ./adminops.sh   list  user  -n user1
- 
- ./adminops.sh   list  dept  -n all   or  ./adminops.sh   list  dept  -n dept1 
- 
- ./adminops.sh delete user -n user10  for deleting the user 
- 
- 
-  ./adminops.sh  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
-
-
-./adminops.sh listservice -n all
-#{'name': 'micros1', 'endpoint_url_internal': None, 'id': 1, 'endpoint_url_external': 'localhost:5002', 'endpoint_url_admin': None}
-
- ./adminops.sh deletservice -n servie1
+	 adminops  -h  provides help to understand the various options of admin funciton os tokenleader  
+	
+	 adminops   add  org   -n org1  
+	 adminops   add  ou   -n ou2  
+	 adminops   add  dept   -n  dept1  
+	 adminops   addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 
+	 adminops   list  wfc  -n wfc2  
+	 #3 wfc2 <WorkFunctionContext wfc2 <Organization org1> <OrgUnit ou1> <Department dept1> >  
+	  
+	 adminops   add  role  -n role1   
+	  
+	 adminops adduser -n user10 --password user10 --emailid user10 --rolenames role10  --wfc wfc1
+	 
+	 adminops   list  user  -n all  or   adminops   list  user  -n user1
+	 
+	 adminops   list  dept  -n all   or  adminops   list  dept  -n dept1 
+	 
+	 adminops delete user -n user10  for deleting the user 
+	 
+	 
+	 adminops  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
+	
+	
+	 adminops listservice -n all
+	#{'name': 'micros1', 'endpoint_url_internal': None, 'id': 1, 'endpoint_url_external': 'localhost:5002', 'endpoint_url_admin': None}
+	
+	 adminops deletservice -n servie1
  
  
  To check the database objects from shell, and to see  that the relational properties are working properly   
  use the follwoing :  
  ==================================================
- /microservice-tsp-billing/tokenleader$ flask shell    
-from app1.authentication import models  
-from app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department  
-r1 = Role.query.filter_by('role1').first()  
-r1 = Role.query.filter_by(rolename='role1').first()  
-r1 
-#<Role role1>  
+	 /microservice-tsp-billing/tokenleader$ flask shell    
+	from app1.authentication import models  
+	from app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department  
+	r1 = Role.query.filter_by('role1').first()  
+	r1 = Role.query.filter_by(rolename='role1').first()  
+	r1 
+	#<Role role1>  
 
 
-export FLASK_APP='app_run.py'  
+	export FLASK_APP='tokenleader.app_run.py'
 
-flask run -p 5001  
+	flask run -p 5001  
 
 ensure  the port  of the server is open from security group  
 
 
 To generate token :  
 ===================================================
-curl -X POST -d '{"username": "admin", "password": "admin"}'  \
--H "Content-Type: Application/json"  localhost:5001/token/gettoken
+
+	curl -X POST -d '{"username": "admin", "password": "admin"}'  \
+	-H "Content-Type: Application/json"  localhost:5001/token/gettoken
 
 what you get from tokenleader:
 ========================================
-{'service_catalog': {  
-	'microservice1': {'id': 1,  
-						'name': 'microservice1',  
-						'endpoint_url_external': 'localhost/5000',  
-						'endpoint_url_admin': 'localhost/5000',  
-						'endpoint_url_internal': 'localhost/5000'}},   
-'message': 'success',   
-'auth_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1NDk4Njg5MDYsInN1YiI6eyJpZCI6MSwiZW1haWwiOiJ1MUBhYmMuY29tIiwicm9sZXMiOlsicm9sZTEiXSwid2ZjIjp7ImlkIjoxLCJuYW1lIjoid2ZjMSIsIm9yZyI6Im9yZzEiLCJvcmd1bml0Ijoib3UxIiwiZGVwYXJ0bWVudCI6ImRlcHQxIn0sInVzZXJuYW1lIjoidTEifSwiZXhwIjoxNTQ5ODcyNTA2fQ.BBtTUcu8kUz__sbHmC8sB111C4Yzk6Fth5DjOoLCCTygqDjj-gQOS3x6T7e8rpKmHtf0LrDWPWFCmhIIqD2I8DuK4U4b-Hk7gbKYIVsvqL3DksOVF2SSe_6v4nNbJR50Q8mYrYQz0yijj-KQHj0Gc1FVCaBSXeIbA-uAUmSpQKCBDRqJbayK85e4dSoILpKL_Q1_JT4qqM7OwnGq05akJrosohNGKxp46gBex9l5iTPkoRgvQk-p1H61MMTdLKZIr9CmjIReXBBzfla6LoX8Siur_Lb4o1r0PJUcok-w69h_QCEqLe9VX9e4zFWnXIpDj5nwKqnj0JRKNvMw5VTcHA', 
-'status': 'success'}  
+
+	{'service_catalog': {  
+		'microservice1': {'id': 1,  
+							'name': 'microservice1',  
+							'endpoint_url_external': 'localhost/5000',  
+							'endpoint_url_admin': 'localhost/5000',  
+							'endpoint_url_internal': 'localhost/5000'}},   
+	'message': 'success',   
+	'auth_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1NDk4Njg5MDYsInN1YiI6eyJpZCI6MSwiZW1haWwiOiJ1MUBhYmMuY29tIiwicm9sZXMiOlsicm9sZTEiXSwid2ZjIjp7ImlkIjoxLCJuYW1lIjoid2ZjMSIsIm9yZyI6Im9yZzEiLCJvcmd1bml0Ijoib3UxIiwiZGVwYXJ0bWVudCI6ImRlcHQxIn0sInVzZXJuYW1lIjoidTEifSwiZXhwIjoxNTQ5ODcyNTA2fQ.BBtTUcu8kUz__sbHmC8sB111C4Yzk6Fth5DjOoLCCTygqDjj-gQOS3x6T7e8rpKmHtf0LrDWPWFCmhIIqD2I8DuK4U4b-Hk7gbKYIVsvqL3DksOVF2SSe_6v4nNbJR50Q8mYrYQz0yijj-KQHj0Gc1FVCaBSXeIbA-uAUmSpQKCBDRqJbayK85e4dSoILpKL_Q1_JT4qqM7OwnGq05akJrosohNGKxp46gBex9l5iTPkoRgvQk-p1H61MMTdLKZIr9CmjIReXBBzfla6LoX8Siur_Lb4o1r0PJUcok-w69h_QCEqLe9VX9e4zFWnXIpDj5nwKqnj0JRKNvMw5VTcHA', 
+	'status': 'success'}  
 
 
 
 To verify token:  
 ================================================
- curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
+
+ 	curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
 
 How the verified toekn data looks like :
 ===========================================================================
-{
-  "message": "Token has been successfully decrypted",
-  "payload": {
-    "exp": 1549382308,
-    "iat": 1549378708,
-    "sub": {
-      "email": "u1@abc.com",
-      "id": 1,
-      "roles": [
-        "role1"
-      ],
-      "username": "u1",
-      "wfc": {
-        "department": "dept1",
-        "id": 1,
-        "name": "wfc1",
-        "org": "org1",
-        "orgunit": "ou1"
-      }
-    }
-  },
-  "status": "Verification Successful"
-}
+
+	{
+	  "message": "Token has been successfully decrypted",
+	  "payload": {
+	    "exp": 1549382308,
+	    "iat": 1549378708,
+	    "sub": {
+	      "email": "u1@abc.com",
+	      "id": 1,
+	      "roles": [
+	        "role1"
+	      ],
+	      "username": "u1",
+	      "wfc": {
+	        "department": "dept1",
+	        "id": 1,
+	        "name": "wfc1",
+	        "org": "org1",
+	        "orgunit": "ou1"
+	      }
+	    }
+	  },
+	  "status": "Verification Successful"
+	}
 
 
 
@@ -220,9 +240,9 @@ for initial setup or when db model is changed
 ===================================================================
 for db migration   
 
-flask db init   
-flask db migrate -m < COMMENT >  
-flask db upgrde   
+	flask db init   
+	flask db migrate -m < COMMENT >  
+	flask db upgrde   
 
 if there is a change in db structure, and a migration is done , commit and push the migration directory to the git  
 from the  machine where migration was done.  
@@ -233,30 +253,31 @@ fresh migartion helped.
 
 to test the db operation  :  
 ========================================================================================
-(venv) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/microservice-tsp-billing/tokenleader$ flask shell
 
-from app1 import db  
-from app1.authentication.models import User, Role  
-r1 = Role(rolename='role1')  
-db.session.add(r1)  
-db.session.commit()  
-
-u = User(username='john', email='john@example.com')  
-db.session.add(u)  
-db.session.commit()  
-u = User.query.filter_by(username='john').first()  
-u
-#<User john>  
-u.roles  
-#<sqlalchemy.orm.dynamic.AppenderBaseQuery object at 0x7fb94faa2e48>  
-u.roles=[r1]  
-db.session.commit()  
-u.roles  
-#<sqlalchemy.orm.dynamic.AppenderBaseQuery object at 0x7fb94fa8bf98>  
-for l in u.roles:  
-    print(l.rolename)  
-
-#role1  
+	(venv) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/microservice-tsp-billing/tokenleader$ flask shell
+	
+	from app1 import db  
+	from app1.authentication.models import User, Role  
+	r1 = Role(rolename='role1')  
+	db.session.add(r1)  
+	db.session.commit()  
+	
+	u = User(username='john', email='john@example.com')  
+	db.session.add(u)  
+	db.session.commit()  
+	u = User.query.filter_by(username='john').first()  
+	u
+	#<User john>  
+	u.roles  
+	#<sqlalchemy.orm.dynamic.AppenderBaseQuery object at 0x7fb94faa2e48>  
+	u.roles=[r1]  
+	db.session.commit()  
+	u.roles  
+	#<sqlalchemy.orm.dynamic.AppenderBaseQuery object at 0x7fb94fa8bf98>  
+	for l in u.roles:  
+	    print(l.rolename)  
+	
+	#role1  
 
 
 1)operation scope filtering based on users org, div, dept details 
