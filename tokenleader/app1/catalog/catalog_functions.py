@@ -5,10 +5,10 @@
 # 
 # 
 # catalog_bp = Blueprint('catalog_bp', __name__)
-from app_run import app  
+from tokenleader.app_run import app  
 from sqlalchemy import exc
-from app1 import db
-from app1.catalog.models_catalog import  ServiceCatalog
+from tokenleader.app1 import db
+from tokenleader.app1.catalog.models_catalog import  ServiceCatalog
 # from app1.catalog import models_catalog as mc
 #from app1.catalog.models_catalog import ServiceCatalog
 

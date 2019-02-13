@@ -1,5 +1,5 @@
-from app1.authentication.models import Organization, OrgUnit, Department, Workfunctioncontext, Role, User
-from app1 import db
+from tokenleader.app1.authentication.models import Organization, OrgUnit, Department, Workfunctioncontext, Role, User
+from tokenleader.app1 import db
 from sqlalchemy import exc
 
 def get_input(text):

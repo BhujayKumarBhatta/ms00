@@ -3,16 +3,16 @@ import datetime
 import json
 import jwt
 from flask import current_app
-from app1.authentication.token_after_login import \
+from tokenleader.app1.authentication.token_after_login import \
  generate_encrypted_auth_token , decrypt_n_verify_token
 
-from tests.base_test import  BaseTestCase
-from tests.unittests.test_admin_ops import TestUserModel
-from app1 import db
-from app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
+from tokenleader.tests.base_test import  BaseTestCase
+from tokenleader.tests.unittests.test_admin_ops import TestUserModel
+from tokenleader.app1 import db
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
 #from app1.authentication import admin_ops
-from app1.adminops import admin_functions as admin_ops
-from tests.unittests.test_catalog_ops import TestCatalog , service_catalog 
+from tokenleader.app1.adminops import admin_functions as admin_ops
+from tokenleader.tests.unittests.test_catalog_ops import TestCatalog , service_catalog 
 
 #app.app_context().push()
 

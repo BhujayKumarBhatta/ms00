@@ -1,7 +1,7 @@
 from flask import  current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app1 import db
+from tokenleader.app1 import db
 
 roles_n_user_map = db.Table('roles_n_user_map',
     db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True),

@@ -1,11 +1,11 @@
 # import os
 import sys
-from app_run import app   
-from app1 import db
+from tokenleader.app_run import app   
+from tokenleader.app1 import db
 from sqlalchemy import exc
-from app1.authentication import models
-from app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
-from app1.adminops import base_ops as bops
+from tokenleader.app1.authentication import models
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
+from tokenleader.app1.adminops import base_ops as bops
 
 
 def register_org(oname):   

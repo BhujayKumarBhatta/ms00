@@ -1,8 +1,8 @@
 from flask import request, Blueprint, jsonify, current_app,make_response
 import jwt
 import datetime
-from app1.authentication.models import User 
-from app1.catalog.models_catalog import ServiceCatalog
+from tokenleader.app1.authentication.models import User 
+from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 # from flask.globals import session
 
 

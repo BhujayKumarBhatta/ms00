@@ -18,18 +18,18 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
 #                                '__init__.py')):
 apppath = (os.path.join(possible_topdir,
                                'tokenleader',
-                               'app1'))
+                               'tokenleader'))
 #    sys.path.insert(0, apppath)
 
 sys.path.insert(0, apppath)
 
 #print(sys.path)
 
-from app_run import app 
+from tokenleader.app_run import app 
 app.app_context().push()
 
-from app1.adminops import  admin_functions as af
-from app1.catalog import  catalog_functions as cf
+from tokenleader.app1.adminops import  admin_functions as af
+from tokenleader.app1.catalog import  catalog_functions as cf
 
 # parser = argparse.ArgumentParser(add_help=False)
 

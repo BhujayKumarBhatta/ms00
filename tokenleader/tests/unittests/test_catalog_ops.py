@@ -1,7 +1,7 @@
-from app1 import db
-from app1.catalog.models_catalog import ServiceCatalog
-from tests.base_test import BaseTestCase
-from app1.catalog import catalog_functions as cf
+from tokenleader.app1 import db
+from tokenleader.app1.catalog.models_catalog import ServiceCatalog
+from tokenleader.tests.base_test import BaseTestCase
+from tokenleader.app1.catalog import catalog_functions as cf
 
 
 service_name = 'microservice1'
