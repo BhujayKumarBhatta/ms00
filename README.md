@@ -73,9 +73,13 @@ To verify token:
  Example :  
  
 	    @bp1.route('/test1', methods=[ 'POST'])
-		@authclient.enforce_access_rule_with_token('service1:first_api:rulename1', 
-		                                           role_acl_map_file, sample_token)
+		@authclient.enforce_access_rule_with_token(<'rulename'> )
 		def acl_enforcer_func_for_test(wfc=None):
+		'''
+		the rule name in this case should be :
+		'pkgname.modulename.classname.acl_enforcer_func_for_test'
+		for each api route functions the parameter wfc must be present
+		'''
 		    msg = ("enforcer decorator working ok with wfc org = {},"
 		            "orgunit={}, dept={}".format(wfc.org, wfc.orgunit, wfc.department))
 		  
@@ -84,7 +88,21 @@ To verify token:
 In the above example, the decorator  impose aceess control on the route /test1 . 
 
 role name for the user  is retrived from the token leader , compared with the rule to acl map yml file 
-(role_acl_map_file) which is maintained locally in the server where the service is running .
+(/etc/tokenleaderclient/role_acl_map_file.yml) which is maintained locally in the server where the service is running .
+
+the role_to_acl_map file maps the  api route function names to and looks like :
+- name: role1
+  allow:
+  - pkgname.modulename1.acl_enforcer_func_for_test
+  - pkg1.module1.acl_enforcer_func_for_test
+ 
+ check the sample data  and test cases  inside the tokenleaderclient for better understanding.
+ tokenleader server ( this repo) it self uses  the tokenleader client for enforcing the rbac for 
+ many api routes , for example adding users , listing users etc. Check the 
+ tokenleader/app1/adminops/adminops_restapi.py file to get a better understanding or mail me
+ your query at bhujay.bhatta@yahoo.com
+ 
+  
 
 decorator alos retrived work function context for the  user from tokenleader and passed it to 
 original route function acl_enforcer_func_for_test .   The route function mandatorily to have a 
@@ -160,6 +178,14 @@ from the root directory of  tokenleader
 	#{'name': 'micros1', 'endpoint_url_internal': None, 'id': 1, 'endpoint_url_external': 'localhost:5002', 'endpoint_url_admin': None}
 	
 	 adminops deletservice -n servie1
+	 
+	 
+to add the admin user and admin role , the cli  command need to be run from the servers  local shell. However for subsequent 
+operations there are  adminops rest api avialble 
+
+	<url>:5001/list/users 
+	/list/user/<username>
+	/add/user
  
  
  To check the database objects from shell, and to see  that the relational properties are working properly   

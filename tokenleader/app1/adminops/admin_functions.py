@@ -1,6 +1,6 @@
 # import os
 import sys
-from tokenleader.app_run import app   
+# from tokenleader.app_run import app   
 from tokenleader.app1 import db
 from sqlalchemy import exc
 from tokenleader.app1.authentication import models

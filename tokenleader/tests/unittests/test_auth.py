@@ -53,6 +53,7 @@ class TestToken(TestUserModel):
         self.assertTrue(isinstance(np, dict))
         #print(np.get('sub'))
         self.assertTrue((np.get('sub').get('wfc').get('org')) == 'org1')
+        return auth_token   # the return is required for later usage by the test_admin_restapi
         #self.assertEqual(np.get('sub'), payload.get('sub'))
 #         print('end of  jwt token function.....................')
 #     

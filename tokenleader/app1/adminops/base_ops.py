@@ -90,10 +90,10 @@ def register_ops1(obj, cname, orgname=None, ou_name=None, dept_name=None, wfc_na
             msg =("{} could not be registered , the erro is: \n  {}".format(cname, e))
             db.session.rollback() 
     print(msg)
-    return record
+    return msg
 
 
-def get_records_from_db(obj, cname):
+def get_records_from_db(obj, cname=None):
     record = None
     record_list = None
     if obj == 'Organization' :
@@ -127,47 +127,31 @@ def get_records_from_db(obj, cname):
         if cname:
             record = User.query.filter_by(username=cname).first()        
         else:
+            #print('i am inside dbops recordlist')
             record_list = User.query.all()  
                
     if record_list:
         return record_list
-    return record
+    else:
+        return record
    
         
 def delete_ops(obj, cname):
     record = None    
     record = get_records_from_db(obj, cname)   
     if  record: 
-        #print('obj is  {}'.format(obj))
-        if obj == 'User':
-            input_message = ('Are you sure to delete user :{}, {}  with id {} \n'
-                         'Type \'yes\' to confirm  deleting user or no to abort:  '.format(
-                             record.username, record.email , record.id)) 
-        elif obj == 'Role':
-            input_message = ('Are you sure to delete user :{}, with id {} \n'
-                         'Type \'yes\' to confirm  deleting user or no to abort:  '.format(
-                             record.rolename, record.id))
-        else:
-            input_message = ('Are you sure to delete user :{},  with id {} \n'
-                         'Type \'yes\' to confirm  deleting user or no to abort:  '.format(
-                             record.name, record.id))    
-                
-        uinput = get_input(input_message)
-        if uinput == 'yes':          
-            try:
-                db.session.delete(record)        
-                db.session.commit()
-                status = "{} has been  deleted successfully".format(cname) 
-                print(status)
-                #print('i am here')
-                return status
-            except  Exception as e:
-                    status = "{} could not be deleted , the erro is: \n  {}".format(cname, e)
-                    print(status)
-                    #return status
-        else:
-            status = 'Aborting deletion'
+    #print('obj is  {}'.format(obj))
+        try:
+            db.session.delete(record)        
+            db.session.commit()
+            status = "{} has been  deleted successfully".format(cname) 
             print(status)
+            #print('i am here')
+            return status
+        except  Exception as e:
+                status = "{} could not be deleted , the erro is: \n  {}".format(cname, e)
+                print(status)
+                #return status
     else:
         status = "{}  not found in database".format(record)
         print(status)
@@ -177,41 +161,57 @@ def delete_ops(obj, cname):
 
 def list_ops(obj, cname=None, *args, **kwargs):
     record = None
-    record_list = None
+    record_list = []
+    
     if cname:
         record = get_records_from_db(obj, cname)
-    else:
-        record_list = get_records_from_db(obj, cname)
-#         print(record_list)
-                            
-           
-    if record:
         if obj == 'Role':
-            print("id: {},  name: {}  ".format(record.id, record.rolename )) 
+            result = {"id": record.id, "name":  record.rolename }
+            print(result) 
         elif obj == 'User':
 #             print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
-            print(record.to_dict())
-        else:            
-            print("id: {},  name: {} , {}".format(record.id, record.name, record))
-            
-    
-#     else:
-#         print("Not Found  any record by that name, try full lisitng")       
-    
-    if record_list:        
+            result = record.to_dict()
+            print(result)
+        else: 
+            result = {'id': record.id, 'name': record.name , 'record': record}
+            print(result)
+             
+        return result
+    else:
+        #print('i am inside list ops')
+        record_list = get_records_from_db(obj)
+#         print(" i got the record list from db {}".format(record_list))
+        record_list_of_dict = []
         for record in record_list:
             if obj == 'Role':
-                print("id: {},  name: {}  ".format(record.id, record.rolename )) 
+                result = {"id": record.id, "name":  record.rolename }
+                print(result) 
             elif obj == 'User':
 #                 print("id: {},  name: {}".format(record.id, record.username))
 #                 print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
-                print(record.to_dict())
+                record_to_dict = (record.to_dict())
+#                 print('i got the record  to dict from record list {}'.format(record_to_dict))
+                record_list_of_dict.append(record_to_dict)
+#                 print('i am on the loop  result {}'.format(record_list_of_dict))
+                result = record_list_of_dict
+                print(result)
             else:            
-                print(record.id, record.name , record) 
-    if record:
-        return record  
-    else:
-        return record_list
+                result = {'id': record.id, 'name': record.name , 'record': record}
+                print(result)                
+#         print('i am on the final result {}'.format(result))        
+        return result  
+                            
+           
+#     if record:
+        
+#     else:
+#         print("Not Found  any record by that name, try full lisitng")       
+# #     
+# #     if record_list:   
+        #print('i am inside record list {}'.format(record_list))     
+        
+   
+        
 #     else:
 #         print("Looks the list is empty , nothing has been registered yet")  
 

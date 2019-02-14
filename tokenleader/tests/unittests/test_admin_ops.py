@@ -113,77 +113,45 @@ class TestUserModel(BaseTestCase):
         self.user_creation_for_test()
         af.list_users()
     
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
+#     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
     def test_delete_org(self, input):
         self.create_org_for_test()
         status = af.delete_org('org1')
         #print(status)
-        self.assertTrue(status == "org1 has been  deleted successfully" )
+        self.assertTrue(status == "org1 has been  deleted successfully" )   
     
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='no')
-    def test_delete_org_aborted(self, input):
-        self.create_org_for_test()
-        status = af.delete_org('org1')
-        #print(status)
-        self.assertTrue(status == 'Aborting deletion' )        
-    
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
+#     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
     def test_delete_ou(self, input):
         self.create_orgunit_for_test()
         status = af.delete_ou('ou1')
         #print(status)
         self.assertTrue(status == "ou1 has been  deleted successfully" )
-    
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='no')
-    def test_delete_ou_aborted(self, input):
-        self.create_orgunit_for_test()
-        status = af.delete_ou('ou1')
-        #print(status)
-        self.assertTrue(status == 'Aborting deletion' )
         
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
+#     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
     def test_delete_dept(self, input):
         self.create_dept_for_test()
         status = af.delete_dept('dept1')
         #print(status)
         self.assertTrue(status == "dept1 has been  deleted successfully" )
     
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='no')
-    def test_delete_dept_aborted(self, input):
-        self.create_dept_for_test()
-        status = af.delete_dept('dept1')
-        #print(status)
-        self.assertTrue(status == 'Aborting deletion' )
-        
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
+#     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
     def test_delete_wfc(self, input):
         self.register_work_function_for_test()
         status = af.delete_wfc('wfc1')      
         self.assertTrue(status == "wfc1 has been  deleted successfully" )
         
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
+#     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
     def test_delete_role(self, input):
         self.role_creation_for_test()
         status = af.delete_role('role1')      
-        self.assertTrue(status == "role1 has been  deleted successfully" )
-        
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='no')
-    def test_delete_role_abort(self, input):
-        self.role_creation_for_test()
-        status = af.delete_role('role1')      
-        self.assertTrue(status == "Aborting deletion" )
-        
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
+        self.assertTrue(status == "role1 has been  deleted successfully" )        
+   
+#     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
     def test_delete_user(self, input):
         self.user_creation_for_test()
         status = af.delete_user('u1')      
         self.assertTrue(status == "u1 has been  deleted successfully" )
         
-    @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='no')
-    def test_delete_user_abort(self, input):
-        self.user_creation_for_test()
-        status = af.delete_user('u1')      
-        self.assertTrue(status == "Aborting deletion" )
 
 
 
