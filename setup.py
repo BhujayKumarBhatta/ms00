@@ -14,7 +14,7 @@ setup(name='tokenleader',
       url='https://github.com/microservice-tsp-billing/tokenleader',
       author='Bhujay Kumar Bhatta',
       author_email='bhujay.bhatta@yahoo.com',
-      license='MIT',
+      license='Apache Software License',
       packages=find_packages(),
 #       package_data={
 #         # If any package contains *.txt or *.rst files, include them:
@@ -35,7 +35,7 @@ setup(name='tokenleader',
           'Flask-Migrate==2.3.1',
           'Flask-SQLAlchemy==2.3.2',
           'konfig==1.1',
-          'tokenleaderclient==0.6',
+          'tokenleaderclient==0.61',
           
       ],
       entry_points = {
