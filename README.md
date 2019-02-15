@@ -1,6 +1,6 @@
 What it does 
 ===================================================================
-tokenleader has three  simple operations:
+tokenleader has three simple operations:
 1) recieves users request ,  autehnticates her and provides a  token  which carries  more users informations such as 
 	a) user's roles ( one user can have multiple roles, although most of the cases one will suffice)  
 	b) user is  also mapped with  a wfc ( work function context)  
@@ -12,6 +12,9 @@ A typical token request call is :
 	-H "Content-Type: Application/json"  localhost:5001/token/gettoken
 
 The validity period of the token can be set through the settings.ini in future , currently it is fixed as one hour.
+
+Before a token can be recived ,   user need to be registered in the token leader server following the steps shown 
+later section of this docuement.
 
 2) receives a token from user , can validate and unencrypt the users information. 
 
@@ -130,22 +133,9 @@ all tokens will be encrypted by the private key and the  tokenleaderclient shoul
 general_settings.yml file so that token leader client can unencrypt the token using the public key
 
 
-
-
-
-Testing 
-===========================================================================
-clone from git and then run 
-
-	python -m unittest discover tests    
-
-to run single unit test 
- 
-	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
-
-for token generation and verification  testing this is a useful test  
-
-	python -m unittest tokenleader.tests.test_auth.TestToken.test_token_gen_n_verify_success_for_registered_user_with_role   
+	register a admin  role  and a admin user 
+	
+	also two yml files in the /etc/.... folder as mentioned below
 
 
 TO set up the tokenleqder the following entities need to be registered in sequence   
@@ -186,6 +176,17 @@ operations there are  adminops rest api avialble
 	<url>:5001/list/users 
 	/list/user/<username>
 	/add/user
+
+development is in progresss to make all the adminops oopeartons thourg rest api and also make them avialable from the 
+tokenleader client
+ 
+ there are two more files that need to be configured on the server for additonal operations such as adding user through 
+ the rest call. 
+ ===============================================================================
+ 
+	 /etc/tlclient/general_configs.yml
+	 /etc/tokenleader/service_access_policy.yml
+ 
  
  
  To check the database objects from shell, and to see  that the relational properties are working properly   
@@ -276,6 +277,23 @@ from the  machine where migration was done.
 For  development machine with sqllite db , there are chalenges in migration due to lil8mitiaton of database
 alter capabilities inherent to sqllite. So sometimes , delelting the migration folder and and  recreating a   
 fresh migartion helped.
+
+
+
+Testing 
+===========================================================================
+clone from git and then run 
+
+	python -m unittest discover tests    
+
+to run single unit test 
+ 
+	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
+
+for token generation and verification  testing this is a useful test  
+
+	python -m unittest tokenleader.tests.test_auth.TestToken.test_token_gen_n_verify_success_for_registered_user_with_role   
+
 
 to test the db operation  :  
 ========================================================================================

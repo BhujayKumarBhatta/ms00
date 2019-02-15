@@ -7,9 +7,8 @@ def readme():
 
 
 setup(name='tokenleader',
-      version='0.2',
-      description='tokenleader server is a microservice which can be used by other microservices for token based\
-      authentication and authorization',
+      version='0.4',
+      description='tokenleader server can be used by other microservices for token based  authentication and authorization',
       long_description=readme(),
       url='https://github.com/microservice-tsp-billing/tokenleader',
       author='Bhujay Kumar Bhatta',
@@ -35,7 +34,7 @@ setup(name='tokenleader',
           'Flask-Migrate==2.3.1',
           'Flask-SQLAlchemy==2.3.2',
           'konfig==1.1',
-          'tokenleaderclient==0.61',
+          'tokenleaderclient==0.62',
           
       ],
       entry_points = {
