@@ -7,7 +7,7 @@ def readme():
 
 
 setup(name='tokenleader',
-      version='0.4',
+      version='0.5',
       description='tokenleader server can be used by other microservices for token based  authentication and authorization',
       long_description=readme(),
       url='https://github.com/microservice-tsp-billing/tokenleader',
@@ -35,10 +35,12 @@ setup(name='tokenleader',
           'Flask-SQLAlchemy==2.3.2',
           'konfig==1.1',
           'tokenleaderclient==0.62',
+          'pyOpenSSL==19.0.0',
           
       ],
       entry_points = {
-        'console_scripts': ['adminops=tokenleader.app1.adminops.admin_cli_parser:main'],
+        'console_scripts': ['adminops=tokenleader.app1.adminops.admin_cli_parser:main',
+                            'tokenleader-start=tokenleader.app_run:main'],
         },
       test_suite='nose.collector',
       tests_require=['nose'],

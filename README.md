@@ -129,6 +129,32 @@ Please follow the installation and configuration steps
 	
 	ssh-keygen < press enter to select all defaults>  
 	
+configure the /etc/token/leader/tokenleader_settings.ini
+	
+	sudo vi /etc/token/leader/tokenleader_settings.ini
+	
+	[flask_default]
+	host_name = localhost
+	host_port = 5001
+	# sslnot required  since the production depoyment will be behind the apache with ssl 
+	# This is required only when flask is started  without apache for testing
+	ssl = enabled   
+	ssl_settings = adhoc
+	
+	[token]
+	# default will take the id_rsa keys from the  users home directory and .ssh directiry
+	# put the file name here if  the file name is different
+	#also the public ley need to be copied in the client settings file under /etc/tlclient
+	private_key_file_location = default
+	public_key_file_location = default
+	
+	[db]
+	#change the database string  as appripriate for your porduction environment
+	#contributors are requested to put some more example here
+	SQLALCHEMY_DATABASE_URI = sqlite:////tmp/auth.db
+	SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+	
 all tokens will be encrypted by the private key and the  tokenleaderclient should have the public key in the 
 general_settings.yml file so that token leader client can unencrypt the token using the public key
 
@@ -141,6 +167,7 @@ general_settings.yml file so that token leader client can unencrypt the token us
 TO set up the tokenleqder the following entities need to be registered in sequence   
 from the root directory of  tokenleader  
 ====================================================================================
+
 	 adminops  -h  provides help to understand the various options of admin funciton os tokenleader  
 	
 	 adminops   add  org   -n org1  
