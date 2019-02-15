@@ -1,3 +1,11 @@
+change log 
+============
+
+1. introduction of /etc/token/leader/tokenleader_settings.ini for hostname, port etc.  
+2. tokenleader-start  to start the service  
+3. service can be started with ssl - although this will be mostly done by a nginx or apache in a production setup.  
+
+
 What it does 
 ===================================================================
 tokenleader has three simple operations:
@@ -129,6 +137,7 @@ Please follow the installation and configuration steps
 	
 	ssh-keygen < press enter to select all defaults>  
 	
+	
 configure the /etc/token/leader/tokenleader_settings.ini
 	
 	sudo vi /etc/token/leader/tokenleader_settings.ini
@@ -162,6 +171,15 @@ general_settings.yml file so that token leader client can unencrypt the token us
 	register a admin  role  and a admin user 
 	
 	also two yml files in the /etc/.... folder as mentioned below
+	
+start the service :
+	
+	tokenleader-start
+
+ensure  the port  of the server is open from security group.   
+In production scnerio the service should be running with apache or ngnix or.  
+ All of them can be bundled in a docker container , ( will be published soon)
+
 
 
 TO set up the tokenleqder the following entities need to be registered in sequence   
@@ -228,11 +246,6 @@ tokenleader client
 	#<Role role1>  
 
 
-	export FLASK_APP='tokenleader.app_run.py'
-
-	flask run -p 5001  
-
-ensure  the port  of the server is open from security group  
 
 
 To generate token :  
