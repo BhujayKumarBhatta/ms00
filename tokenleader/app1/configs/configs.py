@@ -10,6 +10,17 @@ _HERE = os.path.dirname(__file__)
 
 _SETTINGS_FILE = os.path.join(_HERE, '/etc/tokenleader/tokenleader_settings.ini')
 
+must_have_in_flask_default_section = {'host_name',
+                              'host_port',
+                              'ssl',
+                              'ssl_settings'}
+
+must_have_in_token_section = {'private_key_file_location',
+                              'public_key_file_location'}
+
+must_have_in_db_section = {'SQLALCHEMY_DATABASE_URI'}
+
+
 try:
     CONFS = konfig.Config(_SETTINGS_FILE)
     flask_default_setiings_map = CONFS.get_map('flask_default')
@@ -18,6 +29,24 @@ try:
 except:   
     print("did you configured the file /etc/token/leader/tokenleader_settings.ini correctly ? \n"
           "see readme for a sample settings \n")
+    sys.exit()
+    
+    
+if not flask_default_setiings_map.keys() >= must_have_in_flask_default_section:
+    print("{} must have  the following parameters {}  under the flask_default section".format(
+       _SETTINGS_FILE, must_have_in_flask_default_section ))
+    sys.exit()
+    
+    
+if not token_settings_map.keys() >= must_have_in_token_section:
+    print("{} must have  the following parameters {}  under the flask_default section".format(
+       _SETTINGS_FILE, must_have_in_token_section ))
+    sys.exit()
+    
+    
+if not db_settings_map.keys() >= must_have_in_db_section:
+    print("{} must have  the following parameters {}  under the flask_default section".format(
+       _SETTINGS_FILE, db_settings_map ))
     sys.exit()
 
 

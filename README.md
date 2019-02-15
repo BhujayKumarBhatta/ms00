@@ -1,6 +1,12 @@
 change log 
 ============
 
+ver 0.6
+--------------
+1. check  presence of required parameters in /etc/token/leader/tokenleader_settings.ini while starting the service
+
+ver 0.5 
+------------------
 1. introduction of /etc/token/leader/tokenleader_settings.ini for hostname, port etc.  
 2. tokenleader-start  to start the service  
 3. service can be started with ssl - although this will be mostly done by a nginx or apache in a production setup.  
