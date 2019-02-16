@@ -19,7 +19,12 @@ host = configs.flask_default_setiings_map.get('host_name')
 port = configs.flask_default_setiings_map.get('host_port')
 ssl = configs.flask_default_setiings_map.get('ssl')
 ssl_settings = configs.flask_default_setiings_map.get('ssl_settings')
-def main():
+
+
+
+# from tokenleader.app1.adminops.admin_cli_parser import main
+
+def main():   
     if  ssl == 'enabled':
         app.run(ssl_context=ssl_settings, host = host, port=port, )
     else:

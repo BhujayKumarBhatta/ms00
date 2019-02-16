@@ -5,6 +5,7 @@
 import os
 import sys
 import argparse
+import subprocess
 
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
@@ -23,6 +24,10 @@ apppath = (os.path.join(possible_topdir,
 
 sys.path.insert(0, apppath)
 
+#migration_dir = os.path.dirname(__file__)+'/../../migrations'
+migration_path = os.path.join(os.path.dirname(__file__),
+                               os.pardir , os.pardir, 'migrations')
+
 #print(sys.path)
 
 from tokenleader.app_run import app 
@@ -37,6 +42,8 @@ parser = argparse.ArgumentParser(add_help=False)
 
 
 subparser = parser.add_subparsers()
+
+initdb_parser = subparser.add_parser('initdb', help='initialize database' ) #parents = [parser])
 
 list_parser = subparser.add_parser('list', help='List contents' ) #parents = [parser])
 list_parser.add_argument('entity', choices=['org', 'ou', 'dept', 'wfc', 'role', 'user' ])
@@ -171,26 +178,31 @@ def main():
         # display help message when no args are passed.
         parser.print_help()
         sys.exit(1)
+        
+    if sys.argv[1] == 'initdb':
+        print("performing db table creation as per the last schema"
+              " change in migration dir : {}".format(migration_path))
+        subprocess.run(["flask" , "db" , "upgrade", "-d",  migration_path, ])
     
     #print(sys.argv[3])
-    entity_name = options.name
+#     entity_name = options.name
     
     if  sys.argv[1] == 'add':
         
         if options.entity == 'org':      
-            af.register_org(entity_name)
+            af.register_org(options.name)
                 
         
         if options.entity == 'ou':      
-            af.register_ou(entity_name)
+            af.register_ou(options.name)
                 
                 
         if options.entity == 'dept':      
-            af.register_dept(entity_name)
+            af.register_dept(options.name)
           
                 
         if options.entity == 'role':
-            af.register_role(entity_name)
+            af.register_role(options.name)
             
     if  sys.argv[1] == 'addwfc':
         af.register_work_func_context(entity_name, options.wfcorg, options.wfcou, options.wfcdept)
@@ -210,6 +222,8 @@ def main():
         else:
             af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc) 
         #af.delete_user(entity_name, options.email, options.password, options.roles)      
+    
+    
     
     if  sys.argv[1] == 'list':
         

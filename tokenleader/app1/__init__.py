@@ -1,9 +1,10 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 
 db = SQLAlchemy()
 migrate = Migrate()
+migraion_dir = 'tokenleader:migrations'
 
 # flask_app_var = Flask(__name__)
 
@@ -19,10 +20,13 @@ def create_app(config_map_list=None, blue_print_list=None):
     with app.app_context():
 
         if db.engine.url.drivername == 'sqlite':
-            migrate.init_app(app, db, render_as_batch=True)
+            migrate.init_app(app, db, directory=migraion_dir, render_as_batch=True)
         else:
-            migrate.init_app(app, db)
+            migrate.init_app(app, db, directory=migraion_dir)
+#         db.create_all()
+#         db.session.commit()
         #migrate.init_app(app, db, render_as_batch=True)
+#         upgrade(directory=migraion_dir)
     
     if blue_print_list:
         for bp in blue_print_list:

@@ -1,6 +1,10 @@
 change log 
 ============
 
+ver 0.8 / 0.9
+------------------
+1. added adminops initdb  command  for  applying the changes  in database schema
+
 ver 0.7 
 --------------
 1. tokenleaderclient bug resolved in client version 0.64
@@ -195,9 +199,11 @@ In production scnerio the service should be running with apache or ngnix or.
 TO set up the tokenleqder the following entities need to be registered in sequence   
 from the root directory of  tokenleader  
 ====================================================================================
-
+     
 	 adminops  -h  provides help to understand the various options of admin funciton os tokenleader  
-	
+	 
+	 adminops initdb 
+	 
 	 adminops   add  org   -n org1  
 	 adminops   add  ou   -n ou2  
 	 adminops   add  dept   -n  dept1  
