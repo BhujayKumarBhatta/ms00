@@ -1,6 +1,11 @@
 change log 
 ============
 
+ver 1.0
+----------------
+setting FLASK_APP  during db init 
+
+
 ver 0.8 / 0.9
 ------------------
 1. added adminops initdb  command  for  applying the changes  in database schema

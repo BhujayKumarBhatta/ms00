@@ -28,6 +28,9 @@ sys.path.insert(0, apppath)
 migration_path = os.path.join(os.path.dirname(__file__),
                                os.pardir , os.pardir, 'migrations')
 
+flask_app = os.path.join(os.path.dirname(__file__),
+                               os.pardir , os.pardir, 'app_run.py')
+
 #print(sys.path)
 
 from tokenleader.app_run import app 
@@ -182,10 +185,11 @@ def main():
     if sys.argv[1] == 'initdb':
         print("performing db table creation as per the last schema"
               " change in migration dir : {}".format(migration_path))
+        os.environ["FLASK_APP"] = flask_app
         subprocess.run(["flask" , "db" , "upgrade", "-d",  migration_path, ])
     
     #print(sys.argv[3])
-#     entity_name = options.name
+#     options.name = options.name
     
     if  sys.argv[1] == 'add':
         
@@ -205,7 +209,7 @@ def main():
             af.register_role(options.name)
             
     if  sys.argv[1] == 'addwfc':
-        af.register_work_func_context(entity_name, options.wfcorg, options.wfcou, options.wfcdept)
+        af.register_work_func_context(options.name, options.wfcorg, options.wfcou, options.wfcdept)
                 
     if  sys.argv[1] == 'adduser':        
         password = options.password
@@ -221,79 +225,79 @@ def main():
             af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc, roles=role_list,)
         else:
             af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc) 
-        #af.delete_user(entity_name, options.email, options.password, options.roles)      
+        #af.delete_user(options.name, options.email, options.password, options.roles)      
     
     
     
     if  sys.argv[1] == 'list':
         
         if options.entity == 'org':      
-            if entity_name == 'all':
+            if options.name == 'all':
                 af.list_org()
             else:
-                af.list_org(entity_name)
+                af.list_org(options.name)
                 
         
         if options.entity == 'ou':      
-            if entity_name == 'all':
+            if options.name == 'all':
                 af.list_ou()
             else:
-                af.list_ou(entity_name)
+                af.list_ou(options.name)
                 
                 
         if options.entity == 'dept':      
-            if entity_name == 'all':
+            if options.name == 'all':
                 af.list_dept()
             else:
-                af.list_dept(entity_name)
+                af.list_dept(options.name)
                 
         
         if options.entity == 'wfc':      
-            if entity_name == 'all':
+            if options.name == 'all':
                 af.list_wfc()
             else:
-                af.list_wfc(entity_name)
+                af.list_wfc(options.name)
                 
                 
         if options.entity == 'role':      
-            if entity_name == 'all':
+            if options.name == 'all':
                 af.list_role()
             else:
-                af.list_role(entity_name)
+                af.list_role(options.name)
                 
                 
         if options.entity == 'user':      
-            if entity_name == 'all':
+            if options.name == 'all':
                 af.list_users()
             else:
-                af.list_users(entity_name)         
+                af.list_users(options.name)         
         
     
     if  sys.argv[1] == 'delete': 
         
         
         if options.entity == 'org':      
-            af.delete_org(entity_name)
+            af.delete_org(options.name)
                 
         
         if options.entity == 'ou':      
-            af.delete_ou(entity_name)
+            af.delete_ou(options.name)
                 
                 
         if options.entity == 'dept':      
-            af.delete_dept(entity_name)
+            af.delete_dept(options.name)
                 
         
         if options.entity == 'wfc':      
-            af.delete_wfc(entity_name)
+            af.delete_wfc(options.name)
                 
                 
         if options.entity == 'role':      
-            af.delete_role(entity_name)
+            af.delete_role(options.name)
                 
                 
         if options.entity == 'user':      
-            af.delete_user(entity_name)           
+            af.delete_user(options.name)           
          
     if  sys.argv[1] == 'addservice':
         cf.add_service(options.name, options.password, options.urlext, options.urlint, options.urladmin)
