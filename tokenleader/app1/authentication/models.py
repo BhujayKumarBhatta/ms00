@@ -11,7 +11,7 @@ roles_n_user_map = db.Table('roles_n_user_map',
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
+    username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), index=True, unique=True)    
     password_hash = db.Column(db.String(128))
 #     roles = db.relationship('Role', secondary=roles_n_user_map, lazy='dynamic' ,
@@ -53,7 +53,8 @@ class User(db.Model):
     
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    rolename = db.Column(db.String(64), index=True, unique=True)
+    rolename = db.Column(db.String(64), index=True, unique=True, nullable=False)
+    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
 #     functional_context = db.relationship('Workfunctioncontext', backref = 'role', uselist=False, lazy = True)
 
     def __repr__(self):
@@ -65,7 +66,7 @@ class Workfunctioncontext(db.Model):
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     org = db.relationship('Organization', backref = 'org', uselist=False, lazy = True)
     orgunit = db.relationship('OrgUnit', backref = 'orgunit', uselist=False, lazy = True)
-    department = db.relationship('Department', backref = 'department', uselist=False, lazy = True)
+    department = db.relationship('Department', backref = 'department', uselist=False,lazy = True)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
     
     def __repr__(self):

@@ -27,8 +27,8 @@ try:
     token_settings_map = CONFS.get_map('token')
     db_settings_map = CONFS.get_map('db')
 except:   
-    print("did you configured the file /etc/token/leader/tokenleader_settings.ini correctly ? \n"
-          "see readme for a sample settings \n")
+    print("did you configured the file {} correctly ? \n"
+          "see readme for a sample settings \n".format(_SETTINGS_FILE))
     sys.exit()
     
     

@@ -157,9 +157,11 @@ Please follow the installation and configuration steps
 	ssh-keygen < press enter to select all defaults>  
 	
 	
-configure the /etc/token/leader/tokenleader_settings.ini
+configure the /etc/tokenleader/tokenleader_settings.ini
+   
+    sudo mkdir /etc/tokenleader
 	
-	sudo vi /etc/token/leader/tokenleader_settings.ini
+	sudo vi /etc/tokenleader/tokenleader_settings.ini
 	
 	[flask_default]
 	host_name = localhost
@@ -187,6 +189,39 @@ all tokens will be encrypted by the private key and the  tokenleaderclient shoul
 general_settings.yml file so that token leader client can unencrypt the token using the public key
 
 
+tokenleaderclient related config which has to be present in the tokenleader server as welll
+===================================================
+
+
+The tokenleaderclient configuration file is divided into two files . 
+/etc/tlclient/general_configs.yml which holds the non secret configs  about the client and looks as
+        
+        sudo vi /etc/tlclient/general_configs.yml
+
+		user_auth_info_from: file # OSENV or file
+		user_auth_info_file_location: /home/bhujay/tlclient/user_settings.ini
+		fernet_key_file: /home/bhujay/tlclient/prod_farnetkeys
+		tl_public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYV9y94je6Z9N0iarh0xNrE3IFGrdktV2TLfI5h60hfd9yO7L9BZtd94/r2L6VGFSwT/dhBR//CwkIuue3RW23nbm2OIYsmsijBSHtm1/2tw/0g0UbbneM9vFt9ciCjdq3W4VY8I6iQ7s7v98qrtRxhqLc/rH2MmfERhQaMQPaSnMaB59R46xCtCnsJ+OoZs5XhGOJXJz8YKuCw4gUs4soRMb7+k7F4wADseoYuwtVLoEmSC+ikbmPZNWOY18HxNrSVJOvMH2sCoewY6/GgS/5s1zlWBwV/F0UvmKoCTf0KcNHcdzXbeDU9/PkGU/uItRYVfXIWYJVQZBveu7BYJDR bhujay@DESKTOP-DTA1VEB
+		ssl_verify: False
+		the other file , which is user_auth_info_file_location: /home/bhujay/tlclient/user_settings.ini   holds the   
+
+users authentiaction information . The file is generated using  an cli   
+------------------------------------------------------------------------------
+
+		tlconfig -u user1 -p user1 --url http://localhost:5001   
+
+the file , /home/bhujay/tlclient/user_settings.ini , thus generated will looks like this :    
+
+		[DEFAULT]  
+		tl_user = user1  
+		tl_url = http://localhost:5001  
+		tl_password = gAAAAABcYnpRqet_VEucowJrE0lM1RQh2j5E-_Al4j8hm8vJaMvfj2nk7yb3zQo95lBFDoDR_CeoHVRY3QBFFG-p9Ga4bkJKBw==
+
+note that the  original password has been encrypted before  saving in the file. if the keyfile is lost or the 
+password is forgotten   the  file has to be deleted and recreated. Accordingly the users password in the 
+tokenleader server also to be changed. 
+
+
 	register a admin  role  and a admin user 
 	
 	also two yml files in the /etc/.... folder as mentioned below
@@ -210,7 +245,7 @@ from the root directory of  tokenleader
 	 adminops initdb 
 	 
 	 adminops   add  org   -n org1  
-	 adminops   add  ou   -n ou2  
+	 adminops   add  ou   -n ou1 
 	 adminops   add  dept   -n  dept1  
 	 adminops   addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 
 	 adminops   list  wfc  -n wfc2  
@@ -252,6 +287,18 @@ tokenleader client
  
 	 /etc/tlclient/general_configs.yml
 	 /etc/tokenleader/service_access_policy.yml
+	 
+	  a sample  yml file entry is as below:
+	 
+		- name: role1
+		  allow:
+		  - service1:first_api:rulename1
+		  - service1:second_api:rulename2
+		  
+		- name: role2
+		  allow:
+		  - service1:third_api:rulename3
+		  - service1:fourthapi_api:rulename4
  
  
  

@@ -81,9 +81,9 @@ def register_ops1(obj, cname, orgname=None, ou_name=None, dept_name=None, wfc_na
             db.session.add(record)        
             db.session.commit()
             msg = "{} has been registered.".format(cname)         
-        except exc.IntegrityError:
-            msg = ('databse integrity error, {} by the same name may be already present'.format(
-                cname))
+        except exc.IntegrityError as e :
+            msg = ('databse integrity error, {} by the same name may be already present  or all the requred'
+                   'fileds has not been supplied.\n\n Full detail: {}'.format( cname, e))
             db.session.rollback()
             #raise
         except  Exception as e:
