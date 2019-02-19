@@ -34,7 +34,7 @@ setup(name='tokenleader',
           'Flask-Migrate==2.3.1',
           'Flask-SQLAlchemy==2.3.2',
           'konfig==1.1',
-          'tokenleaderclient==0.66',
+          'tokenleaderclient==0.68',
           'pyOpenSSL==19.0.0',
           
       ],
