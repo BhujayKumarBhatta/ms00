@@ -1,28 +1,154 @@
-change log 
-============
+Please take a note on the change log in the bottom of the document in case you  had used a previous version
 
-ver 1.0
-----------------
-setting FLASK_APP  during db init 
+quick start
+===================
+optional Steps:  
+-----------------------------------
+	virtualenv -p python3 venv  
+	
+	source venv/bin/activate  
+	
+	pip install --upgrade pip  
+
+installtion:
+-----------------------------
+	pip install tokenleader ( create virtual env if required)
+
+required configurations
+========================
+create  the follwoing  directories and files under /etc folder. 
+
+1. ssh-keygen < press enter to select all defaults>  
+2. /etc/tokenleader/tokenleader_settings.ini
+3. /etc/tokenleader/role_to_aclmap.yml
+4. /etc/tokenleader/client_configs.yml
+5. run tokenleader-auth - u <username> - p < password>  --url localhost:5001
+
+sample configuration of each files
+====================================
+configure the /etc/tokenleader/tokenleader_settings.ini
+=============================================================================
+   
+    sudo mkdir /etc/tokenleader	
+	sudo vi /etc/tokenleader/tokenleader_settings.ini
+	
+	[flask_default]
+	host_name = localhost
+	host_port = 5001
+	# sslnot required  since the production depoyment will be behind the apache with ssl 
+	# This is required only when flask is started  without apache for testing
+	# put enabled  for enabling ssl 
+	ssl = disabled   
+	ssl_settings = adhoc
+	
+	[token]
+	# default will take the id_rsa keys from the  users home directory and .ssh directiry
+	# put the file name here if  the file name is different
+	#also the public ley need to be copied in the client settings file under /etc/tlclient
+	private_key_file_location = default
+	public_key_file_location = default
+	
+	[db]
+	#change the database string  as appripriate for your porduction environment
+	#contributors are requested to put some more example here
+	SQLALCHEMY_DATABASE_URI = sqlite:////tmp/auth.db
+	SQLALCHEMY_TRACK_MODIFICATIONS = False
+	
+/etc/tokenleader/role_to_aclmap.yml
+============================================================================================
+	
+      sudo mkdir /etc/tokenleaderclient      
+      sudo vi /etc/tokenleader/role_to_aclmap.yml
+	 
+	  maintain atleast one role and one entry in the follwoing format 
+	 
+		- name: role1
+		  allow:
+		  - tokenleader.adminops.adminops_restapi.list_users		  
+		  
+		- name: role2
+		  allow:
+		  - service1.third_api.rulename3
+		  - service1.fourthapi_api.rulename4
+/etc/tokenleader/client_configs.yml which holds the non secret configs  about the client and looks as
+================================================================================================
+user_auth_info_file_location: <change this location to users home dir , two files will be generated and stored here>
+fernet_key_file: <same as above>
+tl_public_key: copy the public key of the server  <cat sh/id_rsa.id> and paste  the key here 
+        
+        sudo vi 
+        sudo vi /etc/tokenleader/client_configs.yml
+
+		user_auth_info_from: file # OSENV or file , leave it as file
+		user_auth_info_file_location: /home/bhujay/tlclient/user_settings.ini # change this location to users home dir 
+		fernet_key_file: /home/bhujay/tlclient/prod_farnetkeys
+		tl_public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYV9y94je6Z9N0iarh0xNrE3IFGrdktV2TLfI5h60hfd9yO7L9BZtd94/r2L6VGFSwT/dhBR//CwkIuue3RW23nbm2OIYsmsijBSHtm1/2tw/0g0UbbneM9vFt9ciCjdq3W4VY8I6iQ7s7v98qrtRxhqLc/rH2MmfERhQaMQPaSnMaB59R46xCtCnsJ+OoZs5XhGOJXJz8YKuCw4gUs4soRMb7+k7F4wADseoYuwtVLoEmSC+ikbmPZNWOY18HxNrSVJOvMH2sCoewY6/GgS/5s1zlWBwV/F0UvmKoCTf0KcNHcdzXbeDU9/PkGU/uItRYVfXIWYJVQZBveu7BYJDR bhujay@DESKTOP-DTA1VEB
+		ssl_verify: False # leave it as is 
 
 
-ver 0.8 / 0.9
-------------------
-1. added adminops initdb  command  for  applying the changes  in database schema
+users authentiaction information . The file is generated using  an cli   
+=================================================================================
 
-ver 0.7 
---------------
-1. tokenleaderclient bug resolved in client version 0.64
+		tokenleader-auth -u user1 -p user1 --url http://localhost:5001   
 
-ver 0.6
---------------
-1. check  presence of required parameters in /etc/tokenleader/tokenleader_settings.ini while starting the service
+the file , /home/bhujay/tlclient/user_settings.ini , will be auto  generated and will looks like this :    
 
-ver 0.5 
-------------------
-1. introduction of /etc/tokenleader/tokenleader_settings.ini for hostname, port etc.  
-2. tokenleader-start  to start the service  
-3. service can be started with ssl - although this will be mostly done by a nginx or apache in a production setup.  
+		[DEFAULT]  
+		tl_user = user1  
+		tl_url = http://localhost:5001  
+		tl_password = gAAAAABcYnpRqet_VEucowJrE0lM1RQh2j5E-_Al4j8hm8vJaMvfj2nk7yb3zQo95lBFDoDR_CeoHVRY3QBFFG-p9Ga4bkJKBw==
+
+note that the  original password has been encrypted before  saving in the file. if the keyfile is lost or the 
+password is forgotten   the  file has to be deleted and recreated. Accordingly the users password in the 
+tokenleader server also to be changed. 
+
+TO set up the tokenleqder the following entities need to be registered in sequence   
+from the root directory of  tokenleader, change the name of org , ou , dept , wfc , role and user as per your need
+====================================================================================
+     
+	 adminops  -h  provides help to understand the various options of admin funciton os tokenleader  
+	 
+	 adminops initdb 
+	 
+	 adminops   add  org   -n org1  
+	 adminops   add  ou   -n ou1 
+	 adminops   add  dept   -n  dept1  
+	 adminops   addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 	 
+	 adminops   list  wfc  -n wfc1
+	 adminops   add  role  -n role1  	  
+	 adminops adduser -n user1 --password user1 --emailid user1 --rolenames role1  --wfc wfc1
+	 adminops  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
+
+start the service :
+==============================================================
+	
+	tokenleader-start
+	
+Test it is working
+=======================================================
+
+from the cli :  
+--------------------
+
+		tokenleader  gettoken
+		tokenleader  verify -t <paste the toen here>
+		tokenleader  list user
+ 
+ 
+
+then from python shell it works as follows:  
+---------------------------------------------
+
+		>>> from  tokenleaderclient.client.client import Client  
+		>>> c = Client()
+		>>> c.get_token()
+		{'message': 'success', 'status': 'success', 'auth_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1NDk5NjcxODAsImV4cCI6MTU0OTk3MDc4MCwic3ViIjp7IndmYyI6eyJvcmd1bml0Ijoib3UxIiwibmFtZSI6IndmYzEiLCJkZXBhcnRtZW50IjoiZGVwdDEiLCJpZCI6MSwib3JnIjoib3JnMSJ9LCJlbWFpbCI6InVzZXIxIiwiaWQiOjEsInVzZXJuYW1lIjoidXNlcjEiLCJyb2xlcyI6WyJyb2xlMSJdfX0.gzW0GlgR9qiNLZbR-upuzgHMw5rOm2luV-EnHZwlOSJ-0kJnHsiiT5Wk-HZaqMGZd0YJxA1e9GMroHixtj7WJsbLLjhgqQ5H1ZprCkA9um6-vdkwAFVduWIqIN7S6LbsE036bN7y4cdgVhuJAKoiV1KyxOU1-Hxid5l3inL0Hx2aDUrZ3InzFKBw7Mll86xWdfkpHSdyVjVuayKQMvH2IdT3N15k4O2tSwV3t6UhG6MO0ngHFt3LFR471QWGzJ8UyRzqyqbheuk5vwPk684MfRclCtKx33LWAMf-HXQgVA2py_NzmEiY1ROsKmZqpbIO9YKIO_aFCmzB7DQSI8dcYg', 'service_catalog': {'tokenleader': {'endpoint_url_external': 'localhost:5001', 'endpoint_url_admin': None, 'id': 2, 'endpoint_url_internal': None, 'name': 'tokenleader'}, 'micros1': {'endpoint_url_external': 'localhost:5002', 'endpoint_url_admin': None, 'id': 1, 'endpoint_url_internal': None, 'name': 'micros1'}}}
+		>>> c.verify_token('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1NDk5NjcxODAsImV4cCI6MTU0OTk3MDc4MCwic3ViIjp7IndmYyI6eyJvcmd1bml0Ijoib3UxIiwibmFtZSI6IndmYzEiLCJkZXBhcnRtZW50IjoiZGVwdDEiLCJpZCI6MSwib3JnIjoib3JnMSJ9LCJlbWFpbCI6InVzZXIxIiwiaWQiOjEsInVzZXJuYW1lIjoidXNlcjEiLCJyb2xlcyI6WyJyb2xlMSJdfX0.gzW0GlgR9qiNLZbR-upuzgHMw5rOm2luV-EnHZwlOSJ-0kJnHsiiT5Wk-HZaqMGZd0YJxA1e9GMroHixtj7WJsbLLjhgqQ5H1ZprCkA9um6-vdkwAFVduWIqIN7S6LbsE036bN7y4cdgVhuJAKoiV1KyxOU1-Hxid5l3inL0Hx2aDUrZ3InzFKBw7Mll86xWdfkpHSdyVjVuayKQMvH2IdT3N15k4O2tSwV3t6UhG6MO0ngHFt3LFR471QWGzJ8UyRzqyqbheuk5vwPk684MfRclCtKx33LWAMf-HXQgVA2py_NzmEiY1ROsKmZqpbIO9YKIO_aFCmzB7DQSI8dcYg')
+		{'payload': {'iat': 1549967180, 'exp': 1549970780, 'sub': {'username': 'user1', 'roles': ['role1'], 'id': 1, 'email': 'user1', 'wfc': {'orgunit': 'ou1', 'id': 1, 'org': 'org1', 'department': 'dept1', 'name': 'wfc1'}}}, 'message': 'Token has been successfully decrypted', 'status': 'Verification Successful'}
+		>>>
+		
+
+
 
 
 What it does 
@@ -142,166 +268,15 @@ now within the acl_enforcer_func_for_test  funtion  , wfc attributes like org, o
 to display a message. They actually  to be used for database query filtering so that based on the work function
 user is able to view only relevant information.
 
-
-Please follow the installation and configuration steps  
-======================================================================================  
-
-	virtualenv -p python3 venv  
-	
-	source venv/bin/activate  
-	
-	pip install --upgrade pip  
-	
-	pip install tokenleader 
-	
-	ssh-keygen < press enter to select all defaults>  
-	
-	
-configure the /etc/tokenleader/tokenleader_settings.ini
-   
-    sudo mkdir /etc/tokenleader
-	
-	sudo vi /etc/tokenleader/tokenleader_settings.ini
-	
-	[flask_default]
-	host_name = localhost
-	host_port = 5001
-	# sslnot required  since the production depoyment will be behind the apache with ssl 
-	# This is required only when flask is started  without apache for testing
-	ssl = enabled   
-	ssl_settings = adhoc
-	
-	[token]
-	# default will take the id_rsa keys from the  users home directory and .ssh directiry
-	# put the file name here if  the file name is different
-	#also the public ley need to be copied in the client settings file under /etc/tlclient
-	private_key_file_location = default
-	public_key_file_location = default
-	
-	[db]
-	#change the database string  as appripriate for your porduction environment
-	#contributors are requested to put some more example here
-	SQLALCHEMY_DATABASE_URI = sqlite:////tmp/auth.db
-	SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-	
-all tokens will be encrypted by the private key and the  tokenleaderclient should have the public key in the 
-general_settings.yml file so that token leader client can unencrypt the token using the public key
-
-
-tokenleaderclient related config which has to be present in the tokenleader server as welll
-===================================================
-
-
-The tokenleaderclient configuration file is divided into two files . 
-/etc/tlclient/general_configs.yml which holds the non secret configs  about the client and looks as
-        
-        sudo vi /etc/tlclient/general_configs.yml
-
-		user_auth_info_from: file # OSENV or file
-		user_auth_info_file_location: /home/bhujay/tlclient/user_settings.ini
-		fernet_key_file: /home/bhujay/tlclient/prod_farnetkeys
-		tl_public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYV9y94je6Z9N0iarh0xNrE3IFGrdktV2TLfI5h60hfd9yO7L9BZtd94/r2L6VGFSwT/dhBR//CwkIuue3RW23nbm2OIYsmsijBSHtm1/2tw/0g0UbbneM9vFt9ciCjdq3W4VY8I6iQ7s7v98qrtRxhqLc/rH2MmfERhQaMQPaSnMaB59R46xCtCnsJ+OoZs5XhGOJXJz8YKuCw4gUs4soRMb7+k7F4wADseoYuwtVLoEmSC+ikbmPZNWOY18HxNrSVJOvMH2sCoewY6/GgS/5s1zlWBwV/F0UvmKoCTf0KcNHcdzXbeDU9/PkGU/uItRYVfXIWYJVQZBveu7BYJDR bhujay@DESKTOP-DTA1VEB
-		ssl_verify: False
-		the other file , which is user_auth_info_file_location: /home/bhujay/tlclient/user_settings.ini   holds the   
-
-users authentiaction information . The file is generated using  an cli   
-------------------------------------------------------------------------------
-
-		tlconfig -u user1 -p user1 --url http://localhost:5001   
-
-the file , /home/bhujay/tlclient/user_settings.ini , thus generated will looks like this :    
-
-		[DEFAULT]  
-		tl_user = user1  
-		tl_url = http://localhost:5001  
-		tl_password = gAAAAABcYnpRqet_VEucowJrE0lM1RQh2j5E-_Al4j8hm8vJaMvfj2nk7yb3zQo95lBFDoDR_CeoHVRY3QBFFG-p9Ga4bkJKBw==
-
-note that the  original password has been encrypted before  saving in the file. if the keyfile is lost or the 
-password is forgotten   the  file has to be deleted and recreated. Accordingly the users password in the 
-tokenleader server also to be changed. 
-
-
-	register a admin  role  and a admin user 
-	
-	also two yml files in the /etc/.... folder as mentioned below
-	
-start the service :
-	
-	tokenleader-start
-
-ensure  the port  of the server is open from security group.   
-In production scnerio the service should be running with apache or ngnix or.  
- All of them can be bundled in a docker container , ( will be published soon)
+List of api routes and their rules
+============================================================================
+1. /list/users     acl rule name - tokenleader.adminops.adminops_restapi.list_users
 
 
 
-TO set up the tokenleqder the following entities need to be registered in sequence   
-from the root directory of  tokenleader  
-====================================================================================
-     
-	 adminops  -h  provides help to understand the various options of admin funciton os tokenleader  
-	 
-	 adminops initdb 
-	 
-	 adminops   add  org   -n org1  
-	 adminops   add  ou   -n ou1 
-	 adminops   add  dept   -n  dept1  
-	 adminops   addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 
-	 adminops   list  wfc  -n wfc2  
-	 #3 wfc2 <WorkFunctionContext wfc2 <Organization org1> <OrgUnit ou1> <Department dept1> >  
-	  
-	 adminops   add  role  -n role1   
-	  
-	 adminops adduser -n user10 --password user10 --emailid user10 --rolenames role10  --wfc wfc1
-	 
-	 adminops   list  user  -n all  or   adminops   list  user  -n user1
-	 
-	 adminops   list  dept  -n all   or  adminops   list  dept  -n dept1 
-	 
-	 adminops delete user -n user10  for deleting the user 
-	 
-	 
-	 adminops  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
-	
-	
-	 adminops listservice -n all
-	#{'name': 'micros1', 'endpoint_url_internal': None, 'id': 1, 'endpoint_url_external': 'localhost:5002', 'endpoint_url_admin': None}
-	
-	 adminops deletservice -n servie1
-	 
-	 
-to add the admin user and admin role , the cli  command need to be run from the servers  local shell. However for subsequent 
-operations there are  adminops rest api avialble 
 
-	<url>:5001/list/users 
-	/list/user/<username>
-	/add/user
 
-development is in progresss to make all the adminops oopeartons thourg rest api and also make them avialable from the 
-tokenleader client
- 
- there are two more files that need to be configured on the server for additonal operations such as adding user through 
- the rest call. 
- ===============================================================================
- 
-	 /etc/tlclient/general_configs.yml
-	 /etc/tokenleader/service_access_policy.yml
-	 
-	  a sample  yml file entry is as below:
-	 
-		- name: role1
-		  allow:
-		  - service1:first_api:rulename1
-		  - service1:second_api:rulename2
-		  
-		- name: role2
-		  allow:
-		  - service1:third_api:rulename3
-		  - service1:fourthapi_api:rulename4
- 
- 
- 
+
  To check the database objects from shell, and to see  that the relational properties are working properly   
  use the follwoing :  
  ==================================================
@@ -316,7 +291,7 @@ tokenleader client
 
 
 
-To generate token :  
+To generate token using curl :  
 ===================================================
 
 	curl -X POST -d '{"username": "admin", "password": "admin"}'  \
@@ -451,4 +426,37 @@ ext  important works:
 3) client for tokenleader
 
 
+change log 
+================================================
+
+
+ver 1.1 
+-------------
+
+1. all configs are in /etc/tokenleader
+2. tlclient command changed to tokenleader
+3. tlconfig command changed to tokenleader-auth
+
+ver 1.0
+----------------
+setting FLASK_APP  during db init 
+
+
+ver 0.8 / 0.9
+------------------
+1. added adminops initdb  command  for  applying the changes  in database schema
+
+ver 0.7 
+--------------
+1. tokenleaderclient bug resolved in client version 0.64
+
+ver 0.6
+--------------
+1. check  presence of required parameters in /etc/tokenleader/tokenleader_settings.ini while starting the service
+
+ver 0.5 
+------------------
+1. introduction of /etc/tokenleader/tokenleader_settings.ini for hostname, port etc.  
+2. tokenleader-start  to start the service  
+3. service can be started with ssl - although this will be mostly done by a nginx or apache in a production setup.  
 
