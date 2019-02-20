@@ -485,9 +485,10 @@ ext  important works:
 change log 
 ================================================
 
-ver1.2
+ver1.3
 -------------
 1. migration/version was missing 
+2. Sample config files created under etc directory in  source code
 
 ver 1.1 
 -------------
