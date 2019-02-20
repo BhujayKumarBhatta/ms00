@@ -395,6 +395,17 @@ WSGIPythonHome "/mnt/c/mydev/microservice-tsp-billing/tokenleader/venv" copy thi
 	ln -s ../mods-available/wsgi.conf  wsgi.conf
 	
 	ln -s ../mods-available/wsgi.load  wsgi.load
+	
+	sudo a2enmod ssl 
+	
+	sudo mkdir /etc/apache2/ssl
+	
+	sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+	 -keyout /etc/apache2/ssl/tokenleader-apache-server.key  \
+	 -out /etc/apache2/ssl/tokenleader-apache-server.crt
+	
+	
+	apachectl configtest 
 
 download the copy of app.wsgi file and copy it in /var/www
 download the tokenleader-apache.conf , place it in /etc/apache2/sites-enabled/  and modify the  
