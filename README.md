@@ -429,6 +429,9 @@ ext  important works:
 change log 
 ================================================
 
+ver1.2
+-------------
+1. migration/version was missing 
 
 ver 1.1 
 -------------
