@@ -16,16 +16,18 @@ installtion:
 
 required configurations
 ========================
-create  the follwoing  directories and files under /etc folder. 
+create  the following  directories and files under /etc folder. 
 
 1. ssh-keygen < press enter to select all defaults>  
 2. /etc/tokenleader/tokenleader_settings.ini
-3. /etc/tokenleader/role_to_aclmap.yml
+3. /etc/tokenleader/role_to_acl_map.yml
 4. /etc/tokenleader/client_configs.yml
-5. run tokenleader-auth - u <username> - p < password>  --url localhost:5001
+5. run tokenleader-auth - u <uname> - p <pass>  --url localhost:5001
+
+
 
 sample configuration of each files
-====================================
+=============================================================================
 configure the /etc/tokenleader/tokenleader_settings.ini
 =============================================================================
    
@@ -35,7 +37,7 @@ configure the /etc/tokenleader/tokenleader_settings.ini
 	[flask_default]
 	host_name = localhost
 	host_port = 5001
-	# sslnot required  since the production depoyment will be behind the apache with ssl 
+	# ssl not required  since the production deployment will be behind the apache with ssl 
 	# This is required only when flask is started  without apache for testing
 	# put enabled  for enabling ssl 
 	ssl = disabled   
@@ -52,18 +54,18 @@ configure the /etc/tokenleader/tokenleader_settings.ini
 	#public_key_file_location = /home/bhujay/.ssh/id_rsa.pub
 	
 	[db]
-	#change the database string  as appripriate for your porduction environment
+	#change the database string  as appripriate for your production environment
 	#contributors are requested to put some more example here
 	SQLALCHEMY_DATABASE_URI = sqlite:////tmp/auth.db
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 	
-/etc/tokenleader/role_to_aclmap.yml
+/etc/tokenleader/role_to_acl_map.yml
 ============================================================================================
 	
-      sudo mkdir /etc/tokenleaderclient      
-      sudo vi /etc/tokenleader/role_to_aclmap.yml
+      sudo mkdir /etc/tokenleader      
+      sudo vi /etc/tokenleader/role_to_acl_map.yml
 	 
-	  maintain atleast one role and one entry in the follwoing format 
+	  maintain at least one role and one entry in the following format 
 	 
 		- name: role1
 		  allow:
@@ -92,7 +94,7 @@ tl_public_key: copy the public key of the server  <cat sh/id_rsa.id> and paste  
 users authentiaction information . The file is generated using  an cli   
 =================================================================================
 
-		tokenleader-auth -u user1 -p user1 --url http://localhost:5001   
+		tokenleader-auth -u user1 -p user1 --url https://localhost:5001   
 
 the file , /home/bhujay/tlclient/user_settings.ini , will be auto  generated and will looks like this :    
 
@@ -109,7 +111,7 @@ TO set up the tokenleqder the following entities need to be registered in sequen
 from the root directory of  tokenleader, change the name of org , ou , dept , wfc , role and user as per your need
 ====================================================================================
      
-	 adminops  -h  provides help to understand the various options of admin funciton os tokenleader  
+	 adminops  -h  provides help to understand the various options of admin function os tokenleader  
 	 
 	 adminops initdb 
 	 
@@ -134,7 +136,7 @@ from the cli :
 --------------------
 
 		tokenleader  gettoken
-		tokenleader  verify -t <paste the toen here>
+		tokenleader  verify -t <paste the token here>
 		tokenleader  list user
  
  

@@ -14,7 +14,6 @@ def list_users(wfc):
     response_obj = {"status": record_list}
     return jsonify(response_obj)
 
-
 @adminops_bp.route('/list/user/<username>', methods=['GET'])
 def list_user_byname(username):
     #print('i got the name from http argument {}'.format(username))

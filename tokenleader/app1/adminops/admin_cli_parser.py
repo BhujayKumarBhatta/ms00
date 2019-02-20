@@ -317,7 +317,7 @@ if __name__ == '__main__':
     main()
     
 '''
-/mnt/c/mydev/microservice-tsp-billing/tokenleader$ ./tokenadmin.sh  -h    to get help
+/mnt/c/mydev/microservice-tsp-billing/tokenleader$ ./tokenadmin.sh  -h    to get help 
 '''
     
     
