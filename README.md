@@ -45,8 +45,11 @@ configure the /etc/tokenleader/tokenleader_settings.ini
 	# default will take the id_rsa keys from the  users home directory and .ssh directiry
 	# put the file name here if  the file name is different
 	#also the public ley need to be copied in the client settings file under /etc/tlclient
-	private_key_file_location = default
+	private_key_file_location = default 
 	public_key_file_location = default
+	#use full path when deployed with apache 
+	#private_key_file_location = /home/bhujay/.ssh/id_rsa
+	#public_key_file_location = /home/bhujay/.ssh/id_rsa.pub
 	
 	[db]
 	#change the database string  as appripriate for your porduction environment
@@ -362,6 +365,59 @@ alter capabilities inherent to sqllite. So sometimes , delelting the migration f
 fresh migartion helped.
 
 
+
+
+Deployment
+===========================================
+
+	sudo apt-get install -y  apache2 apache2-dev
+	
+	sudo su 
+	
+	source venv/bin/activate
+	
+	pip install mod_wsgi
+	 
+	mod_wsgi-express module-config
+	 
+	mod_wsgi-express install-module
+
+this will print the folowing lines : 	
+LoadModule wsgi_module "/usr/lib/apache2/modules/mod_wsgi-py35.cpython-35m-x86_64-linux-gnu.so"  - copy this to wsgi.load
+WSGIPythonHome "/mnt/c/mydev/microservice-tsp-billing/tokenleader/venv" copy this to wsgi.conf  
+
+	vi /etc/apache2/mods-available/wsgi.load
+	
+	vi /etc/apache2/mods-available/wsgi.load
+	
+	cd /etc/apache2/mods-enabled/
+	
+	ln -s ../mods-available/wsgi.conf  wsgi.conf
+	
+	ln -s ../mods-available/wsgi.load  wsgi.load
+
+download the copy of app.wsgi file and copy it in /var/www
+download the tokenleader-apache.conf , place it in /etc/apache2/sites-enabled/  and modify the  
+directories  and the username 
+
+start the apache service 
+
+    sudo service apache2 start
+    
+	
+    
+  
+ 
+ https://pypi.org/project/mod_wsgi/
+ 
+ important note :  https://modwsgi.readthedocs.io/en/develop/user-guides/virtual-environments.html   
+ ===========================
+	
+
+
+
+development
+===========================================================
 
 Testing 
 ===========================================================================
