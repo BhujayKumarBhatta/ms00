@@ -1,9 +1,23 @@
 Please take a note on the change log in the bottom of the document in case you  had used a previous version
 
-quick start
-===================
+Quick Start
+=============================
+	
+	docker run -p 5001:5001 bhujay/tokenleader:1.4 
+
+to run in background  
+
+	docker run -d -p 5001:5001 bhujay/tokenleader:1.4  
+
+once it is running install the client in a venv and test the features . 
+consult the client installation doc  https://github.com/microservice-tsp-billing/tokenleaderclient
+
+
+Manual installation steps
+=================================
 optional Steps:  
 -----------------------------------
+	
 	virtualenv -p python3 venv  
 	
 	source venv/bin/activate  
