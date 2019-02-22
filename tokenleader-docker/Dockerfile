@@ -12,14 +12,17 @@ RUN mod_wsgi-express install-module
 RUN mkdir /etc/tokenleader
 RUN mkdir /root/.ssh
 COPY . /etc/tokenleader/
-COPY id_rsa /root/.ssh/
-COPY id_rsa.pub /root/.ssh/
+COPY ./id_rsa /root/.ssh/
+COPY ./id_rsa.pub /root/.ssh/
 COPY ./wsgi.load /etc/apache2/mods-available/
 COPY ./wsgi.conf /etc/apache2/mods-available/
 RUN ln -s /etc/apache2/mods-available/wsgi.load  /etc/apache2/mods-enabled/wsgi.load
 RUN ln -s /etc/apache2/mods-available/wsgi.conf  /etc/apache2/mods-enabled/wsgi.conf
-COPY ./tokenleader-apache.conf /etc/apache2/confs-enabled/
+COPY ./tokenleader-apache.conf /etc/apache2/sites-enabled/
+COPY ./ports.conf /etc/apache2/
+COPY ./app.wsgi /usr/local/lib/python3.5/site-packages/tokenleader/
 #RUN ls -l /etc/tokenleader
+RUN  a2enmod ssl 
 RUN apachectl configtest
 
 # Install any needed packages specified in requirements.txt
@@ -46,3 +49,7 @@ EXPOSE 5001
 RUN apachectl configtest 
 
 RUN service apache2 start
+
+
+CMD ["apachectl", "-f", "/etc/apache2/apache2.conf", "-D", "FOREGROUND" , "-X"]
+
