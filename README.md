@@ -3,11 +3,13 @@ Please take a note on the change log in the bottom of the document in case you  
 Quick Start
 =============================
 	
-	docker run -p 5001:5001 bhujay/tokenleader:1.4 
+	docker run -p 5001:5001 bhujay/tokenleader
 
 to run in background  
 
-	docker run -d -p 5001:5001 bhujay/tokenleader:1.4  
+	docker run -d -p 5001:5001 bhujay/tokenleader
+
+it is installed with default user use1 and password user1 
 
 once it is running install the client in a venv and test the features . 
 consult the client installation doc  https://github.com/microservice-tsp-billing/tokenleaderclient
@@ -402,7 +404,7 @@ this will print the folowing lines :
 LoadModule wsgi_module "/usr/lib/apache2/modules/mod_wsgi-py35.cpython-35m-x86_64-linux-gnu.so"  - copy this to wsgi.load
 WSGIPythonHome "/mnt/c/mydev/microservice-tsp-billing/tokenleader/venv" copy this to wsgi.conf  
 
-	vi /etc/apache2/mods-available/wsgi.load
+	vi /etc/apache2/mods-available/wsgi.conf
 	
 	vi /etc/apache2/mods-available/wsgi.load
 	
