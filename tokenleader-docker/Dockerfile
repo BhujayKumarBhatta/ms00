@@ -2,10 +2,11 @@
 FROM ubuntu:14.04
 FROM python:3.5.2-slim
 
-RUN apt update -y
-RUN apt install apache2 apache2-dev -y
+RUN apt-get update  && apt-get install -y apache2 apache2-dev 
 RUN pip install mod_wsgi 
-
+RUN apachectl configtest
+RUN mod_wsgi-express module-config
+RUN mod_wsgi-express install-module
 
 
 RUN mkdir /etc/tokenleader
@@ -19,6 +20,7 @@ RUN ln -s /etc/apache2/mods-available/wsgi.load  /etc/apache2/mods-enabled/wsgi.
 RUN ln -s /etc/apache2/mods-available/wsgi.conf  /etc/apache2/mods-enabled/wsgi.conf
 COPY ./tokenleader-apache.conf /etc/apache2/confs-enabled/
 #RUN ls -l /etc/tokenleader
+RUN apachectl configtest
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org tokenleader
@@ -39,6 +41,8 @@ RUN  adminops  addservice  -n tokenleader --password tokenleader --urlint localh
 EXPOSE 5001
 
 
-# Run app.py when the container launches
 #CMD ["tokenleader-start"]
+
+RUN apachectl configtest 
+
 RUN service apache2 start
