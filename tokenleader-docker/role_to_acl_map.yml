@@ -1,0 +1,8 @@
+- name: role1
+  allow:
+  - tokenleader.adminops.adminops_restapi.list_users
+  
+- name: role2
+  allow:
+  - service1.third_api.rulename3
+  - service1.fourthapi_api.rulename4
