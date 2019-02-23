@@ -2,7 +2,7 @@
 FROM ubuntu:14.04
 FROM python:3.5.2-slim
 
-RUN apt-get update  && apt-get install -y apache2 apache2-dev 
+RUN apt-get update  && apt-get install -y apache2 apache2-dev net-tools curl vim 
 RUN pip install mod_wsgi 
 RUN apachectl configtest
 RUN mod_wsgi-express module-config
@@ -10,10 +10,9 @@ RUN mod_wsgi-express install-module
 
 
 RUN mkdir /etc/tokenleader
-RUN mkdir /root/.ssh
 COPY . /etc/tokenleader/
-COPY ./id_rsa /root/.ssh/
-COPY ./id_rsa.pub /root/.ssh/
+RUN chmod 644 /etc/tokenleader/id_rsa
+
 COPY ./wsgi.load /etc/apache2/mods-available/
 COPY ./wsgi.conf /etc/apache2/mods-available/
 RUN ln -s /etc/apache2/mods-available/wsgi.load  /etc/apache2/mods-enabled/wsgi.load
@@ -53,3 +52,4 @@ RUN service apache2 start
 
 CMD ["apachectl", "-f", "/etc/apache2/apache2.conf", "-D", "FOREGROUND" , "-X"]
 
+#CMD ["cat"]
