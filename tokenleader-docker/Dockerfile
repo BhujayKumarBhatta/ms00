@@ -2,7 +2,7 @@
 FROM ubuntu:14.04
 FROM python:3.5.2-slim
 
-RUN apt-get update  && apt-get install -y apache2 apache2-dev 
+RUN apt-get update  && apt-get install -y apache2 apache2-dev net-tools curl vim 
 RUN pip install mod_wsgi 
 RUN apachectl configtest
 RUN mod_wsgi-express module-config
@@ -10,16 +10,18 @@ RUN mod_wsgi-express install-module
 
 
 RUN mkdir /etc/tokenleader
-RUN mkdir /root/.ssh
 COPY . /etc/tokenleader/
-COPY id_rsa /root/.ssh/
-COPY id_rsa.pub /root/.ssh/
+RUN chmod 644 /etc/tokenleader/id_rsa
+
 COPY ./wsgi.load /etc/apache2/mods-available/
 COPY ./wsgi.conf /etc/apache2/mods-available/
 RUN ln -s /etc/apache2/mods-available/wsgi.load  /etc/apache2/mods-enabled/wsgi.load
 RUN ln -s /etc/apache2/mods-available/wsgi.conf  /etc/apache2/mods-enabled/wsgi.conf
-COPY ./tokenleader-apache.conf /etc/apache2/confs-enabled/
+COPY ./tokenleader-apache.conf /etc/apache2/sites-enabled/
+COPY ./ports.conf /etc/apache2/
+COPY ./app.wsgi /usr/local/lib/python3.5/site-packages/tokenleader/
 #RUN ls -l /etc/tokenleader
+RUN  a2enmod ssl 
 RUN apachectl configtest
 
 # Install any needed packages specified in requirements.txt
@@ -46,3 +48,8 @@ EXPOSE 5001
 RUN apachectl configtest 
 
 RUN service apache2 start
+
+
+CMD ["apachectl", "-f", "/etc/apache2/apache2.conf", "-D", "FOREGROUND" , "-X"]
+
+#CMD ["cat"]
