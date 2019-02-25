@@ -7,7 +7,7 @@ def readme():
 
 
 setup(name='tokenleader',
-      version='1.6',
+      version='1.7',
       description='tokenleader server can be used by other microservices for token based  authentication and authorization',
       long_description=readme(),
       url='https://github.com/microservice-tsp-billing/tokenleader',
@@ -34,7 +34,7 @@ setup(name='tokenleader',
           'Flask-Migrate==2.3.1',
           'Flask-SQLAlchemy==2.3.2',
           'konfig==1.1',
-          'tokenleaderclient==0.71',
+          'tokenleaderclient==0.8',
           'pyOpenSSL==19.0.0',
           
       ],
