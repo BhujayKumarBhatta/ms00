@@ -104,19 +104,21 @@ tl_public_key: copy the public key of the server  <cat sh/id_rsa.id> and paste  
 		user_auth_info_file_location: /home/bhujay/tlclient/user_settings.ini # change this location to users home dir 
 		fernet_key_file: /home/bhujay/tlclient/prod_farnetkeys
 		tl_public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYV9y94je6Z9N0iarh0xNrE3IFGrdktV2TLfI5h60hfd9yO7L9BZtd94/r2L6VGFSwT/dhBR//CwkIuue3RW23nbm2OIYsmsijBSHtm1/2tw/0g0UbbneM9vFt9ciCjdq3W4VY8I6iQ7s7v98qrtRxhqLc/rH2MmfERhQaMQPaSnMaB59R46xCtCnsJ+OoZs5XhGOJXJz8YKuCw4gUs4soRMb7+k7F4wADseoYuwtVLoEmSC+ikbmPZNWOY18HxNrSVJOvMH2sCoewY6/GgS/5s1zlWBwV/F0UvmKoCTf0KcNHcdzXbeDU9/PkGU/uItRYVfXIWYJVQZBveu7BYJDR bhujay@DESKTOP-DTA1VEB
-		ssl_verify: False # leave it as is 
+		ssl_verify: False # leave it as is 		
+		tl_user: user1
+		tl_url: http://localhost:5001
+		ssl_verify: False
+
 
 
 users authentiaction information . The file is generated using  an cli   
 =================================================================================
 
-		tokenleader-auth -u user1 -p user1 --url https://localhost:5001   
+		tokenleader-auth -p user1 
 
 the file , /home/bhujay/tlclient/user_settings.ini , will be auto  generated and will looks like this :    
 
-		[DEFAULT]  
-		tl_user = user1  
-		tl_url = http://localhost:5001  
+		[DEFAULT]  		 
 		tl_password = gAAAAABcYnpRqet_VEucowJrE0lM1RQh2j5E-_Al4j8hm8vJaMvfj2nk7yb3zQo95lBFDoDR_CeoHVRY3QBFFG-p9Ga4bkJKBw==
 
 note that the  original password has been encrypted before  saving in the file. if the keyfile is lost or the 
@@ -148,27 +150,75 @@ start the service :
 Test it is working
 =======================================================
 
-from the cli :  
---------------------
 
-		tokenleader  gettoken
-		tokenleader  verify -t <paste the token here>
+CLI utilities 
+====================================================================
+using user name and password from config file 
+
+		tokenleader  gettoken 
+		
+or username and password can be supplied  theough the CLI 
+
+		gettoken  --authuser user1 --authpwd user1
+		
+Other CLI operaions 
+
+		tokenleader  verify -t <paste the toen here>
 		tokenleader  list user
  
  
+Python client 
+======================================================================================
+From python shell it works as follows:
 
-then from python shell it works as follows:  
----------------------------------------------
+        from tokenleaderclient.configs.config_handler import Configs    
+		from  tokenleaderclient.client.client import Client 
+		
+		
+this will read  the credentials from configurations file. Will be used for CLI. 
+ 
+		auth_config = Configs()  	
+		
+the user name and password will be  taken from the input  but rest of the settings will be from config files.  
+This will be used for browser based login  
 
-		>>> from  tokenleaderclient.client.client import Client  
-		>>> c = Client()
-		>>> c.get_token()
+		auth_config = Configs(tlusr='user1', tlpwd='user1') 
+		
+Inititialize the client with auth_config
+	 
+		c = Client(auth_config)
+		c.get_token()
 		{'message': 'success', 'status': 'success', 'auth_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1NDk5NjcxODAsImV4cCI6MTU0OTk3MDc4MCwic3ViIjp7IndmYyI6eyJvcmd1bml0Ijoib3UxIiwibmFtZSI6IndmYzEiLCJkZXBhcnRtZW50IjoiZGVwdDEiLCJpZCI6MSwib3JnIjoib3JnMSJ9LCJlbWFpbCI6InVzZXIxIiwiaWQiOjEsInVzZXJuYW1lIjoidXNlcjEiLCJyb2xlcyI6WyJyb2xlMSJdfX0.gzW0GlgR9qiNLZbR-upuzgHMw5rOm2luV-EnHZwlOSJ-0kJnHsiiT5Wk-HZaqMGZd0YJxA1e9GMroHixtj7WJsbLLjhgqQ5H1ZprCkA9um6-vdkwAFVduWIqIN7S6LbsE036bN7y4cdgVhuJAKoiV1KyxOU1-Hxid5l3inL0Hx2aDUrZ3InzFKBw7Mll86xWdfkpHSdyVjVuayKQMvH2IdT3N15k4O2tSwV3t6UhG6MO0ngHFt3LFR471QWGzJ8UyRzqyqbheuk5vwPk684MfRclCtKx33LWAMf-HXQgVA2py_NzmEiY1ROsKmZqpbIO9YKIO_aFCmzB7DQSI8dcYg', 'service_catalog': {'tokenleader': {'endpoint_url_external': 'localhost:5001', 'endpoint_url_admin': None, 'id': 2, 'endpoint_url_internal': None, 'name': 'tokenleader'}, 'micros1': {'endpoint_url_external': 'localhost:5002', 'endpoint_url_admin': None, 'id': 1, 'endpoint_url_internal': None, 'name': 'micros1'}}}
-		>>> c.verify_token('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1NDk5NjcxODAsImV4cCI6MTU0OTk3MDc4MCwic3ViIjp7IndmYyI6eyJvcmd1bml0Ijoib3UxIiwibmFtZSI6IndmYzEiLCJkZXBhcnRtZW50IjoiZGVwdDEiLCJpZCI6MSwib3JnIjoib3JnMSJ9LCJlbWFpbCI6InVzZXIxIiwiaWQiOjEsInVzZXJuYW1lIjoidXNlcjEiLCJyb2xlcyI6WyJyb2xlMSJdfX0.gzW0GlgR9qiNLZbR-upuzgHMw5rOm2luV-EnHZwlOSJ-0kJnHsiiT5Wk-HZaqMGZd0YJxA1e9GMroHixtj7WJsbLLjhgqQ5H1ZprCkA9um6-vdkwAFVduWIqIN7S6LbsE036bN7y4cdgVhuJAKoiV1KyxOU1-Hxid5l3inL0Hx2aDUrZ3InzFKBw7Mll86xWdfkpHSdyVjVuayKQMvH2IdT3N15k4O2tSwV3t6UhG6MO0ngHFt3LFR471QWGzJ8UyRzqyqbheuk5vwPk684MfRclCtKx33LWAMf-HXQgVA2py_NzmEiY1ROsKmZqpbIO9YKIO_aFCmzB7DQSI8dcYg')
+		c.verify_token('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1NDk5NjcxODAsImV4cCI6MTU0OTk3MDc4MCwic3ViIjp7IndmYyI6eyJvcmd1bml0Ijoib3UxIiwibmFtZSI6IndmYzEiLCJkZXBhcnRtZW50IjoiZGVwdDEiLCJpZCI6MSwib3JnIjoib3JnMSJ9LCJlbWFpbCI6InVzZXIxIiwiaWQiOjEsInVzZXJuYW1lIjoidXNlcjEiLCJyb2xlcyI6WyJyb2xlMSJdfX0.gzW0GlgR9qiNLZbR-upuzgHMw5rOm2luV-EnHZwlOSJ-0kJnHsiiT5Wk-HZaqMGZd0YJxA1e9GMroHixtj7WJsbLLjhgqQ5H1ZprCkA9um6-vdkwAFVduWIqIN7S6LbsE036bN7y4cdgVhuJAKoiV1KyxOU1-Hxid5l3inL0Hx2aDUrZ3InzFKBw7Mll86xWdfkpHSdyVjVuayKQMvH2IdT3N15k4O2tSwV3t6UhG6MO0ngHFt3LFR471QWGzJ8UyRzqyqbheuk5vwPk684MfRclCtKx33LWAMf-HXQgVA2py_NzmEiY1ROsKmZqpbIO9YKIO_aFCmzB7DQSI8dcYg')
 		{'payload': {'iat': 1549967180, 'exp': 1549970780, 'sub': {'username': 'user1', 'roles': ['role1'], 'id': 1, 'email': 'user1', 'wfc': {'orgunit': 'ou1', 'id': 1, 'org': 'org1', 'department': 'dept1', 'name': 'wfc1'}}}, 'message': 'Token has been successfully decrypted', 'status': 'Verification Successful'}
-		>>>
 		
 
+
+for RBAC configure  /etc/tokenleader/role_to_aclmap.yml
+============================================================================================
+	
+      sudo mkdir /etc/tokenleader 
+      sudo vi /etc/tokenleader/role_to_aclmap.yml
+	 
+	  maintain atleast one role and one entry in the follwoing format 
+	 
+		- name: role1
+		  allow:
+		  - tokenleader.adminops.adminops_restapi.list_users		  
+		  
+		- name: role2
+		  allow:
+		  - service1.third_api.rulename3
+		  - service1.fourthapi_api.rulename4
+
+		from tokenleaderclient.rbac.enforcer import Enforcer
+		enforcer = Enforcer(c)
+		
+Here c is the instance of  Client() , the tokenleadercliet which we have initialized in the previous
+example of python client.  
+
+Now @enforcer.enforce_access_rule_with_token('rulename1') is avilable within any flask application  
+where tokenleader client is installed.   
 
 
 

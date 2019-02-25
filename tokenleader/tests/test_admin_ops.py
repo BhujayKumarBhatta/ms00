@@ -114,40 +114,40 @@ class TestUserModel(BaseTestCase):
         af.list_users()
     
 #     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
-    def test_delete_org(self, input):
+    def test_delete_org(self):
         self.create_org_for_test()
         status = af.delete_org('org1')
         #print(status)
         self.assertTrue(status == "org1 has been  deleted successfully" )   
     
 #     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
-    def test_delete_ou(self, input):
+    def test_delete_ou(self):
         self.create_orgunit_for_test()
         status = af.delete_ou('ou1')
         #print(status)
         self.assertTrue(status == "ou1 has been  deleted successfully" )
         
 #     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
-    def test_delete_dept(self, input):
+    def test_delete_dept(self):
         self.create_dept_for_test()
         status = af.delete_dept('dept1')
         #print(status)
         self.assertTrue(status == "dept1 has been  deleted successfully" )
     
 #     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
-    def test_delete_wfc(self, input):
+    def test_delete_wfc(self):
         self.register_work_function_for_test()
         status = af.delete_wfc('wfc1')      
         self.assertTrue(status == "wfc1 has been  deleted successfully" )
         
 #     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
-    def test_delete_role(self, input):
+    def test_delete_role(self):
         self.role_creation_for_test()
         status = af.delete_role('role1')      
         self.assertTrue(status == "role1 has been  deleted successfully" )        
    
 #     @patch('tokenleader.app1.adminops.base_ops.get_input', return_value='yes')
-    def test_delete_user(self, input):
+    def test_delete_user(self):
         self.user_creation_for_test()
         status = af.delete_user('u1')      
         self.assertTrue(status == "u1 has been  deleted successfully" )

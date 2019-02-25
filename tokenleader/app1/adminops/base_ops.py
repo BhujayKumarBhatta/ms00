@@ -165,17 +165,19 @@ def list_ops(obj, cname=None, *args, **kwargs):
     
     if cname:
         record = get_records_from_db(obj, cname)
-        if obj == 'Role':
-            result = {"id": record.id, "name":  record.rolename }
-            print(result) 
-        elif obj == 'User':
-#             print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
-            result = record.to_dict()
-            print(result)
-        else: 
-            result = {'id': record.id, 'name': record.name , 'record': record}
-            print(result)
-             
+        if record:
+            if obj == 'Role':
+                result = {"id": record.id, "name":  record.rolename }
+                print(result) 
+            elif obj == 'User':
+    #             print(record.username, record.email, ','.join([r.rolename for r in record.roles]))
+                result = record.to_dict()
+                print(result)
+            else: 
+                result = {'id': record.id, 'name': record.name , 'record': record}
+                print(result)
+        else:
+            result = {'error': 'No such record is found'}
         return result
     else:
         #print('i am inside list ops')
