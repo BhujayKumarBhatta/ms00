@@ -133,7 +133,7 @@ addservice_parser.add_argument('-n', '--name',
                   help = "Name of the microservice",
                   )
 addservice_parser.add_argument('--password' , action = "store", dest = "password",
-                  required = True,
+                  required = False,
                   help = "service account name password, this password will \
                   be used for intra service communication",
                   ) 
@@ -300,7 +300,10 @@ def main():
             af.delete_user(options.name)           
          
     if  sys.argv[1] == 'addservice':
-        cf.add_service(options.name, options.password, options.urlext, options.urlint, options.urladmin)
+        cf.add_service(options.name, pwd=options.password, 
+                       urlint=options.urlint,
+                       urlext=options.urlext,
+                       urladmin=options.urladmin)
         
         
     if  sys.argv[1] == 'listservice': 
