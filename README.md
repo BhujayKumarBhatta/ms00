@@ -3,11 +3,11 @@ Please take a note on the change log in the bottom of the document in case you  
 Quick Start
 =============================
 	
-	docker run -p 5001:5001 bhujay/tokenleader
+	docker run -p 5001:5001 bhujay/tokenleader:1.8
 
 to run in background  
 
-	docker run -d -p 5001:5001 bhujay/tokenleader
+	docker run -d -p 5001:5001 bhujay/tokenleader:1.8
 
 it is installed with default user use1 and password user1 
 
