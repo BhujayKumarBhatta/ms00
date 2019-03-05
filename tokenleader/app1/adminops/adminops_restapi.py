@@ -51,7 +51,7 @@ def delete_user_restapi(username):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
-##################################################################
+###################################################################
 @adminops_bp.route('/list/org', methods=['GET'])
 def list_org():
     org_dict = af.list_org()
