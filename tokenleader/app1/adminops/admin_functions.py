@@ -35,7 +35,7 @@ def register_dept(deptname):
 
 
 def list_dept(depatname=None):
-    bops.list_ops('Department', depatname)
+    return bops.list_ops('Department', depatname)
     
     
 def delete_dept(deptname):

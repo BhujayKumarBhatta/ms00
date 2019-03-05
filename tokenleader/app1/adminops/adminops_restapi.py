@@ -51,3 +51,33 @@ def delete_user_restapi(username):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
+##################################################################
+@adminops_bp.route('/list/org', methods=['GET'])
+def list_org():
+    org_dict = af.list_org()
+    obj_json = {"name": org_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/list/dept', methods=['GET'])
+def list_dept():
+    dept_dict = af.list_dept()
+    obj_json = {"name": dept_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/list/role', methods=['GET'])
+def list_role():
+    role_dict = af.list_role()
+    obj_json = {"name": role_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/list/ou', methods=['GET'])
+def list_ou():
+    ou_dict = af.list_ou()
+    obj_json = {"name": ou_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
+
+
