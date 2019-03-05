@@ -2,14 +2,28 @@ Please take a note on the change log in the bottom of the document in case you  
 
 Quick Start
 =============================
+for installation and configuration of docker with environment behind proxy , see the sectiom at the bottom of the 
+page labelled as docker installation
 	
-	docker run -p 5001:5001 bhujay/tokenleader:1.8
+	docker pull bhujay/tokenleader:1.8 
+	docker run -d -p 5001:5001  --name tokenleader  -v tokenleader_vol:/tmp bhujay/tokenleader:1.8 
+	
+	docker exec -it tokenleader 'bash'
+	
+change the tl_url to https
 
-to run in background  
 
-	docker run -d -p 5001:5001 bhujay/tokenleader:1.8
-
-it is installed with default user use1 and password user1 
+	vi /etc/tokenleader/client_configs.yml
+	
+	tokenleader  gettoken
+	adminops  addservice  -n tokenleader --password tokenleader --urlint https://192.168.111.131:5001  --urlext https://192.168.111.131:5001
+	adminops  addservice  -n LinkInventory --password LinkInventory --urlint https://192.168.111.131:5004 --urlext https://192.168.111.131:5004
+	adminops  addservice  -n micros1 --password micros1 --urlint https://192.168.111.131:5002 --urlext https://192.168.111.131:5002
+	
+	
+	
+	
+it is installed with default user use1 and password user1  with role as role1 
 
 once it is running install the client in a venv and test the features . 
 consult the client installation doc  https://github.com/microservice-tsp-billing/tokenleaderclient
@@ -559,6 +573,110 @@ ext  important works:
  
 2) centralized catalogue for all microservice endpoints and 
 3) client for tokenleader
+
+
+
+
+
+
+ **** Install DOCKER
+ ===================================================================================
+
+	sudo apt-get update
+	
+	apt-get install \
+	    apt-transport-https \
+	    ca-certificates \
+	    curl \
+	    gnupg-agent \
+	    software-properties-common
+	
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	sudo apt-key fingerprint 0EBFCD88
+
+
+
+
+	sudo add-apt-repository \
+	   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+	   $(lsb_release -cs) \
+	   stable"
+	
+	sudo apt-get update
+	
+	sudo apt-get install docker-ce docker-ce-cli containerd.io
+	
+	apt-cache madison docker-ce
+	
+	sudo apt-get install docker-ce=5:18.09.2~3-0~ubuntu-xenial docker-ce-cli=5:18.09.2~3-0~ubuntu-xenial containerd.io
+	
+	 
+	vi ~/.docker/config.json
+
+
+
+	{
+	 "proxies":
+	 {
+	   "default":
+	   {
+	     "httpProxy": "http://10.172.100.14:3128",
+	     "httpsProxy": "http://10.172.100.14:3128",
+	     "noProxy": "*.test.example.com,.example2.com"
+	   }
+	 }
+	}
+	
+	
+	sudo groupadd docker
+	sudo usermod -aG docker $USER
+	
+
+
+
+
+
+
+	sudo mkdir -p /etc/systemd/system/docker.service.d
+	vi /etc/systemd/system/docker.service.d/http-proxy.conf
+	[Service]
+	Environment="HTTP_PROXY=http://10.172.100.14:3128/" HTTPS_PROXY=http://10.172.100.14:3128/"
+
+	sudo systemctl daemon-reload
+	sudo systemctl restart docker
+	systemctl show --property=Environment docker
+
+
+Tokenleader speific 
+=================================================
+docker run -d -p 10.174.112.83:5001:5001 bhujay/tokenleader:1.8
+
+docker exec -i -t 8aa561c09458 /bin/bash
+
+
+adminops addservice -n micros1 --password micros1 --urlint http://10.174.112.83  --urlext  http://10.174.112.83
+
+
+
+
+
+tl_public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDENN9QYdy6RUEJUsOcGECj+7uvyhHlNaZqVN5YcP/MCxBIEoWD3ewu1bQxqW/xC938gHXGZ7NWncv+u9IADwmVYBD8/hYUWJFOKFOKtt8+ZcAFamAz6qGAmKFUnThZ5C/n1PAwS8L03aj62NfxXTjgpohcKRn3Pq9SW7TNgeApn3RSkGoydKJOqo8GeNnKuDxJMHhkR663pLtYH+VOvE/TzethQn64Xc1/HL02o6HRsCWtI0UXev2RLMsVa/wP0k2ItUi7YnmZPyL6ATfeiHIRrRmfDsidqUA6eNZ+fsdw6dO6H0TGggeYd+d8I14PBTx6zYwL+QIEiqNBxP6nIdMp bhujay@DESKTOP-DTA1VEB
+
+
+user_auth_info_from: file # OSENV or file
+user_auth_info_file_location: /home/cloud/secrets
+fernet_key_file: /home/cloud/farnetkeys
+
+tl_public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDENN9QYdy6RUEJUsOcGECj+7uvyhHlNaZqVN5YcP/MCxBIEoWD3ewu1bQxqW/xC938gHXGZ7NWncv+u9IADwmVYBD8/hYUWJFOKFOKtt8+ZcAFamAz6qGAmKFUnThZ5C/n1PAwS8L03aj62NfxXTjgpohcKRn3Pq9SW7TNgeApn3RSkGoydKJOqo8GeNnKuDxJMHhkR663pLtYH+VOvE/TzethQn64Xc1/HL02o6HRsCWtI0UXev2RLMsVa/wP0k2ItUi7YnmZPyL6ATfeiHIRrRmfDsidqUA6eNZ+fsdw6dO6H0TGggeYd+d8I14PBTx6zYwL+QIEiqNBxP6nIdMp bhujay@DESKTOP-DTA1VEB
+
+
+
+tl_user: user1
+tl_url: https://localhost:5001
+ssl_verify: False
+ 
+	
+
 
 
 change log 
