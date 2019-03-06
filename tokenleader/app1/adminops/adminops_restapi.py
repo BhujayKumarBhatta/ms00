@@ -53,6 +53,7 @@ def delete_user_restapi(username):
 
 ###################################################################
 @adminops_bp.route('/list/org', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
 def list_org():
     org_dict = af.list_org()
     obj_json = {"name": org_dict.get('name')}
@@ -60,6 +61,7 @@ def list_org():
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/dept', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_dept')
 def list_dept():
     dept_dict = af.list_dept()
     obj_json = {"name": dept_dict.get('name')}
@@ -67,6 +69,7 @@ def list_dept():
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/role', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_role')
 def list_role():
     role_dict = af.list_role()
     obj_json = {"name": role_dict.get('name')}
@@ -74,6 +77,7 @@ def list_role():
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/ou', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_ou')
 def list_ou():
     ou_dict = af.list_ou()
     obj_json = {"name": ou_dict.get('name')}
