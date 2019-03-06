@@ -52,8 +52,7 @@ create  the following  directories and files under /etc folder.
 2. /etc/tokenleader/tokenleader_settings.ini
 3. /etc/tokenleader/role_to_acl_map.yml
 4. /etc/tokenleader/client_configs.yml
-5. run tokenleader-auth - u <uname> - p <pass>  --url localhost:5001
-
+5. tokenleader-auth  -p <password of  tokeneader user>
 
 
 sample configuration of each files
