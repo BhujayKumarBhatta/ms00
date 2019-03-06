@@ -208,17 +208,21 @@ Inititialize the client with auth_config
 		
 
 
-for RBAC configure  /etc/tokenleader/role_to_aclmap.yml
+for RBAC configure  /etc/tokenleader/role_to_acl_map.yml
 ============================================================================================
 	
       sudo mkdir /etc/tokenleader 
-      sudo vi /etc/tokenleader/role_to_aclmap.yml
+      sudo vi /etc/tokenleader/role_to_acl_map.yml
 	 
-	  maintain atleast one role and one entry in the follwoing format 
+	  maintain at least one role and one entry in the following format 
 	 
 		- name: role1
 		  allow:
-		  - tokenleader.adminops.adminops_restapi.list_users		  
+		   - tokenleader.adminops.adminops_restapi.list_users		
+		   - tokenleader.adminops.adminops_restapi.list_org		
+		   - tokenleader.adminops.adminops_restapi.list_ou	
+		   - tokenleader.adminops.adminops_restapi.list_role		
+		   - tokenleader.adminops.adminops_restapi.list_dept	  
 		  
 		- name: role2
 		  allow:
