@@ -459,7 +459,7 @@ fresh migartion helped.
 Deployment
 ===========================================
 
-	sudo apt-get install -y  apache2 apache2-dev
+	sudo apt-get install -y  python3-dev apache2 apache2-dev
 	
 	sudo su 
 	
