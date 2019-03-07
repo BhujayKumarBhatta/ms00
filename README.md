@@ -127,7 +127,9 @@ tl_public_key: copy the public key of the server  <cat sh/id_rsa.id> and paste  
 users authentiaction information . The file is generated using  an cli   
 =================================================================================
 
+		pip install tokenleaderclient
 		tokenleader-auth -p user1 
+**in some systems , the permisson of the /etc/tokenleader/.... files need 777 access ( read , write and execute ) access other wise this and the other commands shown was failing.
 
 the file , /home/bhujay/tlclient/user_settings.ini , will be auto  generated and will looks like this :    
 
@@ -138,10 +140,11 @@ note that the  original password has been encrypted before  saving in the file. 
 password is forgotten   the  file has to be deleted and recreated. Accordingly the users password in the 
 tokenleader server also to be changed. 
 
-TO set up the tokenleqder the following entities need to be registered in sequence   
+TO set up the tokenleqder the following entities need to be registered in sequence   ( see the ** section )
 from the root directory of  tokenleader, change the name of org , ou , dept , wfc , role and user as per your need
 ====================================================================================
-     
+when running from source (git clone) adminops command  is avilable from shell as python adminops.sh or ./adminops.sh 
+
 	 adminops  -h  provides help to understand the various options of admin function os tokenleader  
 	 
 	 adminops initdb 
@@ -157,6 +160,7 @@ from the root directory of  tokenleader, change the name of org , ou , dept , wf
 
 start the service :
 ==============================================================
+when running from source (git clone) adminops command  is avilable from shell as python tokenleader-start.sh or ./tokenleader-start.sh 
 	
 	tokenleader-start
 	
