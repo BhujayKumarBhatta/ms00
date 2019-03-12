@@ -73,7 +73,7 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(data['status'] == 'org1 has been  deleted successfully')            
         
     def test_delete_ou_restapi(self):
-        u1 = t.create_ou_for_test()
+        u1 = t.create_orgunit_for_test()
         with self.client:
             response = self.client.delete('/delete/ou/ou1')
             data = json.loads(response.data.decode())
