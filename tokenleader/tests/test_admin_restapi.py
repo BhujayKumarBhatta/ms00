@@ -65,7 +65,12 @@ class TestAdminRestApi(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'u1 has been  deleted successfully')
             
-            
+    def test_delete_org_restapi(self):
+        u1 = t.test_delete_org()
+        with self.client:
+            response = self.client.delete('/delete/org/ou1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'ou1 has been  deleted successfully')            
         
         
             
