@@ -75,6 +75,12 @@ def delete_role_restapi(rolename):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
+@adminops_bp.route('/delete/wfc/<wfcname>', methods=['DELETE'])
+def delete_wfc_restapi(wfcname):
+    status = af.delete_wfc(wfcname)
+    response_obj = {"status": status}
+    return jsonify(response_obj)
+
 @adminops_bp.route('/list/org', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
 def list_org(wfc):
