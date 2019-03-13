@@ -69,6 +69,12 @@ def delete_dept_restapi(deptname):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
+@adminops_bp.route('/delete/role/<rolename>', methods=['DELETE'])
+def delete_role_restapi(rolename):
+    status = af.delete_role(rolename)
+    response_obj = {"status": status}
+    return jsonify(response_obj)
+
 @adminops_bp.route('/list/org', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
 def list_org(wfc):
