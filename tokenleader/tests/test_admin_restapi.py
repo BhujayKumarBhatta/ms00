@@ -77,6 +77,26 @@ class TestAdminRestApi(BaseTestCase):
         with self.client:
             response = self.client.delete('/delete/ou/ou1')
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'ou1 has been  deleted successfully')       
+            self.assertTrue(data['status'] == 'ou1 has been  deleted successfully')     
+ 
+    def test_delete_dept_restapi(self):
+        u1 = t.create_dept_for_test()
+        with self.client:
+            response = self.client.delete('/delete/dept/dept1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'dept1 has been  deleted successfully')                
+      
+  
+    def test_delete_wfc_restapi(self):
+        u1 = t.register_work_function_for_test()
+        with self.client:
+            response = self.client.delete('/delete/wfc/wfc1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'wfc1 has been  deleted successfully')  
             
-    
+    def test_delete_role_restapi(self):
+        u1 = t.role_creation_for_test()
+        with self.client:
+            response = self.client.delete('/delete/role/role1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'role1 has been  deleted successfully')   
