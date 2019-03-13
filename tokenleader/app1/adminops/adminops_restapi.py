@@ -44,6 +44,11 @@ def add_user():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
+@adminops_bp.route('/add/dept/<deptname>', methods=['POST'])
+def add_dept_restapi(deptname):   
+    status = af.register_dept(deptname)
+    response_obj = {"status": status}
+    return jsonify(response_obj)
 
 @adminops_bp.route('/delete/user/<username>', methods=['DELETE'])
 def delete_user_restapi(username):   
