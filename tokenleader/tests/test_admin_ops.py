@@ -51,13 +51,11 @@ class TestUserModel(BaseTestCase):
     def test_register_org(self):
         o = self.create_org_for_test()
         o1 = Organization.query.filter_by(name='org1').first()
-        self.assertTrue(o1.name, 'org1')
-        
+        self.assertTrue(o1.name, 'org1')     
     
     def test_register_orgunit(self):
         self.create_orgunit_for_test()        
         ou1 = OrgUnit.query.filter_by(name='ou1').first()
-        status = af.register_ou('ou1')
         self.assertTrue(ou1.name, 'ou1')
     
     def test_register_dept(self):
