@@ -31,7 +31,7 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(isinstance(data['status'], list))
     
     def test_list_users_byid_restapi(self):
-        u3 = t.user_creation_for_test()
+        u1 = t.user_creation_for_test()
         with self.client:
             response = self.client.get('/list/user/u1')
             data = json.loads(response.data.decode())
@@ -79,7 +79,7 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(data['status'] == 'u1 has been  deleted successfully')
             
     def test_delete_org_restapi(self):
-        u1 = t.create_org_for_test()
+        u3 = t.create_org_for_test()
         with self.client:
             response = self.client.delete('/delete/org/org1')
             data = json.loads(response.data.decode())
