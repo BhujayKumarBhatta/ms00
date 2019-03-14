@@ -29,7 +29,7 @@ class TestUserModel(BaseTestCase):
         return af.register_ou('ou1')
     
     def create_dept_for_test(self):
-        return af.register_dept('dept1')
+        return af.register_dept('dept2')
     
     def register_work_function_for_test(self):
         o= self.create_org_for_test()
@@ -60,8 +60,8 @@ class TestUserModel(BaseTestCase):
     
     def test_register_dept(self):
         self.create_dept_for_test()
-        dept1 = Department.query.filter_by(name='dept1').first()
-        self.assertTrue(dept1.name, 'dept1')
+        dept2 = Department.query.filter_by(name='dept2').first()
+        self.assertTrue(dept1.name, 'dept2')
     
     def test_register_work_func_context(self):
         self.register_work_function_for_test()
