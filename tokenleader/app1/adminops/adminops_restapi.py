@@ -70,7 +70,7 @@ def add_role_restapi(rolename):
 
 @adminops_bp.route('/add/wfc/<wfcname>', methods=['POST'])
 def add_wfc_restapi(wfcname):   
-    record = af.register_work_func_context(wfcname)
+    record = af.register_work_func_context(orgname ,ou_name ,dept_name)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
