@@ -50,6 +50,12 @@ def add_dept_restapi(deptname):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
+@adminops_bp.route('/add/ou/<orgunitname>', methods=['POST'])
+def add_orgunit_restapi(orgunitname):   
+    status = af.register_orgunit(orgunitname)
+    response_obj = {"status": status}
+    return jsonify(response_obj)
+
 @adminops_bp.route('/delete/user/<username>', methods=['DELETE'])
 def delete_user_restapi(username):   
     status = af.delete_user(username)
