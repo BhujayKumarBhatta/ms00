@@ -63,7 +63,7 @@ class TestAdminRestApi(BaseTestCase):
             response = self.client.post('/add/dept/dept1')
             data = json.loads(response.data.decode())
             print (data)
-            self.assertTrue(data['status'] == 'dept1 has been registered')   
+            self.assertTrue(data['status'] == 'dept1 has been registered.')   
                   
  
     def test_add_orgunit_restapi(self):
