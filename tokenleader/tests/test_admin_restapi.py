@@ -65,7 +65,7 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(data['status'] == 'dept1 has been registered')          
  
     def test_add_orgunit_restapi(self):
-        u1 = t.create_orgunit_for_test()
+        u1 = t.test_register_org()
         with self.client:
             response = self.client.post('/add/orgunit/ou1')
             data = json.loads(response.data.decode())
