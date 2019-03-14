@@ -64,8 +64,8 @@ def add_org_restapi(orgname):
 
 @adminops_bp.route('/add/wfc/<wfcname>', methods=['POST'])
 def add_wfc_restapi(wfcname):   
-    status = af.register_work_func_context(orgname, ou_name, dept_name)
-    response_obj = {"status": status}
+    record = af.register_work_func_context(fname, orgname, ou_name, dept_name)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/user/<username>', methods=['DELETE'])
