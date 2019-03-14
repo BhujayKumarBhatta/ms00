@@ -60,9 +60,9 @@ class TestAdminRestApi(BaseTestCase):
     def test_add_dept_restapi(self):
         u1 = t.create_dept_for_test()
         with self.client:
-            response = self.client.post('/add/dept/dept1')
+            response = self.client.post('/add/dept/dept2')
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'dept1 has been registered')          
+            self.assertTrue(data['status'] == 'dept2 has been registered')          
             
             
     def test_delete_user_restapi(self):
