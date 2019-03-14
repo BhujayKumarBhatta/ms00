@@ -61,7 +61,7 @@ class TestUserModel(BaseTestCase):
     def test_register_dept(self):
         self.create_dept_for_test()
         dept2 = Department.query.filter_by(name='dept2').first()
-        self.assertTrue(dept1.name, 'dept2')
+        self.assertTrue(dept2.name, 'dept2')
     
     def test_register_work_func_context(self):
         self.register_work_function_for_test()
