@@ -35,9 +35,7 @@ class TestUserModel(BaseTestCase):
         o= self.create_org_for_test()
         ou = self.create_orgunit_for_test()
         dept = self.create_dept_for_test()
-        return af.register_work_func_context()
-    
-    #'wfc1' ,'org1', 'ou1', 'dept1')
+        return af.register_work_func_context(fname='wfc1' ,orgname=o, ou_name=ou ,dept_name=dept)
     
     def role_creation_for_test(self):       
         wfc = self.register_work_function_for_test()
