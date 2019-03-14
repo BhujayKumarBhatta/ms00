@@ -84,10 +84,10 @@ class TestAdminRestApi(BaseTestCase):
 
     def test_add_wfc_restapi(self):
         u1 = t.test_register_work_func_context()
+        print (u1)
         with self.client:
             response = self.client.post('/add/wfc/wfc1')
             data = json.loads(response.data.decode())
-            print (data)
             self.assertTrue(data['status'] == 'wfc1 has been registered.')   
             
     def test_delete_user_restapi(self):
