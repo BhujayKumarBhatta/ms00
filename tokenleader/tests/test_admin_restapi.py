@@ -74,7 +74,13 @@ class TestAdminRestApi(BaseTestCase):
         with self.client:
             response = self.client.post('/add/org/org1')
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'org1 has been registered.')      
+            self.assertTrue(data['status'] == 'org1 has been registered.')   
+               
+    def test_add_role_restapi(self):
+        with self.client:
+            response = self.client.post('/add/role/role1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'role1 has been registered.')      
 
     def test_add_wfc_restapi(self):
         u1 = t.test_register_work_func_context()

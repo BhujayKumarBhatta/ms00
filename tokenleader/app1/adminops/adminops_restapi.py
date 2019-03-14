@@ -62,6 +62,12 @@ def add_org_restapi(orgname):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
+@adminops_bp.route('/add/role/<rolename>', methods=['POST'])
+def add_role_restapi(rolename):   
+    status = af.register_role(rolename)
+    response_obj = {"status": status}
+    return jsonify(response_obj)
+
 @adminops_bp.route('/add/wfc/<wfcname>', methods=['POST'])
 def add_wfc_restapi(wfcname):   
     record = af.register_work_func_context(wfcname)
