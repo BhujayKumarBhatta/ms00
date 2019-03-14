@@ -209,7 +209,7 @@ def main():
             af.register_role(options.name)
             
     if  sys.argv[1] == 'addwfc':
-        af.register_work_func_context
+        af.register_work_func_context(options.name, options.wfcorg, options.wfcou, options.wfcdept)
                 
     if  sys.argv[1] == 'adduser':        
         password = options.password
