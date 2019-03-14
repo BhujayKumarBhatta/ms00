@@ -83,8 +83,8 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(data['status'] == 'role1 has been registered.')      
 
     def test_add_wfc_restapi(self):
-#        u1 = t.test_register_work_func_context()
-#        print (u1)
+        u1 = t.register_work_function_for_test()
+        print (u1)
         with self.client:
             response = self.client.post('/add/wfc/wfc1')
             data = json.loads(response.data.decode())
