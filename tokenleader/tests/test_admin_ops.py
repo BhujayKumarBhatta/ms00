@@ -29,7 +29,7 @@ class TestUserModel(BaseTestCase):
         return af.register_ou('ou1')
     
     def create_dept_for_test(self):
-        return af.register_dept('dept2')
+        return af.register_dept('dept1')
     
     def register_work_function_for_test(self):
         o= self.create_org_for_test()
