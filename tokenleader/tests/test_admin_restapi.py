@@ -84,7 +84,6 @@ class TestAdminRestApi(BaseTestCase):
 
     def test_add_wfc_restapi(self):
         u1 = t.register_work_function_for_test()
-        print (u1)
         with self.client:
             response = self.client.post('/add/wfc/wfc1')
             data = json.loads(response.data.decode())
