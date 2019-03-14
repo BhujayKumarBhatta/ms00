@@ -69,6 +69,14 @@ class TestAdminRestApi(BaseTestCase):
             response = self.client.post('/add/ou/ou1')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'ou1 has been registered.')                  
+
+    def test_add_org_restapi(self):
+        with self.client:
+            response = self.client.post('/add/org/org1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'org1 has been registered.')      
+
+
             
     def test_delete_user_restapi(self):
         u1 = t.user_creation_for_test()
