@@ -49,6 +49,7 @@ class TestAdminRestApi(BaseTestCase):
             wfc = 'wfc1',
             roles = ['role1']
             ))
+        print(data)
         with self.client:
             response = self.client.post(
                 '/add/user',
