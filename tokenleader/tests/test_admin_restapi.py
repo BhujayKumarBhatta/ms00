@@ -119,7 +119,7 @@ class TestAdminRestApi(BaseTestCase):
       
   
     def test_delete_wfc_restapi(self):
-        u1 = t.register_work_function_for_test()
+#        u1 = t.register_work_function_for_test()
         with self.client:
             response = self.client.delete('/delete/wfc/wfc1')
             data = json.loads(response.data.decode())
