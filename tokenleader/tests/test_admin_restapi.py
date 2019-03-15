@@ -65,6 +65,7 @@ class TestAdminRestApi(BaseTestCase):
             orgname = 'org1',
             ou_name = 'ou1',
             dept_name = 'dept1',
+            roles = ['role1']
             ))
         print(data)
         with self.client:
