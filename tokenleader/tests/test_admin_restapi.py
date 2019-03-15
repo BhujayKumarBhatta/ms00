@@ -71,6 +71,7 @@ class TestAdminRestApi(BaseTestCase):
                 data=data,
                 content_type='application/json')
             data = json.loads(response.data.decode())
+            print(data)
             self.assertTrue(data['status'] == 'wfc1 has been registered.')        
             
     def test_add_dept_restapi(self):
