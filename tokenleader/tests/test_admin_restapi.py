@@ -65,13 +65,13 @@ class TestAdminRestApi(BaseTestCase):
             ou_name = 'ou1',
             dept_name = 'dept1',
             ))
+        print(data)
         with self.client:
             response = self.client.post(
                 '/add/wfc',
                 data=data,
                 content_type='application/json')
             data = json.loads(response.data.decode())
-            print(data)
             self.assertTrue(data['status'] == 'wfc1 has been registered.')        
             
     def test_add_dept_restapi(self):
