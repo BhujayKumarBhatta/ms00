@@ -311,8 +311,9 @@ def main():
             cf.list_services()
         else:
             cf.list_services(options.name)
-          
-    
+        if options.name == '':
+            msg =='test'
+            
     if  sys.argv[1] == 'deletservice': 
         cf.delete_service(options.name)           
     
