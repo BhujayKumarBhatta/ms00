@@ -56,25 +56,8 @@ class TestAdminRestApi(BaseTestCase):
                 data=data,
                 content_type='application/json')
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'u2 has been registered.')  
-            
-    def test_add_wfc_restapi(self):
-        t.register_work_function_for_test()
-        data = json.dumps(dict(
-            fname = 'wfc1',
-            orgname = 'org1',
-            ou_name = 'ou1',
-            dept_name = 'dept1',
-            roles = ['role1']
-            ))
-        print(data)
-        with self.client:
-            response = self.client.post(
-                '/add/wfc',
-                data=data,
-                content_type='application/json')
-            data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'wfc1 has been registered.')        
+            self.assertTrue(data['status'] == 'u2 has been registered.')              
+   
             
     def test_add_dept_restapi(self):
         with self.client:
@@ -101,12 +84,12 @@ class TestAdminRestApi(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'role1 has been registered.')      
 
-#    def test_add_wfc_restapi(self):
-#        t.role_creation_for_test()
-#        with self.client:
-#            response = self.client.post('/add/wfc/wfc1')
-#            data = json.loads(response.data.decode())
-#            self.assertTrue(data['status'] == 'wfc1 has been registered.')   
+    def test_add_wfc_restapi(self):
+        t.test_register_work_func_context()
+        with self.client:
+            response = self.client.post('/add/wfc/wfc1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'wfc1 has been registered.')   
             
     def test_delete_user_restapi(self):
         u1 = t.user_creation_for_test()
