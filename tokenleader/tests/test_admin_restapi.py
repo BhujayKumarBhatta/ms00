@@ -59,7 +59,7 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(data['status'] == 'u2 has been registered.')    
             
     def test_add_wfc_restapi(self):
-        t.test_register_work_func_context()
+#        t.test_register_work_func_context()
         data = json.dumps(dict(
             fname = 'wfc1',
             orgname = 'org1',
