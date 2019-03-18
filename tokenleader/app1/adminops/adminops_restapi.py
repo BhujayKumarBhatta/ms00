@@ -70,7 +70,7 @@ def add_role_restapi(rolename):
 
 @adminops_bp.route('/add/wfc', methods=['POST'])
 def add_wfc():
-    data_must_contain = ['name', 'email', 'password', 'wfc', 'roles']
+    data_must_contain = ['fname', 'orgname', 'ou_name', 'dept_name']
     for k in data_must_contain:
         if k not in request.json:
             return {"status": " the request must have the following \
