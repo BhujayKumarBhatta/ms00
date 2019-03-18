@@ -44,6 +44,21 @@ def add_user():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
+@adminops_bp.route('/add/wfc', methods=['POST'])
+def add_wfc():
+    data_must_contain = ['fname', 'orgname', 'ou_name', 'dept_name']
+    for f in data_must_contain:
+        if f not in request.json:
+            return {"status": " the request must have the following \
+            information {}".data_must_contain}
+    fname = request.json['fname']
+    orgname = request.json['orgname']
+    ou_name = request.json['ouname']
+    dept_name  = request.json['deptname']
+    record = af.register_work_func_context(fname, orgname, ou_name, dept_name)
+    response_obj = {"status": record}
+    return jsonify(response_obj)
+
 @adminops_bp.route('/add/dept/<deptname>', methods=['POST'])
 def add_dept_restapi(deptname):   
     status = af.register_dept(deptname)
@@ -66,21 +81,6 @@ def add_org_restapi(orgname):
 def add_role_restapi(rolename):   
     status = af.register_role(rolename)
     response_obj = {"status": status}
-    return jsonify(response_obj)
-
-@adminops_bp.route('/add/wfc', methods=['POST'])
-def add_wfc():
-    data_must_contain = ['fname', 'orgname', 'ou_name', 'dept_name']
-    for f in data_must_contain:
-        if f not in request.json:
-            return {"status": " the request must have the following \
-            information {}".data_must_contain}
-    fname = request.json['wfcname']
-    orgname = request.json['orgname']
-    ou_name = request.json['ouname']
-    dept_name  = request.json['deptname']
-    record = af.register_work_func_context(fname, orgname, ou_name, dept_name)
-    response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/user/<username>', methods=['DELETE'])
