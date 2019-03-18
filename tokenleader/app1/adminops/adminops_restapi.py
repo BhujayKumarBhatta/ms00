@@ -68,10 +68,19 @@ def add_role_restapi(rolename):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
-@adminops_bp.route('/add/wfc/<wfcname>', methods=['POST'])
-def add_wfc_restapi(wfcname):   
-    status = af.register_work_func_context()
-    response_obj = {"status": status}
+@adminops_bp.route('/add/wfc', methods=['POST'])
+def add_wfc():
+    data_must_contain = ['name', 'email', 'password', 'wfc', 'roles']
+    for k in data_must_contain:
+        if k not in request.json:
+            return {"status": " the request must have the following \
+            information {}".data_must_contain}
+    fname = request.json['name']
+    orgname = request.json['orgname']
+    ou_name = request.json['ouname']
+    dept_name  = request.json['deptname']
+    register_work_func_context(fname, orgname, ou_name, dept_name)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/user/<username>', methods=['DELETE'])
