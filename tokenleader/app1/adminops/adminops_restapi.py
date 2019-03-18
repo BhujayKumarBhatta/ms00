@@ -75,7 +75,7 @@ def add_wfc():
         if f not in request.json:
             return {"status": " the request must have the following \
             information {}".data_must_contain}
-    fname = request.json['name']
+    fname = request.json['wfcname']
     orgname = request.json['orgname']
     ou_name = request.json['ouname']
     dept_name  = request.json['deptname']
