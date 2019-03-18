@@ -1,16 +1,16 @@
-# from flask import Blueprint
-# from app_run import app1   
-# from app1.catalog import models_calalog 
+from flask import Blueprint
+from app_run import app1   
+from app1.catalog import models_calalog 
 #  # this import is required for flask db migrate to recognize the new model
 # 
 # 
-# catalog_bp = Blueprint('catalog_bp', __name__)
+catalog_bp = Blueprint('catalog_bp', __name__)
 from tokenleader.app_run import app  
 from sqlalchemy import exc
 from tokenleader.app1 import db
 from tokenleader.app1.catalog.models_catalog import  ServiceCatalog
-# from app1.catalog import models_catalog as mc
-#from app1.catalog.models_catalog import ServiceCatalog
+from app1.catalog import models_catalog as mc
+from app1.catalog.models_catalog import ServiceCatalog
 
 
 
