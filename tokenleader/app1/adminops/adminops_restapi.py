@@ -53,8 +53,8 @@ def add_wfc():
             information {}".data_must_contain}
     fname = request.json['fname']
     orgname = request.json['orgname']
-    ou_name = request.json['ouname']
-    dept_name  = request.json['deptname']
+    ou_name = request.json['ou_name']
+    dept_name  = request.json['dept_name']
     record = af.register_work_func_context(fname, orgname, ou_name, dept_name)
     response_obj = {"status": record}
     return jsonify(response_obj)
