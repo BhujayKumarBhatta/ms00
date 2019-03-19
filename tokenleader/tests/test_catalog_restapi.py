@@ -5,7 +5,7 @@ from tokenleaderclient.client.client import Client
 from tokenleaderclient.rbac.enforcer import Enforcer
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 
-catalog_bp = Blueprint('catalog_bp' , __name__)
+adminops_bp = Blueprint('adminops_bp' , __name__)
 auth_config = Configs()
 tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
@@ -18,7 +18,7 @@ enforcer = Enforcer(tlclient)
 #    msg = cf.add_service(servicename, pwd, urlint, urlext, urladmin )     
 #    return msg
 
-@catalog_bp.route('/list/services', methods=['GET'])
+@adminops_bp.route('/list/services', methods=['GET'])
 def list_services():    
      
     record_list = cf.list_services()
