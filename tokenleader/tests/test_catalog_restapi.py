@@ -5,7 +5,7 @@ from tokenleaderclient.client.client import Client
 from tokenleaderclient.rbac.enforcer import Enforcer
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 
-
+catalog_bp = Blueprint('catalog_bp' , __name__)
 auth_config = Configs()
 tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
