@@ -1,26 +1,18 @@
-from flask import request, Blueprint, jsonify, current_app,make_response
-from tokenleader.app1.catalog import catalog_functions as cf
-from tokenleaderclient.configs.config_handler import Configs    
-from tokenleaderclient.client.client import Client 
-from tokenleaderclient.rbac.enforcer import Enforcer
-from tokenleader.app1.adminops.adminops_restapi import adminops_bp
+import json
+from tokenleader.tests.base_test import  BaseTestCase
+from tokenleader.tests.test_catalog_ops import TestCatalog
+from tokenleader.tests.test_auth import TestToken
+test_token_instance = TestToken()
+tc = TestCatalog()
 
-adminops_bp = Blueprint('adminops_bp' , __name__)
-auth_config = Configs()
-tlclient = Client(auth_config)
-enforcer = Enforcer(tlclient)
+class TestCatalogRestApi(BaseTestCase):
  
-   
-#@catalog_bp.route('/list/addservice/<servicename>/<pwd>/<urlint>/<urlext>/<urladmin>', methods=['GET'])
-#@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_users')
-#def add_service(wfc,servicename,pwd,urlint,urlext,urladmin):    
-    
-#    msg = cf.add_service(servicename, pwd, urlint, urlext, urladmin )     
-#    return msg
-
-@adminops_bp.route('/list/services', methods=['GET'])
-def list_services():    
-     
-    record_list = cf.list_services()
-    response_obj = {"status": record_list}
-    return jsonify(response_obj)
+    def test_list_services():      
+        u1 = tc.list_services()
+        with self.client:
+            response = self.client.get('/list/services')
+            data = json.loads(response.data.decode())
+            self.assertTrue(isinstance(data['status'], list))
+            
+            
+           
