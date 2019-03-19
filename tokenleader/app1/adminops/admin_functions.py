@@ -71,6 +71,8 @@ def register_user(uname, email, pwd, wfc_name, roles=None ):
 def list_users(uname=None):
     return bops.list_ops('User', uname)
     
+def list_services(uname=None):
+    return bops.list_services('User', uname)
     
 def delete_user(uname):
    return bops.delete_ops('User', uname)
