@@ -28,8 +28,7 @@ class TestCatalog(BaseTestCase):
     def delete_service(self):
         self.add_service()
         r = cf.delete_service(service_name)
-        return r
-        
+        return r        
     
     def test_add_service(self):
         msg = self.add_service()        
