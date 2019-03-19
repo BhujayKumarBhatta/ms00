@@ -1,5 +1,5 @@
 from flask import request, Blueprint, jsonify, current_app,make_response
-from tokenleader.app1.catalog import catalog_functions as cf , catalog_bp
+from tokenleader.app1.catalog import catalog_functions as cf
 from tokenleaderclient.configs.config_handler import Configs    
 from tokenleaderclient.client.client import Client 
 from tokenleaderclient.rbac.enforcer import Enforcer
