@@ -38,15 +38,7 @@ class TestAdminRestApi(BaseTestCase):
             print(data)
             self.assertTrue(data['status'].get('username') == 'u1')
             
-    def test_list_dept_restapi(self):
-        u1 = t.user_creation_for_test()
-        with self.client:
-            response = self.client.get('/list/user/u1')
-            data = json.loads(response.data.decode())
-            print(data)
-            self.assertTrue(data['status'].get('username') == 'u1')
-    
-    
+        
     def test_add_user_restapi(self):
         t.role_creation_for_test()
 #         t.register_work_function_for_test()
