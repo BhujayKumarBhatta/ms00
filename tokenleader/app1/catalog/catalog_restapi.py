@@ -20,7 +20,7 @@ enforcer = Enforcer(tlclient)
 @catalog_bp.route('/list/services', methods=['GET'])
 #@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_services')
 def list_services(self):
-    services_dict = cf.list_services()
+    services_dict = cf.list_service()
     obj_json = {"name": services_dict.get('name')}
     response_obj = {"status": obj_json}
     return jsonify(response_obj)
