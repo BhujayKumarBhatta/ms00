@@ -1,13 +1,11 @@
 import unittest
 from flask_testing import TestCase
 from flask import Flask
-from  tokenleader import app1
+from tokenleader import app1
 from tokenleader.app1 import db
 from tokenleader.app1.configs.configs import test_configs
 import json
 from flask_testing import LiveServerTestCase
-
-
 from tokenleader.app1.authentication.token_after_login import token_login_bp
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 #from app_run import bp_list
