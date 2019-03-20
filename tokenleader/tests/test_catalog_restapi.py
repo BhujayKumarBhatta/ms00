@@ -5,7 +5,7 @@ from tokenleader.tests.test_auth import TestToken
 test_token_instance = TestToken()
 tc = TestCatalog()
 
-class TestCatalogRestApi(BaseTestCase):
+class TestAdminRestApi(BaseTestCase):
  
     def test_list_services_restapi(self):      
 #         u1 = tc.list_services()

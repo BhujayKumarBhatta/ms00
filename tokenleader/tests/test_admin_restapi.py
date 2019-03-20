@@ -141,3 +141,13 @@ class TestAdminRestApi(BaseTestCase):
             response = self.client.delete('/delete/role/role1')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'role1 has been  deleted successfully')   
+            
+            
+            
+            
+    def test_list_services_restapi(self):      
+#         u1 = tc.list_services()
+        with self.client:
+            response = self.client.get('/list/services/microservice1')
+            print(response.data)
+            print(response.data.decode())
