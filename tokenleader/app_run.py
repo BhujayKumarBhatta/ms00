@@ -11,7 +11,7 @@ from tokenleader.app1.catalog import models_catalog
 from tokenleader.app1.catalog.catalog_restapi import catalog_bp
 
 #bp_list = [token_login_bp, catalog_bp]
-bp_list = [token_login_bp, adminops_bp ,catalog_bp]
+bp_list = [token_login_bp, adminops_bp , catalog_bp]
 
 app = app1.create_app(config_map_list= configs.prod_configs_from_file,
                       blue_print_list=bp_list, )
