@@ -4,7 +4,7 @@ from tokenleader import app1
 from tokenleader.app1.configs import configs 
 from tokenleader.app1.authentication.token_after_login import token_login_bp
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
-from app1.catalog.catalog_functions import catalog_bp
+from tokenleader.app1.catalog.catalog_functions import catalog_bp
 from tokenleader.app1.catalog import models_catalog 
 
 
