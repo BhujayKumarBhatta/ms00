@@ -17,9 +17,10 @@ enforcer = Enforcer(tlclient)
 #    msg = cf.add_service(servicename, pwd, urlint, urlext, urladmin )     
 #    return msg
 
-@catalog_bp.route('/list/services', methods=['GET'])
-def list_services():    
-     
-    record_list = cf.list_services()
-    response_obj = {"status": record_list}
+@adminops_bp.route('/list/services', methods=['GET'])
+#@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_services')
+def list_services():
+    services_dict = cf.list_services()
+    obj_json = {"name": services_dict.get('name')}
+    response_obj = {"status": obj_json}
     return jsonify(response_obj)
