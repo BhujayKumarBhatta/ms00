@@ -40,7 +40,7 @@ def add_service(name, pwd=None, urlint=None, urlext=None, urladmin=None ):
     return msg
 
 
-def list_services(cname=None):
+def list_service(cname=None):
     record = None
     record_list = []
     record_list_dic = []   
