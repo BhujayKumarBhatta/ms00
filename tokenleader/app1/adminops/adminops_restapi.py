@@ -121,7 +121,7 @@ def delete_wfc_restapi(wfcname):
 
 @adminops_bp.route('/list/org', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
-def list_orgs(wfc):
+def list_org(wfc):
     org_dict = af.list_org()
     obj_json = {"name": org_dict.get('name')}
     response_obj = {"status": obj_json}
@@ -130,7 +130,7 @@ def list_orgs(wfc):
 @adminops_bp.route('/list/dept', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_dept')
 def list_dept(wfc):
-    dept_dict = af.list_dept()
+    dept_dict = af.list_depts()
     obj_json = {"name": dept_dict.get('name')}
     response_obj = {"status": obj_json}
     return jsonify(response_obj)
