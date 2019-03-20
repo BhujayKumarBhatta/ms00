@@ -5,10 +5,10 @@ from tokenleader.tests.test_auth import TestToken
 test_token_instance = TestToken()
 tc = TestCatalog()
 
-class TestAdminRestApi(BaseTestCase):
+class TestCatalogRestApi(BaseTestCase):
  
     def test_list_services_restapi(self):      
-#         u1 = tc.list_services()
+        u1 = tc.list_services()
         with self.client:
             response = self.client.get('/list/services/microservice1')
             print(response.data)
