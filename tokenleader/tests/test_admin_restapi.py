@@ -144,7 +144,7 @@ class TestAdminRestApi(BaseTestCase):
      
                         
     def test_list_services_restapi(self):      
-#         u1 = tc.list_services()
+        u1 = t.list_services()
         with self.client:
             response = self.client.get('/list/services/microservice1')
             print(response.data)
