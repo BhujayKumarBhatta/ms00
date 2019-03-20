@@ -3,6 +3,7 @@ from tokenleader.app1.catalog import catalog_functions as cf
 from tokenleaderclient.configs.config_handler import Configs    
 from  tokenleaderclient.client.client import Client 
 from tokenleaderclient.rbac.enforcer import Enforcer
+from tokenleader.app_run import app
 
 catalog_bp = Blueprint('catalog_bp', __name__)
 auth_config = Configs()
@@ -17,7 +18,7 @@ enforcer = Enforcer(tlclient)
 #    msg = cf.add_service(servicename, pwd, urlint, urlext, urladmin )     
 #    return msg
 
-@current_app.route('/list/services', methods=['GET'])
+@app.route('/list/services', methods=['GET'])
 #@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_services')
 def list_services(self):
 #    services_dict = cf.list_service()
