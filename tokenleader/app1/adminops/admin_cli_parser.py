@@ -308,7 +308,7 @@ def main():
         
     if  sys.argv[1] == 'listservice': 
         if options.name == 'all':
-            cf.list_services()
+            cf.list_servicesXXX()
         else:
             cf.list_services(options.name)
                     
