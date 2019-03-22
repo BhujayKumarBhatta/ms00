@@ -24,7 +24,7 @@ def register_ou(ouname):
    
 
 def list_ou(ouname=None):
-    return bops.list_ops('OrgUnit', ouname)
+    return bops.list_ops('OrgUnit', ouxname)
 
     
 def delete_ou(ouname):
