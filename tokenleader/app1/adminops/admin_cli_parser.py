@@ -306,7 +306,7 @@ def main():
                        urladmin=options.urladmin)
         
         
-    if  sys.argv[1] == 'listservice': 
+    if  sys.argv[1] == 'listserviceX': 
         if options.name == 'all':
             cf.list_services()
         else:
