@@ -18,7 +18,7 @@ enforcer = Enforcer(tlclient)
 #    msg = cf.add_service(servicename, pwd, urlint, urlext, urladmin )     
 #    return msg
 
-@catalog_bp.route('/list/services', methods=['GET'])
+@catalog_bp('/list/services', methods=['GET'])
 def list_services(self):
 #    services_dict = cf.list_service()
 #    obj_json = {"name": services_dict.get('name')}
