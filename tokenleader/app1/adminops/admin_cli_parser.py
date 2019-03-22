@@ -240,7 +240,7 @@ def main():
         
         if options.entity == 'ou':      
             if options.name == 'all':
-                af.list_oux()
+                af.list_ou()
             else:
                 af.list_ou(options.name)
                 
