@@ -146,7 +146,7 @@ def list_role(wfc):
 @adminops_bp.route('/list/ou', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_ou')
 def list_ou(wfc):
-    ou_dict = af.list_ou()
+    ou_dict = af.list_oux()
     obj_json = {"name": ou_dict.get('name')}
     response_obj = {"status": obj_json}
     return jsonify(response_obj)
