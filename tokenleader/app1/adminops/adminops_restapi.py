@@ -151,6 +151,10 @@ def list_ou(wfc):
     response_obj = {"status": obj_json}
     return jsonify(response_obj)
 
-
+def list_services():
+    ou_dict = af.list_ou()
+    obj_json = {"name": ou_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
 
 
