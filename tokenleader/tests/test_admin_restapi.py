@@ -39,7 +39,7 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(data['status'].get('username') == 'u1')
             
     def test_list_dept_restapi(self):
-        u1 = t.create_dept_for_test()
+        u1 = t.create_dept_for_test(wfc)
         with self.client:
             response = self.client.get('/list/dept/dept1')
             data = json.loads(response.data.decode())
