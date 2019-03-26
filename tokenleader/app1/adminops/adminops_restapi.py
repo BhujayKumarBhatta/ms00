@@ -152,5 +152,11 @@ def list_ou(wfc):
     response_obj = {"status": obj_json}
     return jsonify(response_obj)
 
-
+@adminops_bp.route('/list/wfc', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_wfc')
+def list_wfc():
+    wfc_dict = af.list_wfc()
+    obj_json = {"name": wfc_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
 
