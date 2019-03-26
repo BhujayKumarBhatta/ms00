@@ -14,6 +14,7 @@ class TestCatalogRestApi(BaseTestCase):
             print(response.data)
             print(response.data.decode())
             data = json.loads(response.data.decode())
+            self.assertTrue(isinstance(data['status'], list))
 #            self.assertTrue(data['status'].get('name') == 'microservice1')
             
             
