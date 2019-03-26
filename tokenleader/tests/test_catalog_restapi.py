@@ -13,8 +13,8 @@ class TestCatalogRestApi(BaseTestCase):
             response = self.client.get('/list/service/microservice1')
             print(response.data)
             print(response.data.decode())
-#             data = json.loads(response.data.decode())
-#             self.assertTrue(data['status'].get('name') == 'microservice1')
+            data = json.loads(response.data.decode())
+#            self.assertTrue(data['status'].get('name') == 'microservice1')
             
             
            
