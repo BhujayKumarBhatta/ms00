@@ -119,9 +119,9 @@ def delete_wfc_restapi(wfcname):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
-#@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
-@adminops_bp.route('/list/org', methods=['GET'])
 
+@adminops_bp.route('/list/org', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
 def list_org(wfc):
     org_dict = af.list_org()
     obj_json = {"name": org_dict.get('name')}
