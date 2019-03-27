@@ -3,6 +3,7 @@ from tokenleader.app1.catalog import catalog_functions as cf
 from tokenleaderclient.configs.config_handler import Configs    
 from  tokenleaderclient.client.client import Client 
 from tokenleaderclient.rbac.enforcer import Enforcer
+from tokenleader.tests.test_catalog_ops import TestCatalog
 
 
 catalog_bp = Blueprint('catalog_bp', __name__)
@@ -28,9 +29,3 @@ def add_service(name, pwd=None, urlint=None, urlext=None, urladmin=None ):
     response_obj = {"status": record}
     return jsonify(response_obj)
 
-@catalog_bp.route('/delete/service/<name>', methods=['DELETE'])
-@enforcer.enforce_access_rule_with_token('tokenleader.delete_service')
-def delete_service(wfc):     
-    record_list = cf.delete_service()
-    response_obj = {"status": record_list}
-    return jsonify(response_obj)
