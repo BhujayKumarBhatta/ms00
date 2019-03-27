@@ -43,8 +43,9 @@ class TestAdminRestApi(BaseTestCase):
         with self.client:
             response = self.client.get('/list/dept')
             data = json.loads(response.data.decode())
-            self.assertTrue(isinstance(data['status'], list))
- #           self.assertTrue(data['status'].get('deptname') == 'dept1')                     
+  #          self.assertTrue(isinstance(data['status'], list))
+            print(data)
+            self.assertTrue(data['status'].get('deptname') == 'dept1')                     
  
         
     def test_add_user_restapi(self):
