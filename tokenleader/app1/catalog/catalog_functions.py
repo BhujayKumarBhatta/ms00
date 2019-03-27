@@ -5,7 +5,7 @@
 # 
 # 
 #catalog_bp = Blueprint('catalog_bp', __name__)
-from tokenleader.tests.app_run import app  
+from tokenleader.app_run import app  
 from sqlalchemy import exc
 from tokenleader.app1 import db
 from tokenleader.app1.catalog.models_catalog import  ServiceCatalog
