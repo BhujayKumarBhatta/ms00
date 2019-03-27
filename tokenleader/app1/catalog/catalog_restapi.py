@@ -33,6 +33,6 @@ def add_service():
     urlext = request.json['urlext']
     urladmin = request.json['urladmin']
     #print('i got the name from http argument {}'.format(username))
-    record = cf.add_service(name, pwd, urlint, urlext, urladmin)
+    record = cf.add_service(name, pwd=None, urlint=None, urlext=None, urladmin=None)
     response_obj = {"status": record}
     return jsonify(response_obj)
