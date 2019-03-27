@@ -11,6 +11,7 @@ class TestCatalogRestApi(BaseTestCase):
         u1 = t.add_service()
         with self.client:
             response = self.client.get('/list/service/')
+            print(response)
             data = json.loads(response.data.decode())
             self.assertTrue(isinstance(data['status'], list))
  #           self.assertTrue(data['status'].get('name') == 'microservice1')
