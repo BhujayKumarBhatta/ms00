@@ -2,12 +2,12 @@ from flask import request, Blueprint, jsonify, current_app,make_response
 from tokenleader.app1.adminops import admin_functions as af
 from tokenleaderclient.configs.config_handler import Configs    
 from  tokenleaderclient.client.client import Client 
-#from tokenleaderclient.rbac.enforcer import Enforcer
+from tokenleaderclient.rbac.enforcer import Enforcer
 
 adminops_bp = Blueprint('adminops_bp', __name__)
 auth_config = Configs()
 tlclient = Client(auth_config)
-#enforcer = Enforcer(tlclient)
+enforcer = Enforcer(tlclient)
  
 @adminops_bp.route('/list/users', methods=['GET'])
 #@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_user')
