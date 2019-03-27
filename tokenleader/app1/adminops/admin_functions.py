@@ -35,11 +35,11 @@ def register_dept(deptname):
 
 
 def list_dept(deptname=None):
-    return bops.list_ops('Department', deptname)
-    
+#    return bops.list_ops('Department', deptname)
+     return bops.list_ops('Workfunctioncontext', deptname)
     
 def delete_dept(deptname):
-   return  bops.delete_ops('Department', deptname)
+    return  bops.delete_ops('Department', deptname)
 
 
 def register_work_func_context(fname, orgname, ou_name, dept_name):
