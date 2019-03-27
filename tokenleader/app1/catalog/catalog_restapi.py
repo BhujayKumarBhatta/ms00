@@ -12,7 +12,7 @@ tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
 
    
-@catalog_bp.route('/list/service/all', methods=['GET'])
+@catalog_bp.route('/list/service/<name>', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_services')
 def list_services(wfc):  
     '''
@@ -20,13 +20,6 @@ def list_services(wfc):
     '''   
     services_dict = cf.list_services()
     obj_json = {"name": services_dict.get('name')}
-    return jsonify(response_obj)
-    
-
-def list_ou(wfc):
-    ou_dict = af.list_ou()
-    obj_json = {"name": ou_dict.get('name')}
-    response_obj = {"status": obj_json}
     return jsonify(response_obj)
 
 @catalog_bp.route('/add/service', methods=['POST'])
