@@ -10,7 +10,7 @@ from tokenleader.app1.authentication.token_after_login import token_login_bp
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 #from tokenleader.app1.catalog.catalog_restapi import catalog_bp
 #from app_run import bp_list
-bp_list = [token_login_bp, adminops_bp]
+bp_list = [token_login_bp, adminops_bp, catalog_bp]
 
 
 # from app_run import app
