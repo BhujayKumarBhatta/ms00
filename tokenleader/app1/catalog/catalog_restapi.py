@@ -19,19 +19,9 @@ def list_services(wfc):
     response_obj = {"status": record_list}
     return jsonify(response_obj)
 
-@catalog_bp.route('/add/service', methods=['POST'])
+@catalog_bp.route('/add/service/<name>', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
-def add_service(wfc):
-    data_must_contain = ['service_name', 'urlint', 'urlext', 'urladmin']
-    for k in data_must_contain:
-        if k not in request.json:
-            return {"status": " the request must have the following \
-            information {}".data_must_contain}
-    service_name = request.json['service_name']
-    urlint = request.json['urlint']
-    urlext = request.json['urlext']
-    urladmin = request.json['urladmin']
-    #print('i got the name from http argument {}'.format(username))
-    record = cf.add_service(service_name, urlint, urlext, urladmin)
-    response_obj = {"status": record}
+def add_service():   
+    status = cf.add_service
+    response_obj = {"status": status}
     return jsonify(response_obj)
