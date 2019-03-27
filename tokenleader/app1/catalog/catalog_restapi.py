@@ -18,11 +18,11 @@ def list_services(wfc):
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''   
-    services_dict = cf.list_services()
-    print(services_dict)
-    obj_json = {"name": services_dict.get('name')}
+    record_list = cf.list_services()
+    response_obj = {"status": record_list}
     return jsonify(response_obj)
 
+    
 @catalog_bp.route('/add/service', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
 def add_service():
