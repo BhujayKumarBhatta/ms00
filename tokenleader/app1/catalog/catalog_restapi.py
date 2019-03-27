@@ -13,7 +13,7 @@ enforcer = Enforcer(tlclient)
 
    
 @catalog_bp.route('/list/service/all', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+@enforcer.enforce_access_rule_with_token('tokenleader.app1.catalog.catalog_restapi.list_services')
 def list_services(wfc):  
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
