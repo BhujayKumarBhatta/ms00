@@ -19,7 +19,8 @@ def list_services(wfc):
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''   
     services_dict = cf.list_services()
-    obj_json = {"cname": services_dict.get('cname')}
+    print(services_dict)
+    obj_json = {"name": services_dict.get('name')}
     return jsonify(response_obj)
 
 @catalog_bp.route('/add/service', methods=['POST'])
