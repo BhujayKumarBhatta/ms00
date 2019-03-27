@@ -22,6 +22,7 @@ def list_services(wfc):
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
 def add_service(wfc):     
     record_list = cf.add_service()
+    print(record_list)
     response_obj = {"status": record_list}
     return jsonify(response_obj)
 
