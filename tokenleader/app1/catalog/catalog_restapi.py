@@ -21,13 +21,13 @@ def list_services(wfc):
 @catalog_bp.route('/add/service/all', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
 def add_service(wfc):     
-    record_list = cf.add_services()
+    record_list = cf.add_service()
     response_obj = {"status": record_list}
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service/all', methods=['DELETE'])
 @enforcer.enforce_access_rule_with_token('tokenleader.delete_service')
 def delete_service(wfc):     
-    record_list = cf.delete_services()
+    record_list = cf.delete_service()
     response_obj = {"status": record_list}
     return jsonify(response_obj)
