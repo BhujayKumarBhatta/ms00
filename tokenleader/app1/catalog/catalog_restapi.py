@@ -18,12 +18,14 @@ def list_services(wfc):
     response_obj = {"status": record_list}
     return jsonify(response_obj)
 
-@catalog_bp.route('/add/service/<service_name>', methods=['POST'])
+@catalog_bp.route('/add/service/<name>', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
-def add_service(wfc):     
-    record_list = cf.add_service()
-    print(record_list)
-    response_obj = {"status": record_list}
+def add_service(name, pwd=None, urlint=None, urlext=None, urladmin=None ):     
+    record = ServiceCatalog(name=name, endpoint_url_internal=urlint, 
+                       endpoint_url_external=urlext,
+                       endpoint_url_admin=urladmin)    
+    print(record)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service/<name>', methods=['DELETE'])
