@@ -129,7 +129,7 @@ def list_org(wfc):
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/dept', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_dept')
+#@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_dept')
 def list_dept(wfc):
     dept_dict = af.list_dept()
     obj_json = {"name": dept_dict.get('name')}
