@@ -1,4 +1,4 @@
-#from flask import Blueprint
+from flask import Blueprint
 #from app_run import app1   
 #from app1.catalog import models_calalog 
 #  # this import is required for flask db migrate to recognize the new model
