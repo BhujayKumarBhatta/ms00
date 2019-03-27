@@ -19,7 +19,7 @@ def list_services(wfc):
     response_obj = {"status": record_list}
     return jsonify(response_obj)
 
-@adminops_bp.route('/add/service', methods=['POST'])
+@catalog_bp.route('/add/service', methods=['POST'])
 def add_service():
     data_must_contain = ['name', 'pwd', 'urlint', 'urlext', 'urladmin']
     for k in data_must_contain:
