@@ -3,7 +3,7 @@ from tokenleader.app1.catalog import catalog_functions as cf
 from tokenleaderclient.configs.config_handler import Configs    
 from  tokenleaderclient.client.client import Client 
 from tokenleaderclient.rbac.enforcer import Enforcer
-from tokenleader.tests.test_catalog_ops import TestCatalog
+#from tokenleader.tests.test_catalog_ops import TestCatalog
 
 
 catalog_bp = Blueprint('catalog_bp', __name__)
