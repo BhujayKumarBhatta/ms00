@@ -20,6 +20,7 @@ def list_services(wfc):
     return jsonify(response_obj)
 
 @catalog_bp.route('/add/service', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.add_service')
 def add_service():
     data_must_contain = ['name', 'pwd', 'urlint', 'urlext', 'urladmin']
     for k in data_must_contain:
