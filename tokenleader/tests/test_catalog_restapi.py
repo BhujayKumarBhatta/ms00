@@ -8,7 +8,7 @@ t = TestCatalog()
 class TestCatalogRestApi(BaseTestCase):
  
     def test_list_services_restapi(self):      
-        u1 = t.list_services()
+        u1 = t.test_add_service()
         with self.client:
             response = self.client.get('/list/service/microservice1')
             data = json.loads(response.data.decode())
