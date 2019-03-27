@@ -21,6 +21,7 @@ def list_services(wfc):
     record_list = cf.list_services()
     print(record_list)
     response_obj = {"status": record_list}
+    print(response_obj)
     return jsonify(response_obj)
 
 @catalog_bp.route('/add/service', methods=['POST'])
