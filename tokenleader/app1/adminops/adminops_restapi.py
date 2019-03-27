@@ -1,4 +1,4 @@
-from flask import request, Blueprint, jsonify, current_app,make_response
+from flask import request, Blueprint, jsonify, current_app, make_response
 from tokenleader.app1.adminops import admin_functions as af
 from tokenleaderclient.configs.config_handler import Configs    
 from  tokenleaderclient.client.client import Client 
