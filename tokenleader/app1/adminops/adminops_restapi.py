@@ -10,7 +10,6 @@ tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
  
 @adminops_bp.route('/list/users', methods=['GET'])
-#@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_users')
 def list_users(wfc):
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
@@ -24,6 +23,46 @@ def list_user_byname(username):
     #print('i got the name from http argument {}'.format(username))
     record = af.list_users(username)
     response_obj = {"status": record}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/list/org', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
+def list_org(wfc):
+    org_dict = af.list_org()
+    obj_json = {"name": org_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/list/dept', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_dept')
+def list_dept(wfc):
+    dept_dict = af.list_dept()
+    obj_json = {"name": dept_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/list/role', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_role')
+def list_role(wfc):
+    role_dict = af.list_role()
+    obj_json = {"name": role_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/list/ou', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_ou')
+def list_ou(wfc):
+    ou_dict = af.list_ou()
+    obj_json = {"name": ou_dict.get('name')}
+    response_obj = {"status": obj_json}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/list/wfc', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_wfc')
+def list_wfc():
+    wfc_dict = af.list_wfc()
+    obj_json = {"name": wfc_dict.get('name')}
+    response_obj = {"status": obj_json}
     return jsonify(response_obj)
 
 
@@ -120,43 +159,5 @@ def delete_wfc_restapi(wfcname):
     return jsonify(response_obj)
 
 
-@adminops_bp.route('/list/org', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
-def list_org(wfc):
-    org_dict = af.list_org()
-    obj_json = {"name": org_dict.get('name')}
-    response_obj = {"status": obj_json}
-    return jsonify(response_obj)
 
-@adminops_bp.route('/list/dept', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_dept')
-def list_dept(wfc):
-    dept_dict = af.list_dept()
-    obj_json = {"name": dept_dict.get('name')}
-    response_obj = {"status": obj_json}
-    return jsonify(response_obj)
-
-@adminops_bp.route('/list/role', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_role')
-def list_role(wfc):
-    role_dict = af.list_role()
-    obj_json = {"name": role_dict.get('name')}
-    response_obj = {"status": obj_json}
-    return jsonify(response_obj)
-
-@adminops_bp.route('/list/ou', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_ou')
-def list_ou(wfc):
-    ou_dict = af.list_ou()
-    obj_json = {"name": ou_dict.get('name')}
-    response_obj = {"status": obj_json}
-    return jsonify(response_obj)
-
-@adminops_bp.route('/list/wfc', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_wfc')
-def list_wfc():
-    wfc_dict = af.list_wfc()
-    obj_json = {"name": wfc_dict.get('name')}
-    response_obj = {"status": obj_json}
-    return jsonify(response_obj)
 
