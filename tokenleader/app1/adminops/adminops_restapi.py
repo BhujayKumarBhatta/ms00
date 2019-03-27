@@ -10,7 +10,7 @@ tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
  
 @adminops_bp.route('/list/users', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_users')
+#@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_users')
 def list_users(wfc):
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
