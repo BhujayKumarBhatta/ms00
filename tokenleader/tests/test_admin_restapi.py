@@ -42,7 +42,6 @@ class TestAdminRestApi(BaseTestCase):
         u1 = t.test_register_dept()
         with self.client:
             response = self.client.get('/list/dept')
-            print(response)
             data = json.loads(response.data.decode())
             self.assertTrue(isinstance(data['status'], list))
  #           self.assertTrue(data['status'].get('deptname') == 'dept1')                     
