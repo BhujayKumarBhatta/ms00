@@ -7,7 +7,7 @@ from tokenleaderclient.rbac.enforcer import Enforcer
 adminops_bp = Blueprint('adminops_bp', __name__)
 auth_config = Configs()
 tlclient = Client(auth_config)
-enforcer = Enforcer(tlclient)
+#enforcer = Enforcer(tlclient)
  
 @adminops_bp.route('/list/users', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_user')
