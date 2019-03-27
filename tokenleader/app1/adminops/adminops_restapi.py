@@ -2,7 +2,7 @@ from flask import request, Blueprint, jsonify, current_app,make_response
 from tokenleader.app1.adminops import admin_functions as af
 from tokenleaderclient.configs.config_handler import Configs    
 from  tokenleaderclient.client.client import Client 
-from tokenleaderclient.rbac.enforcer import Enforcer
+#from tokenleaderclient.rbac.enforcer import Enforcer
 
 adminops_bp = Blueprint('adminops_bp', __name__)
 auth_config = Configs()
