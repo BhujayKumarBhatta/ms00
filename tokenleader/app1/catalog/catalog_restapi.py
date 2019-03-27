@@ -22,6 +22,6 @@ def list_services(wfc):
 @catalog_bp.route('/add/service/<name>', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
 def add_service(wfc):   
-    status = cf.add_service
+    status = cf.add_service()
     response_obj = {"status": status}
     return jsonify(response_obj)
