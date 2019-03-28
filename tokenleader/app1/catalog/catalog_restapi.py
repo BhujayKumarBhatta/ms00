@@ -40,7 +40,7 @@ def list_services_byname(srvname):
     
 @catalog_bp.route('/list/service', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_services')
-def list_services():
+def list_services(wfc):
     data_must_contain = ['name', 'pwd', 'urlint', 'urlext', 'urladmin']
     for k in data_must_contain:
         if k not in request.json:
