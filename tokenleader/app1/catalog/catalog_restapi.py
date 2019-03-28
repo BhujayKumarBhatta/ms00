@@ -17,7 +17,7 @@ def list_services(wfc):
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''   
-    record = cf.list_services(Service)
+    record = cf.list_services(cname)
     print(record)
     response_obj = {"status": record}
     return jsonify(response_obj)
