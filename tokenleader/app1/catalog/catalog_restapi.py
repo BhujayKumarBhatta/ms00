@@ -24,8 +24,8 @@ def list_services(wfc):
 
       
 @catalog_bp.route('/list/service/<srvname>', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.list_servicename')
-def list_services_byname(wfc):  
+#@enforcer.enforce_access_rule_with_token('tokenleader.list_servicename')
+def list_services_byname(srvname):  
     record = cf.list_services(srvname)
     response_obj = {"status": record}
     return jsonify(response_obj)
