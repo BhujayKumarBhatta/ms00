@@ -13,14 +13,21 @@ enforcer = Enforcer(tlclient)
 
 @catalog_bp.route('/list/service', methods=['GET'])
 #@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
-def list_services():  
+def list_services(wfc):  
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''   
-    record = cf.list_services()
-    print(record)
-    response_obj = {"status": record}
+#    record = cf.list_services()
+#    print(record)
+#    response_obj = {"status": record}
+#    return jsonify(response_obj)
+
+    services_dict = cf.list_services()
+    obj_json = {"name": services_dict.get('name')}
+    print(obj_json)
+    response_obj = {"status": obj_json}
     return jsonify(response_obj)
+
 
    
 @catalog_bp.route('/list/service/<srvname>', methods=['GET'])
