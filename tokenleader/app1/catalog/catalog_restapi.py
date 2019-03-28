@@ -11,8 +11,8 @@ auth_config = Configs()
 tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
 
-#@catalog_bp.route('/list/service', methods=['GET'])
-#@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+@catalog_bp.route('/list/service', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
 def list_services(wfc):  
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
@@ -23,7 +23,7 @@ def list_services(wfc):
 #    return jsonify(response_obj)
 
     services_dict = cf.list_services()
-    obj_json = {"name": services_dict.get('name')}
+    obj_json = {"cname": services_dict.get('cname')}
     print(obj_json)
     response_obj = {"status": obj_json}
     return jsonify(response_obj)
@@ -38,9 +38,9 @@ def list_services_byname(srvname):
     return jsonify(response_obj)
 
     
-@catalog_bp.route('/list/service', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
-def list_services(wfc):
+#@catalog_bp.route('/list/service', methods=['GET'])
+#@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+def list_service(wfc):
     data_must_contain = ['name', 'pwd', 'urlint', 'urlext', 'urladmin']
     for k in data_must_contain:
         if k not in request.json:
