@@ -25,7 +25,7 @@ def list_services(wfc):
     
 @catalog_bp.route('/add/service', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
-def add_service():
+def add_service(wfc):
     data_must_contain = ['name', 'pwd', 'urlint', 'urlext', 'urladmin']
     for k in data_must_contain:
         if k not in request.json:
