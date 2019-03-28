@@ -19,7 +19,7 @@ def list_services(wfc):
     '''   
     record = cf.list_services()
     print(record)
-    response_obj = {"status": record}
+    response_obj = {"values": record}
     return jsonify(response_obj)
 
       
