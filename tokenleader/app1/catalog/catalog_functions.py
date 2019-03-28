@@ -1,5 +1,5 @@
 #from flask import Blueprint
-from tokenleader import app1   
+#from tokenleader import app1   
 #from app1.catalog import models_calalog 
 #  # this import is required for flask db migrate to recognize the new model
 # 

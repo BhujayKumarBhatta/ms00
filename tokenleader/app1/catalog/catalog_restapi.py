@@ -14,7 +14,7 @@ enforcer = Enforcer(tlclient)
    
 @catalog_bp.route('/list/service/all', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_services')
-def list_services(wfc):  
+def list_services():  
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''   
@@ -25,7 +25,7 @@ def list_services(wfc):
     
 @catalog_bp.route('/add/service', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
-def add_service(wfc):
+def add_service():
     data_must_contain = ['name', 'pwd', 'urlint', 'urlext', 'urladmin']
     for k in data_must_contain:
         if k not in request.json:
