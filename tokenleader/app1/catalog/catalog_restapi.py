@@ -17,18 +17,17 @@ def list_services(wfc):
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''   
-    record_list = cf.list_services()
-    response_obj = {"status": record_list}
+    record = cf.list_services()
+    print(record)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
    
 @catalog_bp.route('/list/service/<srvname>', methods=['GET'])
 def list_services_byname(srvname):  
-    '''
-    the function must have a mandatory wfc paramater for applying enforcer decorator
-    '''   
-    record_list = cf.list_services(srvname)
-    response_obj = {"status": record_list}
+    record = cf.list_services(srvname)
+    print(record)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
     
