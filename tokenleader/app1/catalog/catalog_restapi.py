@@ -23,6 +23,7 @@ def list_services(wfc):
 #    return jsonify(response_obj)
 
     services_dict = cf.list_services()
+    print(services_dict)
     obj_json = {"cname": services_dict.get('cname')}
     print(obj_json)
     response_obj = {"status": obj_json}
