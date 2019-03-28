@@ -11,7 +11,7 @@ auth_config = Configs()
 tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
 
-@catalog_bp.route('/list/service', methods=['GET'])
+@catalog_bp.route('/list/service/all', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_services')
 def list_services(wfc):  
     '''
