@@ -11,8 +11,8 @@ auth_config = Configs()
 tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
 
-@catalog_bp.route('/list/service', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+#@catalog_bp.route('/list/service', methods=['GET'])
+#@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
 def list_services(wfc):  
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
@@ -38,9 +38,9 @@ def list_services_byname(srvname):
     return jsonify(response_obj)
 
     
-@catalog_bp.route('/add/service', methods=['POST'])
-@enforcer.enforce_access_rule_with_token('tokenleader.add_service')
-def add_service():
+@catalog_bp.route('/list/service', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+def list_services():
     data_must_contain = ['name', 'pwd', 'urlint', 'urlext', 'urladmin']
     for k in data_must_contain:
         if k not in request.json:
