@@ -17,20 +17,12 @@ def list_services(wfc):
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''   
-#    record = cf.list_services()
-#    print(record)
-#    response_obj = {"status": record}
-#    return jsonify(response_obj)
-
-    services_dict = cf.list_services()
-    print(services_dict)
-    obj_json = {"Service": services_dict.get('Service')}
-    print(obj_json)
-    response_obj = {"status": obj_json}
+    record = cf.list_services()
+    print(record)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
-
-   
+      
 @catalog_bp.route('/list/service/<srvname>', methods=['GET'])
 def list_services_byname(srvname):  
     record = cf.list_services(srvname)
