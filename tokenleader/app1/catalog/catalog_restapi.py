@@ -19,8 +19,8 @@ def list_services(wfc):
     '''   
     record = cf.list_services()
     print(record)
-    response_obj = {"status": record}
-    return jsonify(response_obj)
+#    response_obj = {"status": record}
+#    return jsonify(response_obj)
 
       
 @catalog_bp.route('/list/service/<srvname>', methods=['GET'])
