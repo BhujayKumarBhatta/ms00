@@ -15,8 +15,8 @@ def list_users(wfc):
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''   
-    record_list = af.list_users()
-    response_obj = {"status": record_list}
+    record = af.list_users()
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/user/<username>', methods=['GET'])
