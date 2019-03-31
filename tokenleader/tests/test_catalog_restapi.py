@@ -8,7 +8,7 @@ t = TestCatalog()
 class TestCatalogRestApi(BaseTestCase):
  
     def test_list_services_restapi(self):      
-        u1 = t.add_service()
+#        u1 = t.add_service()
         with self.client:
             response = self.client.get('/list/service/all')
             print(response)
