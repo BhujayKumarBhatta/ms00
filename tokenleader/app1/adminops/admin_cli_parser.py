@@ -185,7 +185,7 @@ def main():
     if sys.argv[1] == 'initdb':
         print("performing db table creation as per the last schema"
               " change in migration dir : {}".format(migration_path))
-        os.environ["FLASK_APP"] = flask_app(options.name, options.wfcorg, options.wfcou, options.wfcdept)
+        os.environ["FLASK_APP"] = flask_app#(options.name, options.wfcorg, options.wfcou, options.wfcdept)
         subprocess.run(["flask" , "db" , "upgrade", "-d",  migration_path, ])
     
     #print(sys.argv[3])
