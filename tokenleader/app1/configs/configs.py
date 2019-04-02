@@ -74,7 +74,7 @@ prod_configs_from_file = [flask_default_setiings_map,
 
 
 test_db_settings_map = {'DEBUG': True,
-                'SQLALCHEMY_DATABASE_URI': 'sqlite:////tmp/test_auth.db',
+                'SQLALCHEMY_DATABASE_URI': 'mysql+mysqldb://root:welcome123@localhost/auth',
                 'SQLALCHEMY_TRACK_MODIFICATIONS': False}
 
 
