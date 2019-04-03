@@ -21,7 +21,7 @@ class TestCatalogRestApi(BaseTestCase):
     
     
     def test_add_service_restapi(self):
-        u1 = t.test_add_service()
+#        u1 = t.test_add_service()
         with self.client:
             response = self.client.post('/add/service')
             data = json.loads(response.data.decode())
