@@ -15,11 +15,8 @@ class TestCatalogRestApi(BaseTestCase):
             response = self.client.get('/list/services')
             content_type='application/json'
             data = json.loads(response.data.decode())
-            self.assertTrue(isinstance(data['status'], list))
-#            print(data)
-#            self.assertTrue(data['status'] == '  testservice has been registered.')
-     
-              
+            self.assertTrue(isinstance(data['status'], list)) 
+             
  
     def test_add_service_restapi(self):
 #        u1 = t.add_service()
@@ -40,7 +37,7 @@ class TestCatalogRestApi(BaseTestCase):
             self.assertTrue(data['status'] == 'testservice has been registered.')     
     
     def test_delete_service_restapi(self):
-        u1 = t.delete_service()
+#        u1 = t.delete_service()
         with self.client:
             response = self.client.delete('/delete/service/testservice')
             data = json.loads(response.data.decode())
