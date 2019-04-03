@@ -49,7 +49,7 @@ def add_service():
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service/<srvname>', methods=['DELETE'])
-def delete_user_restapi(srvname):   
+def delete_service(srvname):   
     status = cf.delete_service(srvname)
     response_obj = {"status": status}
     return jsonify(response_obj)
