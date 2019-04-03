@@ -33,8 +33,7 @@ class TestCatalogRestApi(BaseTestCase):
         u1 = t.add_service()
 #         t.register_work_function_for_test()
         data = json.dumps(dict(
-            name = 'testservice',
-#            pwd = 'password',
+            service_name = 'testservice',
             urlint = 'localhost:5005',
             urlext= 'localhost:5005',
             urladmin = 'localhost:5005',
