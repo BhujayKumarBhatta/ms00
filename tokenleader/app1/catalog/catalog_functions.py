@@ -53,6 +53,8 @@ def list_services(cname=None):
         else:
             msg = {'msg': 'no service record has been registered yet'}
             return msg
+    elif cname == 'all':
+        cname=None        
     else:
         record_list = ServiceCatalog.query.all()
         for record in record_list:
