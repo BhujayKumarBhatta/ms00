@@ -45,13 +45,14 @@ def list_services(cname=None):
     record = None
     record_list = []
     record_list_dic = []   
-    if cname or cname == 'all':
+    if cname and cname != 'all':
         record = ServiceCatalog.query.filter_by(name=cname).first()
         if record:
             print(record.to_dict())
             return(record.to_dict())
         else:
             msg = {'msg': 'no service record has been registered yet'}
+            print(msg)
             return msg
          
     else:

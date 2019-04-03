@@ -2,15 +2,16 @@ import json
 from tokenleader.tests.base_test import  BaseTestCase
 from tokenleader.tests.test_catalog_ops import TestCatalog
 from tokenleader.tests.test_auth import TestToken
+from tokenleader.app1.catalog import catalog_functions as cf
 test_token_instance = TestToken()
 t = TestCatalog()
 
 class TestCatalogRestApi(BaseTestCase):
  
     def test_list_services_restapi(self):      
-        u1 = t.list_services()
+        r =cf.add_service( 'testservice', urlint='localhost:5005')
         with self.client:
-            response = self.client.get('/list/service/all')
+            response = self.client.get('/list/services')
             data = json.loads(response.data.decode())
             print(data)
             self.assertTrue(data['status'].get('name') == 'testservice has been registered.')
