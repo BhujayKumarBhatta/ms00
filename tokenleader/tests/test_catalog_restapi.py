@@ -13,7 +13,7 @@ class TestCatalogRestApi(BaseTestCase):
             response = self.client.get('/list/service/all')
             data = json.loads(response.data.decode())
             print(data)
-            self.assertTrue(data['status'].get('name') == 'tokenleader has been registered.')
+            self.assertTrue(data['status'].get('name') == 'testservice has been registered.')
             
     
     

@@ -4,13 +4,13 @@ from tokenleader.tests.base_test import BaseTestCase
 from tokenleader.app1.catalog import catalog_functions as cf
 
 
-service_name = 'tokenleader'
+service_name = 'testservice'
 url_int = 'localhost/5005'
 url_ext = 'localhost/5005'
 url_admin = 'localhost/5005'
 
-service_catalog = {'tokenleader': {'endpoint_url_internal': 'localhost/5005', 
-                                     'name': 'tokenleader', 'endpoint_url_admin': 'localhost/5005',
+service_catalog = {'testservice': {'endpoint_url_internal': 'localhost/5005', 
+                                     'name': 'testservice', 'endpoint_url_admin': 'localhost/5005',
                                      'endpoint_url_external': 'localhost/5005', 'id': 1}
                                      }
 
@@ -32,7 +32,7 @@ class TestCatalog(BaseTestCase):
     
     def test_add_service(self):
         msg = self.add_service()        
-        self.assertTrue(msg == "tokenleader has been registered.")
+        self.assertTrue(msg == "testservice has been registered.")
         
     def test_service_catalog_format(self):        
         svcs = self.list_services()
