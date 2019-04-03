@@ -47,13 +47,17 @@ def list_services(cname=None):
     record_list_dic = []   
     if cname:
         record = ServiceCatalog.query.filter_by(name=cname).first()
-        print(record.to_dict())
-        return(record.to_dict())
+        if record:
+            print(record.to_dict())
+            return(record.to_dict())
+        else:
+            msg = {'msg': 'no service record has been registered yet'}
+            return msg
     else:
         record_list = ServiceCatalog.query.all()
         for record in record_list:
             print(record.to_dict())
-            record_list_dic.append(record)
+            record_list_dic.append(record.to_dict())
         return record_list_dic
     
     
