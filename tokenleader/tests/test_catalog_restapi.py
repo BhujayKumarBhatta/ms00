@@ -13,6 +13,7 @@ class TestCatalogRestApi(BaseTestCase):
 #        r =cf.add_service( 'testservice', urlint='localhost:5005')
         with self.client:
             response = self.client.get('/list/services')
+            content_type='application/json'
             data = json.loads(response.data.decode())
             #self.assertTrue(isinstance(data['status'], list))
 #            print(data)
@@ -21,7 +22,7 @@ class TestCatalogRestApi(BaseTestCase):
     
     
     def test_add_service_restapi(self):
-#        u1 = t.test_add_service()
+        u1 = t.test_add_service()
         with self.client:
             response = self.client.post('/add/service')
             data = json.loads(response.data.decode())
