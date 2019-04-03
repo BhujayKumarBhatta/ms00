@@ -44,9 +44,9 @@ class Workfunctioncontext(db.Model):
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     org_id = db.Column(db.Integer, db.ForeignKey('org.id'), nullable=False) #Rule 2
     org = db.relationship('Organization', backref = 'wfcs') #rule 1
-    orgunit_id = db.Column(db.integer, db.ForeignKey('orgunit.id'), nullable=False)
+    orgunit_id = db.Column(db.Integer, db.ForeignKey('orgunit.id'), nullable=False)
     orgunit = db.relationship('OrgUnit', backref = 'orgunit', uselist=False, lazy = True)
-    department_id = db.Column(db.integer, db.ForeignKey('department.id'), nullable=False)
+    department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
     department = db.relationship('Department', backref = 'department', uselist=False,lazy = True)
 ##################################################################################################
 # the follwinf line is no more required as User class is providing  a 'users'  backref to Workfunctioncontext
