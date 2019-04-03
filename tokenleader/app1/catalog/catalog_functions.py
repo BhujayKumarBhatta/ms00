@@ -12,7 +12,7 @@ from tokenleader.app1.catalog.models_catalog import  ServiceCatalog
 #from app1.catalog import models_catalog as mc
 #from app1.catalog.models_catalog import ServiceCatalog
 from tokenleader.app1.authentication import models
-from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
 
 
 def get_input(text):

@@ -2,7 +2,7 @@ from flask import  current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from tokenleader.app1 import db
-import this
+
 
 
 
@@ -17,7 +17,9 @@ class Organization(db.Model):
         return '<Organization {}>'.format(self.name)
     
 
-class OrgUnit(db.Model):
+class Orgunit(db.Model):
+    '''Dont put capital letter inbetween the word. only the first letter 
+    should be capital'''
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
 #     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
@@ -48,7 +50,7 @@ class Workfunctioncontext(db.Model):
     org = db.relationship('Organization', backref = 'wfcs') #rule 1
     
     orgunit_id = db.Column(db.Integer, db.ForeignKey('orgunit.id'), nullable=False)
-    orgunit = db.relationship('OrgUnit', backref = 'orgunits')
+    orgunit = db.relationship('Orgunit', backref = 'orgunits')
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
     department = db.relationship('Department', backref = 'departments')
 ##################################################################################################

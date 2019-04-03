@@ -4,7 +4,7 @@ import sys
 from tokenleader.app1 import db
 from sqlalchemy import exc
 from tokenleader.app1.authentication import models
-from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
 from tokenleader.app1.adminops import base_ops as bops
 
 def register_user(uname, email, pwd, wfc_name, roles=None ):
@@ -13,7 +13,7 @@ def register_user(uname, email, pwd, wfc_name, roles=None ):
 def register_org(oname):   
    return bops.register_ops1('Organization', oname)
 def register_ou(ouname):
-    return bops.register_ops1('OrgUnit', ouname)
+    return bops.register_ops1('Orgunit', ouname)
 
 def register_dept(deptname):
     return bops.register_ops1('Department', deptname )
@@ -33,7 +33,7 @@ def list_org(oname=None):
     return bops.list_ops('Organization', oname)
 
 def list_ou(ouname=None):
-    return bops.list_ops('OrgUnit', ouname)
+    return bops.list_ops('Orgunit', ouname)
 
 def list_dept(deptname=None):
     return bops.list_ops('Department', deptname)
@@ -50,7 +50,7 @@ def delete_user(uname):
 def delete_org(oname):
    return  bops.delete_ops('Organization', oname)  
 def delete_ou(ouname):
-   return  bops.delete_ops('OrgUnit', ouname)   
+   return  bops.delete_ops('Orgunit', ouname)   
 def delete_dept(deptname):
     return  bops.delete_ops('Department', deptname)
 
