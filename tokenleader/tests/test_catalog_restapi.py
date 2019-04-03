@@ -12,7 +12,7 @@ class TestCatalogRestApi(BaseTestCase):
         u1 = t.list_services()   
 #        r =cf.add_service( 'testservice', urlint='localhost:5005')
         with self.client:
-            response = self.client.get('/list/services/all')
+            response = self.client.get('/list/services')
             data = json.loads(response.data.decode())
             print(data)
 #            self.assertTrue(isinstance(data['status'], list))
