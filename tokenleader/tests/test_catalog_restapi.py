@@ -41,6 +41,6 @@ class TestCatalogRestApi(BaseTestCase):
         with self.client:
             response = self.client.delete('/delete/service/testservice')
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'testservice has been  deleted successfully')
+            self.assertTrue(data['status'] == ' testservice has been  deleted successfully')
     
  
