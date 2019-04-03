@@ -235,6 +235,26 @@ rm /tmp/auth.db
 
 
 
+rm /tmp/auth.db
+./adminops.sh initdb
+./adminops.sh add org -n org1
+./adminops.sh add ou -n ou1
+./adminops.sh add dept -n dept1
+./adminops.sh addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1
+./adminops.sh add role -n role1
+./adminops.sh adduser -n user1 --password user1 --emailid user1 --rolenames role1  --wfc wfc1
+
+
+
+from tokenleader.app_run import app
+app.app_context().push()
+from tokenleader.app1 import db
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
+wl=Workfunctioncontext.query.all()
+w=wl[0]
+dir(w)
+w.users
+
 
 
 '''
