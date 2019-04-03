@@ -12,7 +12,7 @@ tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
 
 @catalog_bp.route('/list/services', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+#@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
 def list_services():  
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
@@ -24,7 +24,7 @@ def list_services():
 
       
 @catalog_bp.route('/list/service/<srvname>', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+#@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
 def list_services_byname(srvname):  
     record = cf.list_services(srvname)
     response_obj = {"status": record}
