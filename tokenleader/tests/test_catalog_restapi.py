@@ -21,7 +21,7 @@ class TestCatalogRestApi(BaseTestCase):
      
               
  
-    def test_add_service_restapix(self):
+    def test_add_service_restapi(self):
 #        u1 = t.add_service()
 #         t.register_work_function_for_test()
         data = json.dumps(dict(
@@ -37,7 +37,7 @@ class TestCatalogRestApi(BaseTestCase):
                 data=data,
                 content_type='application/json')
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == ' testservice has been registered.')     
+            self.assertTrue(data['status'] == 'testservice has been registered.')     
     
     def test_delete_service_restapi(self):
         u1 = t.delete_service()
