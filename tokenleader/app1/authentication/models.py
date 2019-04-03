@@ -11,7 +11,7 @@ class Organization(db.Model):
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     orgtype = db.Column(db.String(64))
     auth_backend = db.Column(db.String(64))
-    work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
+#     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
     
     def __repr__(self):
         return '<Organization {}>'.format(self.name)
@@ -20,7 +20,7 @@ class Organization(db.Model):
 class OrgUnit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
+#     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
     
     def __repr__(self):
         return '<OrgUnit {}>'.format(self.name)
@@ -29,7 +29,7 @@ class OrgUnit(db.Model):
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
+#     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
     
     def __repr__(self):
         return '<Department {}>'.format(self.name)
@@ -42,7 +42,8 @@ class Workfunctioncontext(db.Model):
         Users class side'''
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    org = db.relationship('Organization', backref = 'org', uselist=False, lazy = True)
+    org_id = db.Column(db.Integer, db.ForeignKey('org.id'), nullable=False) #Rule 2
+    org = db.relationship('Organization', backref = 'wfcs') #rule 1
     orgunit = db.relationship('OrgUnit', backref = 'orgunit', uselist=False, lazy = True)
     department = db.relationship('Department', backref = 'department', uselist=False,lazy = True)
 ##################################################################################################
