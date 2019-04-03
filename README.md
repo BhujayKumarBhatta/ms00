@@ -64,29 +64,30 @@ configure the /etc/tokenleader/tokenleader_settings.ini
 	sudo vi /etc/tokenleader/tokenleader_settings.ini
 	
 	[flask_default]
-	host_name = localhost
-	host_port = 5001
-	# ssl not required  since the production deployment will be behind the apache with ssl 
-	# This is required only when flask is started  without apache for testing
-	# put enabled  for enabling ssl 
-	ssl = disabled   
-	ssl_settings = adhoc
-	
-	[token]
-	# default will take the id_rsa keys from the  users home directory and .ssh directiry
-	# put the file name here if  the file name is different
-	#also the public ley need to be copied in the client settings file under /etc/tlclient
-	private_key_file_location = default 
-	public_key_file_location = default
-	#use full path when deployed with apache 
-	#private_key_file_location = /home/bhujay/.ssh/id_rsa
-	#public_key_file_location = /home/bhujay/.ssh/id_rsa.pub
-	
-	[db]
-	#change the database string  as appripriate for your production environment
-	#contributors are requested to put some more example here
-	SQLALCHEMY_DATABASE_URI = sqlite:////tmp/auth.db
-	SQLALCHEMY_TRACK_MODIFICATIONS = False
+    host_name = 0.0.0.0
+    host_port = 5001
+    # sslnot required  since the production depoyment will be behind the apache with ssl
+    # This is required only when flask is started  without apache for testing
+    # put enabled  for enabling ssl
+    ssl = disabled
+    ssl_settings = adhoc
+
+    [token]
+    # default will take the id_rsa keys from the  users home directory and .ssh directiry
+    # put the file name here if  the file name is different
+    #also the public ley need to be copied in the client settings file under /etc/tlclient
+    private_key_file_location = default
+    public_key_file_location = default
+    #use full path when deployed with apache
+    #private_key_file_location = /home/bhujay/.ssh/id_rsa
+    #public_key_file_location = /home/bhujay/.ssh/id_rsa.pub
+
+    [db]
+    #change the database string  as appripriate for your porduction environment
+    #contributors are requested to put some more example here
+    SQLALCHEMY_DATABASE_URI = mysql+pymysql://root:welcome123@10.174.112.100:3306/auth
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 	
 /etc/tokenleader/role_to_acl_map.yml
 ============================================================================================
