@@ -30,7 +30,7 @@ class TestCatalogRestApi(BaseTestCase):
                 
  
     def test_add_service_restapix(self):
-        u1 = t.add_service()
+#        u1 = t.add_service()
 #         t.register_work_function_for_test()
         data = json.dumps(dict(
             name = 'testservice',
