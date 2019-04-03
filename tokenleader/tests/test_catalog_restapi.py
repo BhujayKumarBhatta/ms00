@@ -8,8 +8,9 @@ t = TestCatalog()
 
 class TestCatalogRestApi(BaseTestCase):
  
-    def test_list_services_restapi(self):      
-        r =cf.add_service( 'testservice', urlint='localhost:5005')
+    def test_list_services_restapi(self):   
+        u1 = t.list_services()   
+#        r =cf.add_service( 'testservice', urlint='localhost:5005')
         with self.client:
             response = self.client.get('/list/services')
             data = json.loads(response.data.decode())
