@@ -3,5 +3,5 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class TestConfig:
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://root:welcome123@localhost/auth'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:welcome123@10.174.112.100:3306/auth',
     SQLALCHEMY_TRACK_MODIFICATIONS = False

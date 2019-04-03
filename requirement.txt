@@ -24,10 +24,11 @@ MarkupSafe==1.0
 marshmallow==2.13.1
 marshmallow-jsonapi==0.20.5
 packaging==18.0
-pkg-resources==0.0.0
+#pkg-resources==0.0.0
 pycparser==2.19
 Pygments==2.2.0
 PyJWT==1.7.0
+PyMySQL==0.9.3
 pyparsing==2.3.0
 python-dateutil==2.7.5
 python-editor==1.0.3
