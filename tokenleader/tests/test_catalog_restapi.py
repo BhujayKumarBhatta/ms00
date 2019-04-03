@@ -19,7 +19,7 @@ class TestCatalogRestApi(BaseTestCase):
     def test_add_service_restapi(self):
         u1 = t.test_add_service()
         with self.client:
-            response = self.client.get('/add/service')
+            response = self.client.get('/add/service/tokenleader')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'].get('name') == 'tokenleader')
                 
