@@ -39,7 +39,7 @@ class Workfunctioncontext(db.Model):
     '''relationship from wfc to  Organization, OrgUnit and Department are 'Many to One' type
        whereas  User to Workfunctioncontext is 'Many to one' and
         Workfunctioncontext to User is one to many, i,e, wfc.users  which is created 
-        Users class side'''
+        Users class side, rule1: a.Relation to one b.Backref of (wfc.users) rule2: one_id(ForeignKey to one.id)'''
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     org_id = db.Column(db.Integer, db.ForeignKey('org.id'), nullable=False) #Rule 2
