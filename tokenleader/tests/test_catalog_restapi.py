@@ -24,6 +24,7 @@ class TestCatalogRestApi(BaseTestCase):
             pwd = 'password',
             urlint = 'localhost:5005',
             urlext= 'localhost:5005',
+            urladmin = 'localhost:5005',
             ))
         print(data)
         with self.client:
