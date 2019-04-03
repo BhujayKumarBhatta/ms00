@@ -15,7 +15,7 @@ class TestCatalogRestApi(BaseTestCase):
             response = self.client.get('/list/services')
             data = json.loads(response.data.decode())
             #self.assertTrue(isinstance(data['status'], list))
-            self.assertTrue(data['status'] == 'testservice has been registered.')
+            self.assertTrue(data['status'] == '  testservice has been registered.')
             
     
     
