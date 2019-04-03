@@ -9,6 +9,7 @@ url_int = 'localhost/5005'
 url_ext = 'localhost/5005'
 url_admin = 'localhost/5005'
 
+
 service_catalog = {'testservice': {'endpoint_url_internal': 'localhost/5005', 
                                      'name': 'testservice', 'endpoint_url_admin': 'localhost/5005',
                                      'endpoint_url_external': 'localhost/5005', 'id': 1}
