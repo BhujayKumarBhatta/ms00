@@ -14,9 +14,17 @@ class TestCatalogRestApi(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'].get('name') == 'tokenleader')
             
-            
- 
+    
+    
     def test_add_service_restapi(self):
+        u1 = t.test_add_service()
+        with self.client:
+            response = self.client.get('/add/service')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'].get('name') == 'tokenleader')
+                
+ 
+    def test_add_service_restapix(self):
         u1 = t.add_service()
 #         t.register_work_function_for_test()
         data = json.dumps(dict(
