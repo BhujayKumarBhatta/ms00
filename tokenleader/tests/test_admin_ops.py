@@ -2,7 +2,7 @@ import unittest
 from tokenleader import app1
 from tokenleader.app1 import db
 from tokenleader.app1.authentication import models
-from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
 from tokenleader.app1.adminops import admin_functions as af
 from tokenleader.tests.base_test import  BaseTestCase
 from unittest.mock import patch
