@@ -46,7 +46,8 @@ class Workfunctioncontext(db.Model):
 #     org = db.relationship("Workfunctioncontext", backref="users")    
     org_id = db.Column(db.Integer, db.ForeignKey('organization.id'), nullable=False) #Rule 2
     org = db.relationship('Organization', backref = 'wfcs') #rule 1
-    orgunit_id = db.Column(db.Integer, db.ForeignKey('orgunit.id'), nullable=False)
+    
+    orgunit_id = db.Column(db.Integer, db.ForeignKey('orgUnit.id'), nullable=False)
     orgunit = db.relationship('OrgUnit', backref = 'orgunits')
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
     department = db.relationship('Department', backref = 'departments')
