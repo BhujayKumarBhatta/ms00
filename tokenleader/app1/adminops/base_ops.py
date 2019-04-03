@@ -125,7 +125,8 @@ def get_records_from_db(obj, cname=None):
             record_list = Role.query.all()
     if obj == 'User':        
         if cname:
-            record = User.query.filter_by(username=cname).first()        
+            record = User.query.filter_by(username=cname).first()
+            print(record.wfc) 
         else:
             #print('i am inside dbops recordlist')
             record_list = User.query.all()  
@@ -164,7 +165,7 @@ def list_ops(obj, cname=None, *args, **kwargs):
     record_list = []
     
     if cname:
-        record = get_records_from_db(obj, cname)
+        record = get_records_from_db(obj, cname)        
         if record:
             if obj == 'Role':
                 result = {"id": record.id, "name":  record.rolename }

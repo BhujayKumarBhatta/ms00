@@ -269,7 +269,7 @@ def main():
         if options.entity == 'user':      
             if options.name == 'all':
                 af.list_users()
-            else:
+            else:                
                 af.list_users(options.name)         
         
     

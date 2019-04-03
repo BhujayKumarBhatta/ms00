@@ -26,7 +26,7 @@ def register_work_func_context(fname, orgname, ou_name, dept_name):
 
 
 
-def list_users(uname=None):
+def list_users(uname=None):    
     return bops.list_ops('User', uname)
 
 def list_org(oname=None):
