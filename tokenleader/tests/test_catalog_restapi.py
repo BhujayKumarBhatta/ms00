@@ -15,7 +15,7 @@ class TestCatalogRestApi(BaseTestCase):
             data = json.loads(response.data.decode())
             print(data)
  #           self.assertTrue(isinstance(data['status'], list))
-            self.assertTrue(data['status'].get('name') == 'microservice1')
+            self.assertTrue(data['status'].get('name') == 'tokenleader')
             
             
            
