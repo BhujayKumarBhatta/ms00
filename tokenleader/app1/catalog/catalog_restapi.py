@@ -47,3 +47,10 @@ def add_service():
     record = cf.add_service(name, pwd, urlint, urlext, urladmin)
     response_obj = {"status": record}
     return jsonify(response_obj)
+
+@adminops_bp.route('/delete/service/<srvname>', methods=['DELETE'])
+def delete_user_restapi(srvname):   
+    status = cf.delete_service(srvname)
+    response_obj = {"status": status}
+    return jsonify(response_obj)
+
