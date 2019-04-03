@@ -68,6 +68,7 @@ def list_wfc():
 
 
 @adminops_bp.route('/add/user', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.adduser')
 def add_user():
     data_must_contain = ['name', 'email', 'password', 'wfc', 'roles']
     for k in data_must_contain:
