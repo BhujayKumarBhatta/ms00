@@ -9,11 +9,11 @@ class TestCatalogRestApi(BaseTestCase):
  
     def test_list_services_restapi(self):      
         u1 = t.list_services()
-#         with self.client:
-#             response = self.client.get('/list/service/all')
-#             data = json.loads(response.data.decode())
-#             print(data)
-#             self.assertTrue(data['status'].get('name') == 'testservice has been registered.')
+        with self.client:
+            response = self.client.get('/list/service/all')
+            data = json.loads(response.data.decode())
+            print(data)
+            self.assertTrue(data['status'].get('name') == 'testservice has been registered.')
             
     
     
