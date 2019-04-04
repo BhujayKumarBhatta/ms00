@@ -216,7 +216,7 @@ def delete_role():
             information {}".format(json.dumps(data_must_contain))})
     rolename = request.json['rolename']
     print('i got the name from http argument {}'.format(rolename))
-    record = af.delete_dept(rolename)
+    record = af.delete_role(rolename)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
