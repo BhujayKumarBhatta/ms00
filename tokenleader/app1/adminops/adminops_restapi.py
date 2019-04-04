@@ -120,6 +120,19 @@ def add_orgunit():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
+@adminops_bp.route('/add/dept', methods=['POST'])
+def add_dept():
+    data_must_contain = ['deptname']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    ouname = request.json['deptname']
+    print('i got the name from http argument {}'.format(deptname))
+    record = af.register_dept(ouname)
+    response_obj = {"status": record}
+    return jsonify(response_obj)
+
 @adminops_bp.route('/add/dept/<deptname>', methods=['POST'])
 def add_dept_restapi(deptname):   
     status = af.register_dept(deptname)
