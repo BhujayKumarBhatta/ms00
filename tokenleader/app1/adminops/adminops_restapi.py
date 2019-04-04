@@ -101,29 +101,30 @@ def add_wfc():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
+# @adminops_bp.route('/add/ou/<ouname>', methods=['POST'])
+# def add_orgunit_restapi(ouname):   
+#     status = af.register_ou(ouname)
+#     response_obj = {"status": status}
+#     return jsonify(response_obj)
+
+@adminops_bp.route('/add/ou/<ouname>', methods=['POST'])
+def add_orgunit_restapi(wfc):
+    data_must_contain = ['ouname']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    ouname = request.json['ouname']
+    print('i got the name from http argument {}'.format(ouname))
+    record = af.register_ou(ouname)
+    response_obj = {"status": record}
+    return jsonify(response_obj)
+
 @adminops_bp.route('/add/dept/<deptname>', methods=['POST'])
 def add_dept_restapi(deptname):   
     status = af.register_dept(deptname)
     response_obj = {"status": status}
     return jsonify(response_obj)
-
-# @adminops_bp.route('/add/ou/<ouname>', methods=['POST'])
-# def add_orgunit_restapi(ouname):   
-#     status = af.register_ou(ouname)
-#     response_obj = {"status": status}
-#     return jsonify(response_obj)
-
-@adminops_bp.route('/add/ou/ouname', methods=['POST'])
-def add_orgunit_restapi(ouname):   
-    status = af.register_ou(ouname)
-    response_obj = {"status": status}
-    return jsonify(response_obj)
-
-# @adminops_bp.route('/add/ou/<ouname>', methods=['POST'])
-# def add_orgunit_restapi(ouname):   
-#     status = af.register_ou(ouname)
-#     response_obj = {"status": status}
-#     return jsonify(response_obj)
 
 @adminops_bp.route('/add/org/<orgname>', methods=['POST'])
 def add_org_restapi(orgname):   
