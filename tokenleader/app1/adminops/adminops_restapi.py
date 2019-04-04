@@ -143,7 +143,7 @@ def add_org():
             information {}".format(json.dumps(data_must_contain))})
     orgname = request.json['orgname']
     print('i got the name from http argument {}'.format(orgname))
-    record = af.register_dept(orgname)
+    record = af.register_org(orgname)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
@@ -157,7 +157,7 @@ def add_role():
             information {}".format(json.dumps(data_must_contain))})
     rolename = request.json['rolename']
     print('i got the name from http argument {}'.format(rolename))
-    record = af.register_dept(rolename)
+    record = af.register_role(rolename)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
