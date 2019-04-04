@@ -181,11 +181,17 @@ def delete_org():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
-
-@adminops_bp.route('/delete/org/<orgname>', methods=['DELETE'])
-def delete_org_restapi(orgname):
-    status = af.delete_org(orgname)
-    response_obj = {"status": status}
+@adminops_bp.route('/delete/ou', methods=['DELETE'])
+def delete_ou():
+    data_must_contain = ['ouname']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    ouname = request.json['ouname']
+    print('i got the name from http argument {}'.format(ouname))
+    record = af.delete_ou(ouname)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/ou/<ouname>', methods=['DELETE'])
