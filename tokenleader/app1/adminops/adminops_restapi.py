@@ -101,12 +101,6 @@ def add_wfc():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
-# @adminops_bp.route('/add/ou/<ouname>', methods=['POST'])
-# def add_orgunit_restapi(ouname):   
-#     status = af.register_ou(ouname)
-#     response_obj = {"status": status}
-#     return jsonify(response_obj)
-
 @adminops_bp.route('/add/ou', methods=['POST'])
 def add_orgunit():
     data_must_contain = ['ouname']
@@ -174,23 +168,29 @@ def delete_user():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
+@adminops_bp.route('/delete/org', methods=['DELETE'])
+def delete_org():
+    data_must_contain = ['orgname']
+    for k in data_must_contain:
+        if k not in request.jorgnameson:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    orgname = request.json['orgname']
+    print('i got the name from http argument {}'.format(orgname))
+    record = af.delete_org(orgname)
+    response_obj = {"status": record}
+    return jsonify(response_obj)
 
 
-@adminops_bp.route('/delete/user/<username>', methods=['DELETE'])
-def delete_user_restapi(username):   
-    status = af.delete_user(username)
+@adminops_bp.route('/delete/org/<orgname>', methods=['DELETE'])
+def delete_org_restapi(orgname):
+    status = af.delete_org(orgname)
     response_obj = {"status": status}
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/ou/<ouname>', methods=['DELETE'])
 def delete_ou_restapi(ouname):
     status = af.delete_ou(ouname)
-    response_obj = {"status": status}
-    return jsonify(response_obj)
-
-@adminops_bp.route('/delete/org/<orgname>', methods=['DELETE'])
-def delete_org_restapi(orgname):
-    status = af.delete_org(orgname)
     response_obj = {"status": status}
     return jsonify(response_obj)
 
