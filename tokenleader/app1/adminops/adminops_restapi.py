@@ -74,7 +74,7 @@ def add_user(wfc):
     for k in data_must_contain:
         if k not in request.json:
             return {"status": " the request must have the following \
-            information {}".data_must_contain}
+            information {}".format(data_must_contain)}
     uname = request.json['name']
     email = request.json['email']
     pwd = request.json['password']
