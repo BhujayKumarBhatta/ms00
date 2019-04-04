@@ -127,7 +127,7 @@ def add_dept():
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
-    ouname = request.json['deptname']
+    deptname = request.json['deptname']
     print('i got the name from http argument {}'.format(deptname))
     record = af.register_dept(deptname)
     response_obj = {"status": record}
