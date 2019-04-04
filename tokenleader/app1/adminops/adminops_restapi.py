@@ -136,14 +136,14 @@ def add_dept():
 
 @adminops_bp.route('/add/org', methods=['POST'])
 def add_org():
-    data_must_contain = ['orgname']
+    data_must_contain = ['oname']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
-    orgname = request.json['orgname']
-    print('i got the name from http argument {}'.format(orgname))
-    record = af.register_org(orgname)
+    oname = request.json['oname']
+    print('i got the name from http argument {}'.format(oname))
+    record = af.register_org(oname)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
