@@ -63,27 +63,48 @@ def list_services(cname=None):
         return record_list_dic
     
     
-def delete_service(cname):
-    record = ServiceCatalog.query.filter_by(name=cname).first()
-    input_message = ('Are you sure to delete  :{},  with id {} \n'
-                         'Type \'yes\' to confirm  deleting  or no to abort:  '.format(
-                             record.name, record.id))    
-                
-    uinput = get_input(input_message)
-    if uinput == 'yes':          
+def delete_service(obj, cname):
+    record = None    
+    record = get_records_from_db(obj, cname)   
+    if  record: 
+    #print('obj is  {}'.format(obj))
         try:
             db.session.delete(record)        
             db.session.commit()
             status = "{} has been  deleted successfully".format(cname) 
+            print(status)
+            #print('i am here')
+            return status
         except  Exception as e:
-                    status = "{} could not be deleted , the erro is: \n  {}".format(cname, e)
-                    print(status)
-                    #return status
+                status = "{} could not be deleted , the erro is: \n  {}".format(cname, e)
+                print(status)
+                #return status
     else:
-        status = 'Aborting deletion'
-        print(status)    
+        status = "{}  not found in database".format(record)
+        print(status)
     
     return status
     
-#        
+
+# def delete_service(cname):
+#     record = ServiceCatalog.query.filter_by(name=cname).first()
+#     input_message = ('Are you sure to delete  :{},  with id {} \n'
+#                          'Type \'yes\' to confirm  deleting  or no to abort:  '.format(
+#                              record.name, record.id))    
+#                 
+#     uinput = get_input(input_message)
+#     if uinput == 'yes':          
+#         try:
+#             db.session.delete(record)        
+#             db.session.commit()
+#             status = "{} has been  deleted successfully".format(cname) 
+#         except  Exception as e:
+#                     status = "{} could not be deleted , the erro is: \n  {}".format(cname, e)
+#                     print(status)
+#                     #return status
+#     else:
+#         status = 'Aborting deletion'
+#         print(status)    
+#     
+#     return status       
     
