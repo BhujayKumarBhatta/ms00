@@ -107,7 +107,7 @@ def add_wfc():
 #     response_obj = {"status": status}
 #     return jsonify(response_obj)
 
-@adminops_bp.route('/add/ou/<ouname>', methods=['POST'])
+@adminops_bp.route('/add/ou', methods=['POST'])
 def add_orgunit_restapi(wfc):
     data_must_contain = ['ouname']
     for k in data_must_contain:
