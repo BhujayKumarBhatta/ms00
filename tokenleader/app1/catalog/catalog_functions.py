@@ -63,9 +63,9 @@ def list_services(cname=None):
         return record_list_dic
     
     
-def delete_service(obj, cname):
+def delete_service(cname):
     record = None    
-    record = get_records_from_db(obj, cname)   
+    record = ServiceCatalog.query.filter_by(name=cname).first()   
     if  record: 
     #print('obj is  {}'.format(obj))
         try:
