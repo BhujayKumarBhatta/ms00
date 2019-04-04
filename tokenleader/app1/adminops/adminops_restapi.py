@@ -133,22 +133,32 @@ def add_dept():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
-@adminops_bp.route('/add/dept/<deptname>', methods=['POST'])
-def add_dept_restapi(deptname):   
-    status = af.register_dept(deptname)
-    response_obj = {"status": status}
+
+@adminops_bp.route('/add/org', methods=['POST'])
+def add_org():
+    data_must_contain = ['orgname']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    orgname = request.json['orgname']
+    print('i got the name from http argument {}'.format(orgname))
+    record = af.register_dept(orgname)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
-@adminops_bp.route('/add/org/<orgname>', methods=['POST'])
-def add_org_restapi(orgname):   
-    status = af.register_org(orgname)
-    response_obj = {"status": status}
-    return jsonify(response_obj)
 
-@adminops_bp.route('/add/role/<rolename>', methods=['POST'])
-def add_role_restapi(rolename):   
-    status = af.register_role(rolename)
-    response_obj = {"status": status}
+@adminops_bp.route('/add/role', methods=['POST'])
+def add_role():
+    data_must_contain = ['rolename']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    rolename = request.json['rolename']
+    print('i got the name from http argument {}'.format(rolename))
+    record = af.register_dept(rolename)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/user/<username>', methods=['DELETE'])
