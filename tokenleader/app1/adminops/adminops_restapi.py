@@ -74,13 +74,13 @@ def add_user(wfc):
     for k in data_must_contain:
         if k not in request.json:
             return {"status": " the request must have the following \
-            information {}".format(data_must_contain)}
+            information {}".format(json.dumps(data_must_contain))}
     uname = request.json['name']
     email = request.json['email']
     pwd = request.json['password']
     wfc_name  = request.json['wfc']
     roles = request.json['roles']
-    print('i got the name from http argument {}'.format(username))
+    print('i got the name from http argument {}'.format(uname))
     record = af.register_user(uname, email, pwd, wfc_name, roles=roles)
     response_obj = {"status": record}
     return jsonify(response_obj)
