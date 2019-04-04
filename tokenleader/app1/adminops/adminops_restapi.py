@@ -108,7 +108,7 @@ def add_wfc():
 #     return jsonify(response_obj)
 
 @adminops_bp.route('/add/ou', methods=['POST'])
-def add_orgunit_restapi():
+def add_orgunit():
     data_must_contain = ['ouname']
     for k in data_must_contain:
         if k not in request.json:
