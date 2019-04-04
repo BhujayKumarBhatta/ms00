@@ -194,30 +194,41 @@ def delete_ou():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
-@adminops_bp.route('/delete/ou/<ouname>', methods=['DELETE'])
-def delete_ou_restapi(ouname):
-    status = af.delete_ou(ouname)
-    response_obj = {"status": status}
+@adminops_bp.route('/delete/dept', methods=['DELETE'])
+def delete_dept():
+    data_must_contain = ['deptname']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    deptname = request.json['deptname']
+    print('i got the name from http argument {}'.format(deptname))
+    record = af.delete_dept(deptname)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
-@adminops_bp.route('/delete/dept/<deptname>', methods=['DELETE'])
-def delete_dept_restapi(deptname):
-    status = af.delete_dept(deptname)
-    response_obj = {"status": status}
+@adminops_bp.route('/delete/role', methods=['DELETE'])
+def delete_dept():
+    data_must_contain = ['rolename']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    rolename = request.json['rolename']
+    print('i got the name from http argument {}'.format(rolename))
+    record = af.delete_dept(rolename)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
-@adminops_bp.route('/delete/role/<rolename>', methods=['DELETE'])
-def delete_role_restapi(rolename):
-    status = af.delete_role(rolename)
-    response_obj = {"status": status}
+@adminops_bp.route('/delete/wfc', methods=['DELETE'])
+def delete_wfc():
+    data_must_contain = ['wfcname']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    wfcname = request.json['wfcname']
+    print('i got the name from http argument {}'.format(wfcname))
+    record = af.delete_wfc(wfcname)
+    response_obj = {"status": record}
     return jsonify(response_obj)
-
-@adminops_bp.route('/delete/wfc/<wfcname>', methods=['DELETE'])
-def delete_wfc_restapi(wfcname):
-    status = af.delete_wfc(wfcname)
-    response_obj = {"status": status}
-    return jsonify(response_obj)
-
-
-
-
