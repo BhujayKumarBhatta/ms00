@@ -161,6 +161,21 @@ def add_role():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
+@adminops_bp.route('/delete/user', methods=['POST'])
+def delete_user():
+    data_must_contain = ['username']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    username = request.json['username']
+    print('i got the name from http argument {}'.format(username))
+    record = af.delete_user(rolename)
+    response_obj = {"status": record}
+    return jsonify(response_obj)
+
+
+
 @adminops_bp.route('/delete/user/<username>', methods=['DELETE'])
 def delete_user_restapi(username):   
     status = af.delete_user(username)
