@@ -129,7 +129,7 @@ def add_dept():
             information {}".format(json.dumps(data_must_contain))})
     ouname = request.json['deptname']
     print('i got the name from http argument {}'.format(deptname))
-    record = af.register_dept(ouname)
+    record = af.register_dept(deptname)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
