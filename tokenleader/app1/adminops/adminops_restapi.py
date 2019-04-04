@@ -113,9 +113,9 @@ def add_dept_restapi(deptname):
 #     response_obj = {"status": status}
 #     return jsonify(response_obj)
 
-@adminops_bp.route('/add/ou', methods=['POST'])
-def add_orgunit_restapi():   
-    status = af.register_ou()
+@adminops_bp.route('/add/ou/ouname', methods=['POST'])
+def add_orgunit_restapi(ouname):   
+    status = af.register_ou(ouname)
     response_obj = {"status": status}
     return jsonify(response_obj)
 
