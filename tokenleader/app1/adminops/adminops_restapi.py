@@ -76,7 +76,7 @@ def add_user(wfc):
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
-    uname = request.json['name']
+    uname = request.json['username']
     email = request.json['email']
     pwd = request.json['password']
     wfc_name  = request.json['wfc']
