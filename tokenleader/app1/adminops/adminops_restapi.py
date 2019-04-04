@@ -163,14 +163,14 @@ def add_role():
 
 @adminops_bp.route('/delete/user', methods=['POST'])
 def delete_user(wfc):
-    data_must_contain = ['username']
+    data_must_contain = ['uname']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
-    username = request.json['username']
-    print('i got the name from http argument {}'.format(username))
-    record = af.delete_user(username)
+    uname = request.json['uname']
+    print('i got the name from http argument {}'.format(uname))
+    record = af.delete_user(uname)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
