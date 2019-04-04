@@ -170,7 +170,7 @@ def delete_user():
             information {}".format(json.dumps(data_must_contain))})
     username = request.json['username']
     print('i got the name from http argument {}'.format(username))
-    record = af.delete_user(rolename)
+    record = af.delete_user(username)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
