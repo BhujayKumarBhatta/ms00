@@ -162,7 +162,7 @@ def add_role():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/user', methods=['POST'])
-def delete_user(wfc):
+def delete_user():
     data_must_contain = ['uname']
     for k in data_must_contain:
         if k not in request.json:
