@@ -54,7 +54,7 @@ def delete_service_byname(srvname):
     response_obj = {"status": status}
     return jsonify(response_obj)
 
-@adminops_bp.route('/delete/service', methods=['DELETE'])
+@catalog_bp.route('/delete/service', methods=['DELETE'])
 def delete_service():
     data_must_contain = ['name']
     for k in data_must_contain:
