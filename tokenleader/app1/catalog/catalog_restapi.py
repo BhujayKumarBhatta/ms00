@@ -49,8 +49,21 @@ def add_service():
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service/<srvname>', methods=['DELETE'])
-def delete_service(srvname):   
+def delete_service_byname(srvname):   
     status = cf.delete_service(srvname)
     response_obj = {"status": status}
+    return jsonify(response_obj)
+
+@adminops_bp.route('/delete/service', methods=['DELETE'])
+def delete_service():
+    data_must_contain = ['name']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    name = request.json['name']
+    print('i got the name from http argument {}'.format(name))
+    record = cf.delete_service(name)
+    response_obj = {"status": record}
     return jsonify(response_obj)
 
