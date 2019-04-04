@@ -208,7 +208,7 @@ def delete_dept():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/role', methods=['DELETE'])
-def delete_dept():
+def delete_role():
     data_must_contain = ['rolename']
     for k in data_must_contain:
         if k not in request.json:
