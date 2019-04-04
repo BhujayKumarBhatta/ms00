@@ -71,7 +71,7 @@ def list_wfc():
 @adminops_bp.route('/add/user', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.adduser')
 def add_user(wfc):
-    data_must_contain = ['name', 'email', 'password', 'wfc', 'roles']
+    data_must_contain = ['username', 'email', 'password', 'wfc', 'roles']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
