@@ -15,7 +15,7 @@ class Configs():
         if conf_file:
             self.config_file = conf_file
         else:            
-            self.config_file='/etc/tokenleader/{}_configs.yml'.format(service_name, service_name)
+            self.config_file='/etc/tokenleader/{}_configs.yml'.format(service_name)
 
         if not os.path.exists(self.config_file):
             print("no configuration file found. you need to create a config file "
