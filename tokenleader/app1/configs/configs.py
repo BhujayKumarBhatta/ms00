@@ -1,52 +1,59 @@
 import os
 import sys
+import argparse
 import konfig
 
 
    
+possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
+                                                os.pardir,
+                                                os.pardir))
+apppath = (os.path.join(possible_topdir,
+                               'tokenleader',
+                               'tokenleader'))
 
-_HERE = os.path.dirname(__file__)
-# _SETTINGS_FILE = os.path.join(_HERE, 'settings.ini')
+sys.path.insert(0, apppath)
 
-_SETTINGS_FILE = os.path.join(_HERE, '/etc/tokenleader/tokenleader_settings.ini')
-
+from tokenleader.app1.configs.config_handler import Configs
 must_have_in_flask_default_section = {'host_name',
-                              'host_port',
-                              'ssl',
-                              'ssl_settings'}
+                             'host_port',
+                             'ssl',
+                             'ssl_settings'
+                             }
 
 must_have_in_token_section = {'private_key_file_location',
-                              'public_key_file_location'}
+                              'public_key_file_location',
+                              'secrets'}
 
-must_have_in_db_section = {'SQLALCHEMY_DATABASE_URI'}
+must_have_in_db_section = {'database'}
 
 
 try:
-    CONFS = konfig.Config(_SETTINGS_FILE)
-    flask_default_setiings_map = CONFS.get_map('flask_default')
-    token_settings_map = CONFS.get_map('token')
-    db_settings_map = CONFS.get_map('db')
+    conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
+    flask_default_setiings_map = conf.get_map('flask_default')
+    token_settings_map = conf.get_map('token')
+    db_settings_map = conf.get_map('db')
 except:   
     print("did you configured the file {} correctly ? \n"
-          "see readme for a sample settings \n".format(_SETTINGS_FILE))
+          "see readme for a sample settings \n".format(conf.conf_file))
     sys.exit()
     
     
 if not flask_default_setiings_map.keys() >= must_have_in_flask_default_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       _SETTINGS_FILE, must_have_in_flask_default_section ))
+       conf.conf_file, must_have_in_flask_default_section ))
     sys.exit()
     
     
 if not token_settings_map.keys() >= must_have_in_token_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       _SETTINGS_FILE, must_have_in_token_section ))
+       conf.conf_file, must_have_in_token_section ))
     sys.exit()
     
     
 if not db_settings_map.keys() >= must_have_in_db_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       _SETTINGS_FILE, db_settings_map ))
+       conf.conf_file, db_settings_map ))
     sys.exit()
 
 
@@ -73,15 +80,38 @@ prod_configs_from_file = [flask_default_setiings_map,
                         db_settings_map, ]
 
 
-test_db_settings_map = {'DEBUG': True,
-                'SQLALCHEMY_DATABASE_URI': 'mysql+pymysql://root:welcome123@tldbserver100:3306/auth',
-                'SQLALCHEMY_TRACK_MODIFICATIONS': False}
+#test_db_settings_map = {'DEBUG': True,
+#                'SQLALCHEMY_DATABASE_URI': 'mysql+pymysql://root:welcome123@tldbserver100:3306/auth',
+#                'SQLALCHEMY_TRACK_MODIFICATIONS': False}
 
 
-test_configs = [token_settings_map,
-            test_db_settings_map]
+#test_configs = [token_settings_map,
+#            test_db_settings_map]
 
 
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-k', '--keymap', 
+                  action = "store", dest = "keymap",
+                  required = True,
+                  help = ("a text name of key against which the encrypted password  will be mapped in yml, ensure the \n"
+                          "key name is same as what has been stored  in service_configs.yml , secret section."),
+                  default = "")
 
 
+parser.add_argument('-p', '--password', 
+                  action = "store", dest = "password",
+                  required = True,
+                  help = "tokenleader user password, note down this password , this will be stored as encrypted",
+                  default = "")
+
+try:                  
+    options = parser.parse_args()    
+except:
+    #print usage help when no argument is provided
+    parser.print_help(sys.stderr)
+    sys.exit(1)
+    
+def main():
+    conf.generate_secret_file(options.keymap, options.password)
     
