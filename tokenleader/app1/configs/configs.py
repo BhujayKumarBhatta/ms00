@@ -28,7 +28,7 @@ must_have_in_token_section = {'private_key_file_location',
 
 must_have_in_db_section = {'database'}
 
-'''
+
 try:
     conf = Configs('tokenleader', must_have_keys_in_yml=must_have_in_flask_default_section)
     flask_default_setiings_map = conf.get_map('flask_default')
@@ -56,7 +56,7 @@ if not db_settings_map.keys() >= must_have_in_db_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
        con.conf_file, db_settings_map ))
     sys.exit()
-'''
+
 
 if token_settings_map.get('private_key_file_location') == 'default':
     private_key_filename = os.path.expanduser('~/.ssh/id_rsa')
