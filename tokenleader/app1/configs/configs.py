@@ -15,6 +15,7 @@ apppath = (os.path.join(possible_topdir,
 sys.path.insert(0, apppath)
 
 from tokenleader.app1.configs.config_handler import Configs
+con = Configs('tokenleader')
 must_have_in_flask_default_section = {'host_name',
                              'host_port',
                              'ssl',
@@ -35,25 +36,25 @@ try:
     db_settings_map = conf.get_map('db')
 except:   
     print("did you configured the file {} correctly ? \n"
-          "see readme for a sample settings \n".format(conf.conf_file))
+          "see readme for a sample settings \n".format(con.conf_file))
     sys.exit()
     
     
 if not flask_default_setiings_map.keys() >= must_have_in_flask_default_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.conf_file, must_have_in_flask_default_section ))
+       con.conf_file, must_have_in_flask_default_section ))
     sys.exit()
     
     
 if not token_settings_map.keys() >= must_have_in_token_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.conf_file, must_have_in_token_section ))
+       con.conf_file, must_have_in_token_section ))
     sys.exit()
     
     
 if not db_settings_map.keys() >= must_have_in_db_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.conf_file, db_settings_map ))
+       con.conf_file, db_settings_map ))
     sys.exit()
 
 
