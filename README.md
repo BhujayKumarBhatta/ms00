@@ -444,7 +444,7 @@ for db migration
 
 	flask db init   
 	flask db migrate -m < COMMENT >  
-	flask db upgrde   
+	flask db upgrade   
 
 if there is a change in db structure, and a migration is done , commit and push the migration directory to the git  
 from the  machine where migration was done.  

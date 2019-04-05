@@ -37,8 +37,17 @@ class TestAdminRestApi(BaseTestCase):
             data = json.loads(response.data.decode())
             print(data)
             self.assertTrue(data['status'].get('username') == 'u1')
-    
-    
+
+    def test_list_dept_restapi(self):
+        u1 = t.test_register_dept()
+        with self.client:
+            response = self.client.get('/list/dept')
+            data = json.loads(response.data.decode())
+            self.assertTrue(isinstance(data['status'], list))
+            print(data)
+ #           self.assertTrue(data['status'].get('deptname') == 'dept1')                     
+ 
+        
     def test_add_user_restapi(self):
         t.role_creation_for_test()
 #         t.register_work_function_for_test()
@@ -49,15 +58,56 @@ class TestAdminRestApi(BaseTestCase):
             wfc = 'wfc1',
             roles = ['role1']
             ))
+        print(data)
         with self.client:
             response = self.client.post(
                 '/add/user',
                 data=data,
                 content_type='application/json')
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'u2 has been registered.')           
+            self.assertTrue(data['status'] == 'u2 has been registered.')    
             
+    def test_add_wfc_restapi(self):
+        data = json.dumps(dict(
+            fname = 'wfc1',
+            orgname = 'org1',
+            ou_name = 'ou1',
+            dept_name = 'dept1',
+            ))
+        with self.client:
+            response = self.client.post(
+                '/add/wfc',
+                data=data,
+                content_type='application/json')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'wfc1 has been registered.')              
+   
             
+    def test_add_dept_restapi(self):
+        with self.client:
+            response = self.client.post('/add/dept/dept1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'dept1 has been registered.')   
+                  
+ 
+    def test_add_orgunit_restapi(self):
+        with self.client:
+            response = self.client.post('/add/ou/ou1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'ou1 has been registered.')                  
+
+    def test_add_org_restapi(self):
+        with self.client:
+            response = self.client.post('/add/org/org1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'org1 has been registered.')   
+               
+    def test_add_role_restapi(self):
+        with self.client:
+            response = self.client.post('/add/role/role1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'role1 has been registered.')      
+ 
     def test_delete_user_restapi(self):
         u1 = t.user_creation_for_test()
         with self.client:
@@ -65,8 +115,41 @@ class TestAdminRestApi(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'u1 has been  deleted successfully')
             
-            
+    def test_delete_org_restapi(self):
+        u1 = t.create_org_for_test()
+        with self.client:
+            response = self.client.delete('/delete/org/org1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'org1 has been  deleted successfully')            
         
-        
+    def test_delete_ou_restapi(self):
+        u1 = t.create_orgunit_for_test()
+        with self.client:
+            response = self.client.delete('/delete/ou/ou1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'ou1 has been  deleted successfully')     
+ 
+    def test_delete_dept_restapi(self):
+        u1 = t.create_dept_for_test()
+        with self.client:
+            response = self.client.delete('/delete/dept/dept1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'dept1 has been  deleted successfully')                
+      
+  
+    def test_delete_wfc_restapi(self):
+        u1 = t.register_work_function_for_test()
+        with self.client:
+            response = self.client.delete('/delete/wfc/wfc1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'wfc1 has been  deleted successfully')  
             
+    def test_delete_role_restapi(self):
+        u1 = t.role_creation_for_test()
+        with self.client:
+            response = self.client.delete('/delete/role/role1')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'role1 has been  deleted successfully')         
+     
+                        
     

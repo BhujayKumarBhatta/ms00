@@ -1,4 +1,4 @@
-from tokenleader.app1.authentication.models import Organization, OrgUnit, Department, Workfunctioncontext, Role, User
+from tokenleader.app1.authentication.models import Organization, Orgunit, Department, Workfunctioncontext, Role, User
 from tokenleader.app1 import db
 from sqlalchemy import exc
 
@@ -38,8 +38,8 @@ def register_ops1(obj, cname, orgname=None, ou_name=None, dept_name=None, wfc_na
         if 'auth_backend' in kwargs:
             org_auth_backend = kwargs['auth_backend'] 
         record =  Organization(name=cname, orgtype=otype, auth_backend=org_auth_backend)  
-    if obj == 'OrgUnit' :
-        record =  OrgUnit(name=cname)
+    if obj == 'Orgunit' :
+        record =  Orgunit(name=cname)
     if obj == 'Department' :
         record =  Department(name=cname)
     if obj == 'Role' :
@@ -47,7 +47,7 @@ def register_ops1(obj, cname, orgname=None, ou_name=None, dept_name=None, wfc_na
     if obj == 'Workfunctioncontext' :
         try:
             o = Organization.query.filter_by(name=orgname).first()
-            ou = OrgUnit.query.filter_by(name=ou_name).first()
+            ou = Orgunit.query.filter_by(name=ou_name).first()
             dept = Department.query.filter_by(name=dept_name).first()        
         except Exception as e:
             msg = "Organization, organization Unit or department name not found\
@@ -103,11 +103,11 @@ def get_records_from_db(obj, cname=None):
         else:            
             record_list = Organization.query.all()
 #             print('got record list {}'.format(record_list))        
-    if obj == 'OrgUnit':
+    if obj == 'Orgunit':
         if cname:
-            record = OrgUnit.query.filter_by(name=cname).first()        
+            record = Orgunit.query.filter_by(name=cname).first()        
         else:
-            record_list = OrgUnit.query.all()
+            record_list = Orgunit.query.all()
     if obj == 'Department':
         if cname:
             record = Department.query.filter_by(name=cname).first()        
@@ -125,7 +125,8 @@ def get_records_from_db(obj, cname=None):
             record_list = Role.query.all()
     if obj == 'User':        
         if cname:
-            record = User.query.filter_by(username=cname).first()        
+            record = User.query.filter_by(username=cname).first()
+            print(record.wfc) 
         else:
             #print('i am inside dbops recordlist')
             record_list = User.query.all()  
@@ -164,7 +165,7 @@ def list_ops(obj, cname=None, *args, **kwargs):
     record_list = []
     
     if cname:
-        record = get_records_from_db(obj, cname)
+        record = get_records_from_db(obj, cname)        
         if record:
             if obj == 'Role':
                 result = {"id": record.id, "name":  record.rolename }
