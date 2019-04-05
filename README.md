@@ -586,7 +586,7 @@ ext  important works:
 
 
 
- **** Install DOCKER
+ **** Install DOCKER ****
  ===================================================================================
 
 	sudo apt-get update
