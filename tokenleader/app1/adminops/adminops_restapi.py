@@ -1,7 +1,7 @@
 from flask import request, Blueprint, jsonify, current_app, make_response
 from tokenleader.app1.adminops import admin_functions as af
-from tokenleaderclient.configs.config_handler import Configs    
-from  tokenleaderclient.client.client import Client 
+from tokenleaderclient.configs.config_handler import Configs
+from  tokenleaderclient.client.client import Client
 from tokenleaderclient.rbac.enforcer import Enforcer
 import json
 
@@ -114,7 +114,7 @@ def add_orgunit():
     response_obj = {"status": record}
     return jsonify(response_obj)
 
-@adminops_bp.route('/add/dept', methods=['POST'])
+@adminops_bp.route('/add/dept', methods=['POST']
 def add_dept():
     data_must_contain = ['deptname']
     for k in data_must_contain:

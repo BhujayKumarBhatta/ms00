@@ -11,7 +11,7 @@ def register_user(uname, email, pwd, wfc_name, roles=None ):
     return bops.register_ops1('User', uname, email=email, pwd=pwd, wfc_name=wfc_name, roles=roles, )   
 
 def register_org(oname):   
-   return bops.register_ops1('Organization', oname)
+   return bops.register_ops1('Organization', oname)
 
 def register_ou(ouname):
     return bops.register_ops1('Orgunit', ouname)
@@ -55,9 +55,9 @@ def delete_user(uname):
    return bops.delete_ops('User', uname)
         
 def delete_org(oname):
-   return  bops.delete_ops('Organization', oname)  
+   return  bops.delete_ops('Organization', oname)
 def delete_ou(ouname):
-   return  bops.delete_ops('Orgunit', ouname)   
+   return  bops.delete_ops('Orgunit', ouname)
 def delete_dept(deptname):
     return  bops.delete_ops('Department', deptname)
 
