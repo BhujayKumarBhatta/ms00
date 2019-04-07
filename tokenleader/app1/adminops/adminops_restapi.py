@@ -142,7 +142,6 @@ def add_org():
     return jsonify(response_obj)
 
 
-<<<<<<< HEAD
 @adminops_bp.route('/list/org', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
 def list_org(wfc):
@@ -176,7 +175,6 @@ def list_ou(wfc):
     return jsonify(response_obj)
 
 
-=======
 @adminops_bp.route('/add/role', methods=['POST'])
 def add_role():
     data_must_contain = ['rolename']
@@ -267,4 +265,3 @@ def delete_wfc():
     record = af.delete_wfc(wfcname)
     response_obj = {"status": record}
     return jsonify(response_obj)
->>>>>>> 520143c5045920997886756b6a55e503161dcc4b

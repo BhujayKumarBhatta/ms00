@@ -21,9 +21,3 @@ from tokenleader.app_run import main
 
 if __name__ == '__main__': 
 	 main()
-	 
-<<<<<<< HEAD
-=======
-	 
-	 
->>>>>>> 520143c5045920997886756b6a55e503161dcc4b

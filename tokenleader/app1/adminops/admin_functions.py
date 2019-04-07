@@ -12,11 +12,11 @@ def register_user(uname, email, pwd, wfc_name, roles=None ):
 
 def register_org(oname):   
    return bops.register_ops1('Organization', oname)
+
 def register_ou(ouname):
     return bops.register_ops1('Orgunit', ouname)
 
 def register_dept(deptname):
-<<<<<<< HEAD
     return bops.register_ops1('Department', deptname )  
 
 
@@ -25,18 +25,13 @@ def list_dept(depatname=None):
     
     
 def delete_dept(deptname):
-   return  bops.delete_ops('Department', deptname)
-=======
     return bops.register_ops1('Department', deptname )
->>>>>>> 520143c5045920997886756b6a55e503161dcc4b
 
 def register_role(rname):
     return bops.register_ops1('Role', rname)
 
 def register_work_func_context(fname, orgname, ou_name, dept_name):
     return bops.register_ops1('Workfunctioncontext', fname, orgname, ou_name, dept_name )
-
-
 
 def list_users(uname=None):    
     return bops.list_ops('User', uname)
