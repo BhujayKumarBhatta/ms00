@@ -37,7 +37,7 @@ app = app1.create_app(config_map_list= config_list,
 host = c.get('flask_default').get('host_name')
 port = c.get('flask_default').get('host_port')
 ssl = c.get('flask_default').get('ssl')
-ssl_settings = c.('flask_default').get('ssl_settings')
+ssl_settings = c.get('flask_default').get('ssl_settings')
 
 
 
