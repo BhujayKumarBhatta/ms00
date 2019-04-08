@@ -1,5 +1,5 @@
 #! venv/bin/python
-<<<<<<< HEAD
+
 # -*- coding: utf-8 -*-
 
 import os
@@ -46,4 +46,3 @@ if __name__ == '__main__':
 	
 	
 	
->>>>>>> 212dfebfb383adaf399f0581bb7720c84418ff63
