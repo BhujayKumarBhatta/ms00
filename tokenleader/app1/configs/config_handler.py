@@ -63,7 +63,7 @@ class Configs():
         the file
         '''
         file_loc_from_yml = self.yml.get('secrets').get('secrets_file_location')
-        print(file_loc_from_yml)
+#        print(file_loc_from_yml)
         filepath =  os.path.expanduser(file_loc_from_yml)
         dirpath = os.path.dirname(filepath)
         if not os.path.exists(dirpath):
