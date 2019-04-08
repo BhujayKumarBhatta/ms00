@@ -3,9 +3,6 @@ import sys
 import argparse
 import konfig
 
-_HERE = os.path.dirname(__file__)
-_SETTINGS_FILE = os.path.join(_HERE, '/etc/tokenleader/tokenleader_configs.yml')
-
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir,
                                                 os.pardir))
@@ -17,6 +14,11 @@ sys.path.insert(0, apppath)
 
 from tokenleader.app1.configs.config_handler import Configs
 #con = Configs('tokenleader')
+must_have_keys_in_yml = {'flask_default',
+                         'db',
+                         'token'
+                         }
+
 must_have_in_flask_default_section = {'host_name',
                              'host_port',
                              'ssl',
@@ -31,7 +33,7 @@ must_have_in_db_section = {'database'}
 
 
 try:
-    conf = Configs('tokenleader', _SETTINGS_FILE, must_have_keys_in_yml=must_have_in_flask_default_section)
+    conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
     flask_default_setiings_map = conf.get_map('flask_default')
     token_settings_map = conf.get_map('token')
     db_settings_map = conf.get_map('db')
