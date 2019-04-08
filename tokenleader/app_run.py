@@ -9,13 +9,19 @@ from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 # from app1.catalog.catalog_functions import catalog_bp
 from tokenleader.app1.catalog import models_catalog 
 
-must_have_in_flask_default_section = {'host_name',
-                             'host_port',
-                             'ssl',
-                             'ssl_settings'
-                             }
+must_have_keys_in_yml = {'flask_default',
+                         'db',
+                         'token',
+                         'secrets'
+                         }
 
-conf = Configs('tokenleader', must_have_keys_in_yml=must_have_in_flask_default_section)
+#must_have_in_flask_default_section = {'host_name',
+#                             'host_port',
+#                             'ssl',
+#                             'ssl_settings'
+#                             }
+
+conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
 
 c = conf.yml
 
@@ -28,10 +34,10 @@ bp_list = [token_login_bp, adminops_bp]
 app = app1.create_app(config_map_list= config_list,
                       blue_print_list=bp_list, )
 
-host = c.get('host_name')
-port = c.get('host_port')
-ssl = c.get('ssl')
-ssl_settings = c.get('ssl_settings')
+host = c.get('flask_default').get('host_name')
+port = c.get('flask_default').get('host_port')
+ssl = c.get('flask_default').get('ssl')
+ssl_settings = c.('flask_default').get('ssl_settings')
 
 
 
