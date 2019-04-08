@@ -34,30 +34,31 @@ must_have_in_db_section = {'database'}
 
 try:
     conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
-    flask_default_setiings_map = conf.get_map('flask_default')
-    token_settings_map = conf.get_map('token')
-    db_settings_map = conf.get_map('db')
+    c = conf.yml
+    flask_default_setiings_map = c.get('flask_default')
+    token_settings_map = c.get('token')
+    db_settings_map = c.get('db')
 except:   
     print("did you configured the file {} correctly ? \n"
-          "see readme for a sample settings \n".format(conf.conf_file))
+          "see readme for a sample settings \n".format(conf.config_file))
     sys.exit()
     
     
 if not flask_default_setiings_map.keys() >= must_have_in_flask_default_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.conf_file, must_have_in_flask_default_section ))
+       conf.config_file, must_have_in_flask_default_section ))
     sys.exit()
     
     
 if not token_settings_map.keys() >= must_have_in_token_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.conf_file, must_have_in_token_section ))
+       conf.config_file, must_have_in_token_section ))
     sys.exit()
     
     
 if not db_settings_map.keys() >= must_have_in_db_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.conf_file, db_settings_map ))
+       conf.config_file, db_settings_map ))
     sys.exit()
 
 
