@@ -1,6 +1,10 @@
 from urllib.parse import quote_plus
 from tokenleader.app1.configs.config_handler import Configs
-
+must_have_keys_in_yml = {'flask_default',
+                         'db',
+                         'token',
+                         'secrets'
+                         }
 conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
 
 ymldict = conf.yml
