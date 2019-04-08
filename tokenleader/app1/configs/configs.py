@@ -16,7 +16,8 @@ from tokenleader.app1.configs.config_handler import Configs
 #con = Configs('tokenleader')
 must_have_keys_in_yml = {'flask_default',
                          'db',
-                         'token'
+                         'token',
+                         'secrets'
                          }
 
 must_have_in_flask_default_section = {'host_name',
@@ -27,7 +28,7 @@ must_have_in_flask_default_section = {'host_name',
 
 must_have_in_token_section = {'private_key_file_location',
                               'public_key_file_location',
-                              'secrets'}
+                             }
 
 must_have_in_db_section = {'database'}
 
