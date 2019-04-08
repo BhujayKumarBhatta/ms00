@@ -17,7 +17,7 @@ def create_app(config_map_list=None, blue_print_list=None):
         for m in config_map_list:
 #            print(m)
             app.config.update(m)
-    print(app.config)
+#    print(app.config)
 #    app.config['DEBUG'] = True
 #    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:welcome123@tldbserver100:3306/auth'
 #    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False    
