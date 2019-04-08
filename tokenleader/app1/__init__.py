@@ -15,7 +15,7 @@ def create_app(config_map_list=None, blue_print_list=None):
     if config_map_list:
         for m in config_map_list:
             app.config.update(m)
-        
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:welcome123@tldbserver100:3306/auth'    
     db.init_app(app)
     with app.app_context():
 
