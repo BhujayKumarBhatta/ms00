@@ -62,7 +62,8 @@ class Configs():
         stores encrypted password. user should use a cli utility to call this method to generate 
         the file
         '''
-        file_loc_from_yml = self.yml.get('secrets').get('secrets_file_location')
+        file_loc_from_yml = self.yml.get('secrets')
+        print(file_loc_from_yml)
         filepath =  os.path.expanduser(file_loc_from_yml)
         dirpath = os.path.dirname(filepath)
         if not os.path.exists(dirpath):
