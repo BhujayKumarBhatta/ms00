@@ -15,6 +15,7 @@ def create_app(config_map_list=None, blue_print_list=None):
     app = Flask(__name__)
     if config_map_list:
         for m in config_map_list:
+            print(m)
             app.config.update(m)
     app.config['DEBUG'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:welcome123@tldbserver100:3306/auth'
