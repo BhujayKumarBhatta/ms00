@@ -1,17 +1,18 @@
-# from flask import Blueprint
-# from app_run import app1   
-# from app1.catalog import models_calalog 
+#from flask import Blueprint
+#from tokenleader import app1   
+#from app1.catalog import models_calalog 
 #  # this import is required for flask db migrate to recognize the new model
 # 
 # 
-# catalog_bp = Blueprint('catalog_bp', __name__)
-from tokenleader.app_run import app  
+#catalog_bp = Blueprint('catalog_bp', __name__)
+#from tokenleader.app_run import app  
 from sqlalchemy import exc
 from tokenleader.app1 import db
 from tokenleader.app1.catalog.models_catalog import  ServiceCatalog
-# from app1.catalog import models_catalog as mc
+#from app1.catalog import models_catalog as mc
 #from app1.catalog.models_catalog import ServiceCatalog
-
+from tokenleader.app1.authentication import models
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
 
 
 def get_input(text):
@@ -44,39 +45,66 @@ def list_services(cname=None):
     record = None
     record_list = []
     record_list_dic = []   
-    if cname:
+    if cname and cname != 'all':
         record = ServiceCatalog.query.filter_by(name=cname).first()
-        print(record.to_dict())
-        return(record.to_dict())
+        if record:
+            print(record.to_dict())
+            return(record.to_dict())
+        else:
+            msg = {'msg': 'no service record has been registered yet'}
+            print(msg)
+            return msg
+         
     else:
         record_list = ServiceCatalog.query.all()
         for record in record_list:
             print(record.to_dict())
-            record_list_dic.append(record)
+            record_list_dic.append(record.to_dict())
         return record_list_dic
     
     
 def delete_service(cname):
-    record = ServiceCatalog.query.filter_by(name=cname).first()
-    input_message = ('Are you sure to delete  :{},  with id {} \n'
-                         'Type \'yes\' to confirm  deleting  or no to abort:  '.format(
-                             record.name, record.id))    
-                
-    uinput = get_input(input_message)
-    if uinput == 'yes':          
+    record = None    
+    record = ServiceCatalog.query.filter_by(name=cname).first()   
+    if  record: 
+    #print('obj is  {}'.format(obj))
         try:
             db.session.delete(record)        
             db.session.commit()
             status = "{} has been  deleted successfully".format(cname) 
+            print(status)
+            #print('i am here')
+            return status
         except  Exception as e:
-                    status = "{} could not be deleted , the erro is: \n  {}".format(cname, e)
-                    print(status)
-                    #return status
+                status = "{} could not be deleted , the erro is: \n  {}".format(cname, e)
+                print(status)
+                #return status
     else:
-        status = 'Aborting deletion'
-        print(status)    
+        status = "{}  not found in database".format(record)
+        print(status)
     
     return status
     
-#        
+
+# def delete_service(cname):
+#     record = ServiceCatalog.query.filter_by(name=cname).first()
+#     input_message = ('Are you sure to delete  :{},  with id {} \n'
+#                          'Type \'yes\' to confirm  deleting  or no to abort:  '.format(
+#                              record.name, record.id))    
+#                 
+#     uinput = get_input(input_message)
+#     if uinput == 'yes':          
+#         try:
+#             db.session.delete(record)        
+#             db.session.commit()
+#             status = "{} has been  deleted successfully".format(cname) 
+#         except  Exception as e:
+#                     status = "{} could not be deleted , the erro is: \n  {}".format(cname, e)
+#                     print(status)
+#                     #return status
+#     else:
+#         status = 'Aborting deletion'
+#         print(status)    
+#     
+#     return status       
     

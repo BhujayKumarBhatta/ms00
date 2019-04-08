@@ -185,7 +185,7 @@ def main():
     if sys.argv[1] == 'initdb':
         print("performing db table creation as per the last schema"
               " change in migration dir : {}".format(migration_path))
-        os.environ["FLASK_APP"] = flask_app
+        os.environ["FLASK_APP"] = flask_app#(options.name, options.wfcorg, options.wfcou, options.wfcdept)
         subprocess.run(["flask" , "db" , "upgrade", "-d",  migration_path, ])
     
     #print(sys.argv[3])
@@ -269,7 +269,7 @@ def main():
         if options.entity == 'user':      
             if options.name == 'all':
                 af.list_users()
-            else:
+            else:                
                 af.list_users(options.name)         
         
     
@@ -311,8 +311,7 @@ def main():
             cf.list_services()
         else:
             cf.list_services(options.name)
-          
-    
+                    
     if  sys.argv[1] == 'deletservice': 
         cf.delete_service(options.name)           
     
