@@ -1,4 +1,5 @@
 from flask import Flask
+import pymysql
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 
@@ -15,7 +16,9 @@ def create_app(config_map_list=None, blue_print_list=None):
     if config_map_list:
         for m in config_map_list:
             app.config.update(m)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:welcome123@tldbserver100:3306/auth'    
+    app.config['DEBUG'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:welcome123@tldbserver100:3306/auth'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False    
     db.init_app(app)
     with app.app_context():
 
