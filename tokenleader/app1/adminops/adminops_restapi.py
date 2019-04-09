@@ -133,7 +133,7 @@ def add_dept():
 
 
 @adminops_bp.route('/add/org', methods=['POST'])
-@enforcer.enforce_access_rule_with_token('tokenleader.add_org)
+@enforcer.enforce_access_rule_with_token('tokenleader.add_org')
 def add_org():
     data_must_contain = ['oname']
     for k in data_must_contain:
@@ -148,7 +148,7 @@ def add_org():
 
 
 @adminops_bp.route('/add/role', methods=['POST'])
-@enforcer.enforce_access_rule_with_token('tokenleader.add_role)
+@enforcer.enforce_access_rule_with_token('tokenleader.add_role')
 def add_role():
     data_must_contain = ['rolename']
     for k in data_must_contain:
@@ -162,7 +162,7 @@ def add_role():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/user', methods=['DELETE'])
-@enforcer.enforce_access_rule_with_token('tokenleader.delete_user)
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_user')
 def delete_user():
     data_must_contain = ['username']
     for k in data_must_contain:
@@ -176,7 +176,7 @@ def delete_user():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/org', methods=['DELETE'])
-@enforcer.enforce_access_rule_with_token('tokenleader.delete_org)
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_org')
 def delete_org():
     data_must_contain = ['oname']
     for k in data_must_contain:
@@ -190,7 +190,7 @@ def delete_org():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/ou', methods=['DELETE'])
-@enforcer.enforce_access_rule_with_token('tokenleader.delete_ou)
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_ou')
 def delete_ou():
     data_must_contain = ['ouname']
     for k in data_must_contain:
@@ -204,7 +204,7 @@ def delete_ou():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/dept', methods=['DELETE'])
-@enforcer.enforce_access_rule_with_token('tokenleader.delete_dept)
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_dept')
 def delete_dept():
     data_must_contain = ['deptname']
     for k in data_must_contain:
@@ -218,7 +218,7 @@ def delete_dept():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/role', methods=['DELETE'])
-@enforcer.enforce_access_rule_with_token('tokenleader.delete_role)
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_role')
 def delete_role():
     data_must_contain = ['rolename']
     for k in data_must_contain:
@@ -232,7 +232,7 @@ def delete_role():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/wfc', methods=['DELETE'])
-@enforcer.enforce_access_rule_with_token('tokenleader.delete_wfc)
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_wfc')
 def delete_wfc():
     data_must_contain = ['wfcname']
     for k in data_must_contain:
