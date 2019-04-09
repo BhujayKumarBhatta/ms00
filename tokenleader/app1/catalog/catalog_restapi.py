@@ -56,7 +56,7 @@ def delete_service_byname(srvname):
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service', methods=['DELETE'])
-@enforcer.enforce_access_rule_with_token('tokenleader.delete_service)
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_service')
 def delete_service():
     data_must_contain = ['name']
     for k in data_must_contain:
