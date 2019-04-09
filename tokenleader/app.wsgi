@@ -8,4 +8,4 @@ with open(activate_this) as file_:
 import sys
 sys.path.insert(0, '/opt/tokenleader/')
 
-from tokenleader.app_run  import app as application
+from tokenleader.app  import app as application
