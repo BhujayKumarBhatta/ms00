@@ -1,7 +1,6 @@
 import os
 import sys
 import argparse
-import konfig
 
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir,
@@ -13,7 +12,6 @@ apppath = (os.path.join(possible_topdir,
 sys.path.insert(0, apppath)
 
 from tokenleader.app1.configs.config_handler import Configs
-#con = Configs('tokenleader')
 must_have_keys_in_yml = {'flask_default',
                          'db',
                          'token',
@@ -84,15 +82,6 @@ token_settings_map.update(key_attr)
 prod_configs_from_file = [flask_default_setiings_map,
                         token_settings_map,
                         db_settings_map, ]
-
-
-#test_db_settings_map = {'DEBUG': True,
-#                'SQLALCHEMY_DATABASE_URI': 'mysql+pymysql://root:welcome123@tldbserver100:3306/auth',
-#                'SQLALCHEMY_TRACK_MODIFICATIONS': False}
-
-
-#test_configs = [token_settings_map,
-#            test_db_settings_map]
 
 
 parser = argparse.ArgumentParser()
