@@ -218,15 +218,33 @@ for RBAC configure  /etc/tokenleader/role_to_acl_map.yml
       sudo vi /etc/tokenleader/role_to_acl_map.yml
 	 
 	  maintain at least one role and one entry in the following format 
-	 
-		- name: role1
+	   - name: role1
 		  allow:
-		   - tokenleader.adminops.adminops_restapi.list_users		
-		   - tokenleader.adminops.adminops_restapi.list_org		
-		   - tokenleader.adminops.adminops_restapi.list_ou	
-		   - tokenleader.adminops.adminops_restapi.list_role		
-		   - tokenleader.adminops.adminops_restapi.list_dept	  
-		  
+		   - tokenleader.list_users
+		   - tokenleader.list_user_byname
+		   - tokenleader.list_org
+		   - tokenleader.list_dept
+		   - tokenleader.list_role
+		   - tokenleader.list_ou
+		   - tokenleader.list_wfc
+		   - tokenleader.add_user
+		   - tokenleader.add_wfc
+		   - tokenleader.add_ou
+		   - tokenleader.add_dept
+		   - tokenleader.add_org
+		   - tokenleader.add_role
+		   - tokenleader.delete_user
+		   - tokenleader.delete_org
+		   - tokenleader.delete_ou
+		   - tokenleader.delete_dept
+		   - tokenleader.delete_role
+		   - tokenleader.delete_wfc
+		   - tokenleader.list_services
+		   - tokenleader.list_services_byname
+		   - tokenleader.add_service
+		   - tokenleader.delete_service
+		   - tokenleader.delete_service_byname
+	   		  
 		- name: role2
 		  allow:
 		  - service1.third_api.rulename3
