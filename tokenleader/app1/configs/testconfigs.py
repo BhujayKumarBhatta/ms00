@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 from tokenleader.app1.configs.config_handler import Configs
 
 _HERE = os.path.dirname(__file__)
-_SETTINGS_FILE = os.path.join(_HERE, 'tokenleader/tests/test_configs.yml')
+_SETTINGS_FILE = os.path.join(_HERE, '../../tests/test_configs.yml')
 
 must_have_keys_in_yml = {'flask_default',
                          'db',
