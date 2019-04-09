@@ -12,7 +12,7 @@ tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
 
 @catalog_bp.route('/list/services', methods=['GET'])
-#@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
 def list_services():  
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
@@ -24,14 +24,14 @@ def list_services():
 
       
 @catalog_bp.route('/list/service/<srvname>', methods=['GET'])
-#@enforcer.enforce_access_rule_with_token('tokenleader.list_services')
+@enforcer.enforce_access_rule_with_token('tokenleader.list_services_byname')
 def list_services_byname(srvname):  
     record = cf.list_services(srvname)
     response_obj = {"status": record}
     return jsonify(response_obj)
  
 @catalog_bp.route('/add/service', methods=['POST'])
-#@enforcer.enforce_access_rule_with_token('tokenleader.add_service')
+@enforcer.enforce_access_rule_with_token('tokenleader.add_service')
 def add_service():
     data_must_contain = ['name', 'urlint', 'urlext','urladmin']
     for k in data_must_contain:
@@ -49,12 +49,14 @@ def add_service():
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service/<srvname>', methods=['DELETE'])
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_service_byname')
 def delete_service_byname(srvname):   
     status = cf.delete_service(srvname)
     response_obj = {"status": status}
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service', methods=['DELETE'])
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_service)
 def delete_service():
     data_must_contain = ['name']
     for k in data_must_contain:

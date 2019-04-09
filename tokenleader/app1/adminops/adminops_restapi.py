@@ -11,7 +11,7 @@ tlclient = Client(auth_config)
 enforcer = Enforcer(tlclient)
  
 @adminops_bp.route('/list/users', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_user')
+@enforcer.enforce_access_rule_with_token('tokenleader.list_users')
 def list_users(wfc):
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
@@ -21,6 +21,7 @@ def list_users(wfc):
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/user/<username>', methods=['GET'])
+@enforcer.enforce_access_rule_with_token('tokenleader.list_user_byname')
 def list_user_byname(username):
     #print('i got the name from http argument {}'.format(username))
     record = af.list_users(username)
@@ -28,7 +29,7 @@ def list_user_byname(username):
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/org', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_org')
+@enforcer.enforce_access_rule_with_token('tokenleader.list_org')
 def list_org(wfc):
     org_dict = af.list_org()
     obj_json = {"name": org_dict.get('name')}
@@ -36,7 +37,7 @@ def list_org(wfc):
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/dept', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_dept')
+@enforcer.enforce_access_rule_with_token('tokenleader.list_dept')
 def list_dept(wfc):
     dept_dict = af.list_dept()
     obj_json = {"name": dept_dict.get('name')}
@@ -44,7 +45,7 @@ def list_dept(wfc):
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/role', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_role')
+@enforcer.enforce_access_rule_with_token('tokenleader.list_role')
 def list_role(wfc):
     role_dict = af.list_role()
     obj_json = {"name": role_dict.get('name')}
@@ -52,7 +53,7 @@ def list_role(wfc):
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/ou', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_ou')
+@enforcer.enforce_access_rule_with_token('tokenleader.list_ou')
 def list_ou(wfc):
     ou_dict = af.list_ou()
     obj_json = {"name": ou_dict.get('name')}
@@ -60,7 +61,7 @@ def list_ou(wfc):
     return jsonify(response_obj)
 
 @adminops_bp.route('/list/wfc', methods=['GET'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adminops.adminops_restapi.list_wfc')
+@enforcer.enforce_access_rule_with_token('tokenleader.list_wfc')
 def list_wfc():
     wfc_dict = af.list_wfc()
     obj_json = {"name": wfc_dict.get('name')}
@@ -69,7 +70,7 @@ def list_wfc():
 
 
 @adminops_bp.route('/add/user', methods=['POST'])
-@enforcer.enforce_access_rule_with_token('tokenleader.adduser')
+@enforcer.enforce_access_rule_with_token('tokenleader.add_user')
 def add_user(wfc):
     data_must_contain = ['username', 'email', 'password', 'wfc', 'roles']
     for k in data_must_contain:
@@ -87,6 +88,7 @@ def add_user(wfc):
     return jsonify(response_obj)
 
 @adminops_bp.route('/add/wfc', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.add_wfc')
 def add_wfc():
     data_must_contain = ['fname', 'orgname', 'ou_name', 'dept_name']
     for f in data_must_contain:
@@ -102,6 +104,7 @@ def add_wfc():
     return jsonify(response_obj)
 
 @adminops_bp.route('/add/ou', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.add_ou')
 def add_orgunit():
     data_must_contain = ['ouname']
     for k in data_must_contain:
@@ -115,6 +118,7 @@ def add_orgunit():
     return jsonify(response_obj)
 
 @adminops_bp.route('/add/dept', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.add_dept')
 def add_dept():
     data_must_contain = ['deptname']
     for k in data_must_contain:
@@ -129,6 +133,7 @@ def add_dept():
 
 
 @adminops_bp.route('/add/org', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.add_org)
 def add_org():
     data_must_contain = ['oname']
     for k in data_must_contain:
@@ -143,6 +148,7 @@ def add_org():
 
 
 @adminops_bp.route('/add/role', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.add_role)
 def add_role():
     data_must_contain = ['rolename']
     for k in data_must_contain:
@@ -156,6 +162,7 @@ def add_role():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/user', methods=['DELETE'])
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_user)
 def delete_user():
     data_must_contain = ['username']
     for k in data_must_contain:
@@ -169,6 +176,7 @@ def delete_user():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/org', methods=['DELETE'])
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_org)
 def delete_org():
     data_must_contain = ['oname']
     for k in data_must_contain:
@@ -182,6 +190,7 @@ def delete_org():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/ou', methods=['DELETE'])
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_ou)
 def delete_ou():
     data_must_contain = ['ouname']
     for k in data_must_contain:
@@ -195,6 +204,7 @@ def delete_ou():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/dept', methods=['DELETE'])
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_dept)
 def delete_dept():
     data_must_contain = ['deptname']
     for k in data_must_contain:
@@ -208,6 +218,7 @@ def delete_dept():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/role', methods=['DELETE'])
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_role)
 def delete_role():
     data_must_contain = ['rolename']
     for k in data_must_contain:
@@ -221,6 +232,7 @@ def delete_role():
     return jsonify(response_obj)
 
 @adminops_bp.route('/delete/wfc', methods=['DELETE'])
+@enforcer.enforce_access_rule_with_token('tokenleader.delete_wfc)
 def delete_wfc():
     data_must_contain = ['wfcname']
     for k in data_must_contain:
