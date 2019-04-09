@@ -17,7 +17,3 @@ connection_string = quote_plus(raw_connection_string)
 prod_db_conf = { 'SQLALCHEMY_DATABASE_URI': raw_connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False }
 # pick up values from yml and construct other confs here
 prod_conf_list = [prod_db_conf ,   ymldict ]
-
-
-
-
