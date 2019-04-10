@@ -7,7 +7,7 @@ page labelled as docker installation
 	
 	docker pull bhujay/tokenleader:1.8 
 	docker run -d -p 5001:5001  --name tokenleader  -v tokenleader_vol:/tmp bhujay/tokenleader:1.8 
-	echo '10.174.112.100   tldbserver100' >> /etc/hosts
+	echo '10.174.112.130   tldbserver130' >> /etc/hosts
 	docker exec -it tokenleader 'bash'
 	
 change the tl_url to https
@@ -70,7 +70,7 @@ configure the /etc/tokenleader/tokenleader_configs.yml
 	  ssl_settings: adhoc
 	db:
 	  database:
-	     Server: tldbserver100
+	     Server: tldbserver130
 	     Port: 3306
 	     Database: auth
 	     UID: root
