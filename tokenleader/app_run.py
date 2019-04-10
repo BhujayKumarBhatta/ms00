@@ -1,30 +1,9 @@
 # from app1 import flask_app_var
-
 from tokenleader import app1
-from tokenleader.app1.configs.config_handler import Configs 
-
-
 from tokenleader.app1.authentication.token_after_login import token_login_bp
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 # from app1.catalog.catalog_functions import catalog_bp
 from tokenleader.app1.catalog import models_catalog 
-
-must_have_keys_in_yml = {'flask_default',
-                         'db',
-                         'token',
-                         'secrets'
-                         }
-
-#must_have_in_flask_default_section = {'host_name',
-#                             'host_port',
-#                             'ssl',
-#                             'ssl_settings'
-#                             }
-
-conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
-
-c = conf.yml
-
 from tokenleader.app1.configs import prodconfigs
 
 # from prodcon import the prod_conf_ist  and  pass it here , 
@@ -33,14 +12,16 @@ from tokenleader.app1.configs import prodconfigs
 
 #bp_list = [token_login_bp, catalog_bp]
 bp_list = [token_login_bp, adminops_bp]
-
+#print(prodconfigs.prod_conf_list)
 app = app1.create_app(config_map_list= prodconfigs.prod_conf_list,
                       blue_print_list=bp_list, )
 
-host = c.get('flask_default').get('host_name')
-port = c.get('flask_default').get('host_port')
-ssl = c.get('flask_default').get('ssl')
-ssl_settings = c.get('flask_default').get('ssl_settings')
+conf=prodconfigs.conf.yml
+
+host = conf.get('flask_default').get('host_name')
+port = conf.get('flask_default').get('host_port')
+ssl = conf.get('flask_default').get('ssl')
+ssl_settings = conf.get('flask_default').get('ssl_settings')
 
 
 

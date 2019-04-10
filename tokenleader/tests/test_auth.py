@@ -80,7 +80,7 @@ class TestToken(TestUserModel):
                 
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-            print(data)
+#            print(data)
             #print(data['message'])
             self.assertTrue(data['status'] == 'success')
             self.assertTrue('auth_token' in data)
@@ -124,7 +124,7 @@ class TestToken(TestUserModel):
             self.assertTrue(sorted(roles_retrived_from_token) == sorted(['role1']))
             self.assertTrue((data['payload'].get('sub').get('wfc').get('org')) == 'org1')
             #print(data)
-            print(response.data.decode())
+#            print(response.data.decode())
             
 #     def test_token_gen_n_verify_success_for_registered_user_without_role(self):
 #         u1 = User(username='susan', email='susan@abc.com')
@@ -167,7 +167,7 @@ class TestToken(TestUserModel):
                 '/token/verify_token',                
                 headers=self.headers)
             data = json.loads(response.data.decode())
-            print(data)
+#            print(data)
             #self.assertTrue(data['status'] == 'Invalid token')
             self.assertTrue(isinstance('payload', str))
     
