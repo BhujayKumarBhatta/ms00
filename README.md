@@ -92,7 +92,10 @@ configure the /etc/tokenleader/tokenleader_configs.yml
 	     db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
 	     tokenleader_pwd_key_map: tl_pwd
 
-
+generate an encrypted password for the db(one time)
+===========================================================================================
+when running from source (git clone) encrypt-pwd command  is avilable from shell as python encrypt-pwd.sh or ./encrypt-pwd.sh 
+encrypt-pwd -k db_pwd -p <your password here>
 	
 /etc/tokenleader/role_to_acl_map.yml
 ============================================================================================
@@ -529,11 +532,13 @@ Testing
 ===========================================================================
 clone from git and then run 
 
-	python -m unittest discover tests    
+	python -m unittest discover tests  (ImportError: No module named 'tokenleader') --> 1
+	python -m unittest tokenleader.tests.test_catalog_ops  (Recommended instead of 1)
 
 to run single unit test 
  
-	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
+	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes (ImportError: No module named 'tokenleader.tests.unittests') --> 2 
+    python -m unittest tokenleader.tests.test_admin_ops.Test_User_Model.test_delete_org  (Recommended instead of 2)
 
 for token generation and verification  testing this is a useful test  
 
