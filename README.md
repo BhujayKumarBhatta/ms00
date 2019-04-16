@@ -190,7 +190,7 @@ or username and password can be supplied  theough the CLI
 Other CLI operaions 
 
 		tokenleader  verify -t <paste the toen here>
-		tokenleader  list user
+		tokenleader  list -e user
  
  
 Python client 
