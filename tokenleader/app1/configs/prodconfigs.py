@@ -65,9 +65,8 @@ with open(public_key_filename, 'r') as f:
 key_attr = {'private_key': private_key, 'public_key': public_key}
 token_settings_map.update(key_attr)
 
-raw_connection_string = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}'.format(dbs.get('UID'), conf.decrypt_password(dbs.get('db_pwd_key_map')), dbs.get('Server'), dbs.get('Port'), dbs.get('Database'))
+raw_connection_string = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}'.format(quote_plus(dbs.get('UID')), quote_plus(conf.decrypt_password(dbs.get('db_pwd_key_map'))), dbs.get('Server'), dbs.get('Port'), dbs.get('Database'))
 #converted_safe_uri #use quote_plus to construct the uri
-connection_string = quote_plus(raw_connection_string) 
 prod_db_conf = { 'SQLALCHEMY_DATABASE_URI': raw_connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False }
 # pick up values from yml and construct other confs here
 prod_configs_from_file = {**flask_default_setiings_map, **token_settings_map, **prod_db_conf}
