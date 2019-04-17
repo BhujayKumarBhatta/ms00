@@ -269,7 +269,7 @@ def main():
         if options.entity == 'user':      
             if options.name == 'all':
                 af.list_users()
-            else:
+            else:                
                 af.list_users(options.name)         
         
     
@@ -311,8 +311,7 @@ def main():
             cf.list_services()
         else:
             cf.list_services(options.name)
-          
-    
+                    
     if  sys.argv[1] == 'deletservice': 
         cf.delete_service(options.name)           
     

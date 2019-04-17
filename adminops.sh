@@ -17,8 +17,12 @@ apppath = (os.path.join(possible_topdir,
 
 sys.path.insert(0, apppath)
 
+sys.path.insert(0, apppath)
+
 migration_dir = apppath+'/migrations'
 from tokenleader.app1.adminops.admin_cli_parser import main
 
 if __name__ == '__main__':		
 	main()
+
+	

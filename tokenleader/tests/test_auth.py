@@ -9,7 +9,7 @@ from tokenleader.app1.authentication.token_after_login import \
 from tokenleader.tests.base_test import  BaseTestCase
 from tokenleader.tests.test_admin_ops import TestUserModel
 from tokenleader.app1 import db
-from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, OrgUnit, Department
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
 #from app1.authentication import admin_ops
 from tokenleader.app1.adminops import admin_functions as admin_ops
 from tokenleader.tests.test_catalog_ops import TestCatalog , service_catalog 
