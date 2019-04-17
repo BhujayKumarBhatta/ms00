@@ -1,0 +1,28 @@
+flask_default:
+  host_name: '0.0.0.0' # for docker this should 0.0.0.0
+  host_port: 5001
+  ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
+  ssl_settings: adhoc
+db:
+  database:
+     Server: tldbserver130
+     Port: 3306
+     Database: auth
+     UID: root
+     db_pwd_key_map: db_pwd
+     engine_connect_string: 'mssql+pymysql:///{0}'
+
+token:
+     #default will take the id_rsa keys from the  users home directory and .ssh directiry
+     #put the file name here if  the file name is different
+     #also the public ley need to be copied in the client settings file under /etc/tlclient
+     private_key_file_location: default
+     public_key_file_location: default
+     #use full path when deployed with apache
+     #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
+     #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
+secrets:
+     secrets_file_location: tokenleader/tests/test_data/secrets.yml # where you have write access
+     fernet_key_location: tokenleader/tests/test_data/fernetkeys # where you have write access and preferebly separated from secrets_file_location
+     db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
+     tokenleader_pwd_key_map: tl_pwd

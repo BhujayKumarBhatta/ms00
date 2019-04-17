@@ -1,8 +1,8 @@
-"""empty message
+"""remigrating cause of the error -> sqlalchemy.exc.InternalError
 
-Revision ID: 3f6c8ac80cdf
+Revision ID: 38acf813f0f0
 Revises: 
-Create Date: 2019-02-18 16:28:22.484257
+Create Date: 2019-04-08 16:28:29.871064
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3f6c8ac80cdf'
+revision = '38acf813f0f0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,12 +27,10 @@ def upgrade():
     sa.Column('endpoint_url_admin', sa.String(length=256), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('service_catalog', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_service_catalog_endpoint_url_admin'), ['endpoint_url_admin'], unique=True)
-        batch_op.create_index(batch_op.f('ix_service_catalog_endpoint_url_external'), ['endpoint_url_external'], unique=True)
-        batch_op.create_index(batch_op.f('ix_service_catalog_endpoint_url_internal'), ['endpoint_url_internal'], unique=True)
-        batch_op.create_index(batch_op.f('ix_service_catalog_name'), ['name'], unique=True)
-
+    op.create_index(op.f('ix_service_catalog_endpoint_url_admin'), 'service_catalog', ['endpoint_url_admin'], unique=True)
+    op.create_index(op.f('ix_service_catalog_endpoint_url_external'), 'service_catalog', ['endpoint_url_external'], unique=True)
+    op.create_index(op.f('ix_service_catalog_endpoint_url_internal'), 'service_catalog', ['endpoint_url_internal'], unique=True)
+    op.create_index(op.f('ix_service_catalog_name'), 'service_catalog', ['name'], unique=True)
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=False),
@@ -40,10 +38,8 @@ def upgrade():
     sa.Column('password_hash', sa.String(length=128), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('user', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_user_email'), ['email'], unique=True)
-        batch_op.create_index(batch_op.f('ix_user_username'), ['username'], unique=True)
-
+    op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
+    op.create_index(op.f('ix_user_username'), 'user', ['username'], unique=True)
     op.create_table('role',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('rolename', sa.String(length=64), nullable=False),
@@ -51,9 +47,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['userid'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('role', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_role_rolename'), ['rolename'], unique=True)
-
+    op.create_index(op.f('ix_role_rolename'), 'role', ['rolename'], unique=True)
     op.create_table('workfunctioncontext',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=False),
@@ -61,9 +55,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['userid'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('workfunctioncontext', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_workfunctioncontext_name'), ['name'], unique=True)
-
+    op.create_index(op.f('ix_workfunctioncontext_name'), 'workfunctioncontext', ['name'], unique=True)
     op.create_table('department',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=False),
@@ -71,9 +63,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['work_func_id'], ['workfunctioncontext.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('department', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_department_name'), ['name'], unique=True)
-
+    op.create_index(op.f('ix_department_name'), 'department', ['name'], unique=True)
     op.create_table('org_unit',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=False),
@@ -81,9 +71,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['work_func_id'], ['workfunctioncontext.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('org_unit', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_org_unit_name'), ['name'], unique=True)
-
+    op.create_index(op.f('ix_org_unit_name'), 'org_unit', ['name'], unique=True)
     op.create_table('organization',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=False),
@@ -93,9 +81,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['work_func_id'], ['workfunctioncontext.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('organization', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_organization_name'), ['name'], unique=True)
-
+    op.create_index(op.f('ix_organization_name'), 'organization', ['name'], unique=True)
     op.create_table('roles_n_user_map',
     sa.Column('role_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -109,36 +95,22 @@ def upgrade():
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('roles_n_user_map')
-    with op.batch_alter_table('organization', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_organization_name'))
-
+    op.drop_index(op.f('ix_organization_name'), table_name='organization')
     op.drop_table('organization')
-    with op.batch_alter_table('org_unit', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_org_unit_name'))
-
+    op.drop_index(op.f('ix_org_unit_name'), table_name='org_unit')
     op.drop_table('org_unit')
-    with op.batch_alter_table('department', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_department_name'))
-
+    op.drop_index(op.f('ix_department_name'), table_name='department')
     op.drop_table('department')
-    with op.batch_alter_table('workfunctioncontext', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_workfunctioncontext_name'))
-
+    op.drop_index(op.f('ix_workfunctioncontext_name'), table_name='workfunctioncontext')
     op.drop_table('workfunctioncontext')
-    with op.batch_alter_table('role', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_role_rolename'))
-
+    op.drop_index(op.f('ix_role_rolename'), table_name='role')
     op.drop_table('role')
-    with op.batch_alter_table('user', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_user_username'))
-        batch_op.drop_index(batch_op.f('ix_user_email'))
-
+    op.drop_index(op.f('ix_user_username'), table_name='user')
+    op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table('user')
-    with op.batch_alter_table('service_catalog', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_service_catalog_name'))
-        batch_op.drop_index(batch_op.f('ix_service_catalog_endpoint_url_internal'))
-        batch_op.drop_index(batch_op.f('ix_service_catalog_endpoint_url_external'))
-        batch_op.drop_index(batch_op.f('ix_service_catalog_endpoint_url_admin'))
-
+    op.drop_index(op.f('ix_service_catalog_name'), table_name='service_catalog')
+    op.drop_index(op.f('ix_service_catalog_endpoint_url_internal'), table_name='service_catalog')
+    op.drop_index(op.f('ix_service_catalog_endpoint_url_external'), table_name='service_catalog')
+    op.drop_index(op.f('ix_service_catalog_endpoint_url_admin'), table_name='service_catalog')
     op.drop_table('service_catalog')
     # ### end Alembic commands ###

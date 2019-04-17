@@ -3,7 +3,7 @@ from flask_testing import TestCase
 from flask import Flask
 from  tokenleader import app1
 from tokenleader.app1 import db
-from tokenleader.app1.configs.configs import test_configs
+from tokenleader.app1.configs import testconfigs
 import json
 from flask_testing import LiveServerTestCase
 
@@ -16,7 +16,7 @@ bp_list = [token_login_bp, adminops_bp]
 
 # from app_run import app
 
-app = app1.create_app(config_map_list = test_configs,  blue_print_list=bp_list)
+app = app1.create_app(config_map_list = testconfigs.test_conf_list,  blue_print_list=bp_list)
 #app = app1.create_app(config_map_list = test_configs)
 
 #class BaseTestCase(LiveServerTestCase):

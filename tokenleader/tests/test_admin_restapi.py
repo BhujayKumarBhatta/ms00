@@ -35,7 +35,7 @@ class TestAdminRestApi(BaseTestCase):
         with self.client:
             response = self.client.get('/list/user/u1')
             data = json.loads(response.data.decode())
-            print(data)
+#            print(data)
             self.assertTrue(data['status'].get('username') == 'u1')
     
     

@@ -1,4 +1,5 @@
 from flask import Flask
+import pymysql
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 
@@ -15,11 +16,10 @@ def create_app(config_map_list=None, blue_print_list=None):
     if config_map_list:
         for m in config_map_list:
             app.config.update(m)
-        
     db.init_app(app)
     with app.app_context():
 
-        if db.engine.url.drivername == 'sqlite':
+        if db.engine.url.drivername == 'pymysql':
             migrate.init_app(app, db,  render_as_batch=True)
         else:
             migrate.init_app(app, db )

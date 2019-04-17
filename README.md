@@ -7,7 +7,7 @@ page labelled as docker installation
 	
 	docker pull bhujay/tokenleader:1.8 
 	docker run -d -p 5001:5001  --name tokenleader  -v tokenleader_vol:/tmp bhujay/tokenleader:1.8 
-	
+	echo '10.174.112.130   tldbserver130' >> /etc/hosts
 	docker exec -it tokenleader 'bash'
 	
 change the tl_url to https
@@ -49,7 +49,7 @@ required configurations
 create  the following  directories and files under /etc folder. 
 
 1. ssh-keygen < press enter to select all defaults>  
-2. /etc/tokenleader/tokenleader_settings.ini
+2. /etc/tokenleader/tokenleader_configs.yml
 3. /etc/tokenleader/role_to_acl_map.yml
 4. /etc/tokenleader/client_configs.yml
 5. tokenleader-auth  -p <password of  tokeneader user>
@@ -57,36 +57,45 @@ create  the following  directories and files under /etc folder.
 
 sample configuration of each files
 =============================================================================
-configure the /etc/tokenleader/tokenleader_settings.ini
+configure the /etc/tokenleader/tokenleader_configs.yml
 =============================================================================
    
     sudo mkdir /etc/tokenleader	
-	sudo vi /etc/tokenleader/tokenleader_settings.ini
+	sudo vi /etc/tokenleader/tokenleader_configs.yml
 	
-	[flask_default]
-	host_name = localhost
-	host_port = 5001
-	# ssl not required  since the production deployment will be behind the apache with ssl 
-	# This is required only when flask is started  without apache for testing
-	# put enabled  for enabling ssl 
-	ssl = disabled   
-	ssl_settings = adhoc
+	flask_default:
+	  host_name: '0.0.0.0' # for docker this should 0.0.0.0
+	  host_port: 5001
+	  ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
+	  ssl_settings: adhoc
+	db:
+	  database:
+	     Server: tldbserver130
+	     Port: 3306
+	     Database: auth
+	     UID: root
+	     db_pwd_key_map: db_pwd
+	     engine_connect_string: 'mssql+pymysql:///{0}'
 	
-	[token]
-	# default will take the id_rsa keys from the  users home directory and .ssh directiry
-	# put the file name here if  the file name is different
-	#also the public ley need to be copied in the client settings file under /etc/tlclient
-	private_key_file_location = default 
-	public_key_file_location = default
-	#use full path when deployed with apache 
-	#private_key_file_location = /home/bhujay/.ssh/id_rsa
-	#public_key_file_location = /home/bhujay/.ssh/id_rsa.pub
-	
-	[db]
-	#change the database string  as appripriate for your production environment
-	#contributors are requested to put some more example here
-	SQLALCHEMY_DATABASE_URI = sqlite:////tmp/auth.db
-	SQLALCHEMY_TRACK_MODIFICATIONS = False
+	token:
+	     #default will take the id_rsa keys from the  users home directory and .ssh directiry
+	     #put the file name here if  the file name is different
+	     #also the public ley need to be copied in the client settings file under /etc/tlclient
+	     private_key_file_location: default
+	     public_key_file_location: default
+	     #use full path when deployed with apache
+	     #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
+	     #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
+	secrets:
+	     secrets_file_location: tokenleader/tests/test_data/secrets.yml # where you have write access
+	     fernet_key_location: tokenleader/tests/test_data/fernetkeys # where you have write access and preferebly separated from secrets_file_location
+	     db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
+	     tokenleader_pwd_key_map: tl_pwd
+
+generate an encrypted password for the db(one time)
+===========================================================================================
+when running from source (git clone) encrypt-pwd command  is avilable from shell as python encrypt-pwd.sh or ./encrypt-pwd.sh 
+encrypt-pwd -k db_pwd -p <your password here>
 	
 /etc/tokenleader/role_to_acl_map.yml
 ============================================================================================
@@ -181,7 +190,7 @@ or username and password can be supplied  theough the CLI
 Other CLI operaions 
 
 		tokenleader  verify -t <paste the toen here>
-		tokenleader  list user
+		tokenleader  list -e user
  
  
 Python client 
@@ -523,11 +532,13 @@ Testing
 ===========================================================================
 clone from git and then run 
 
-	python -m unittest discover tests    
+	python -m unittest discover tests  (ImportError: No module named 'tokenleader') --> 1
+	python -m unittest tokenleader.tests.test_catalog_ops  (Recommended instead of 1)
 
 to run single unit test 
  
-	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes  
+	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes (ImportError: No module named 'tokenleader.tests.unittests') --> 2 
+    python -m unittest tokenleader.tests.test_admin_ops.Test_User_Model.test_delete_org  (Recommended instead of 2)
 
 for token generation and verification  testing this is a useful test  
 

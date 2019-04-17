@@ -74,7 +74,7 @@ def get_token():
                 user_from_db = user.to_dict()
     
                 privkey = current_app.config.get('private_key')     
-                
+#                print(privkey)
                 payload = {
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                     'iat': datetime.datetime.utcnow(),
@@ -152,8 +152,8 @@ def verify_token():
 # aud: The audience of the token
 # qsh: query string hash
 # exp: Token expiration time defined in Unix time
-# nbf: “Not before” time that identifies the time before which the JWT must not be accepted for processing
-# iat: “Issued at” time, in Unix time, at which the token was issued
+# nbf: ï¿½Not beforeï¿½ time that identifies the time before which the JWT must not be accepted for processing
+# iat: ï¿½Issued atï¿½ time, in Unix time, at which the token was issued
 # jti: JWT ID claim provides a unique identifier for the JWT
 # 
 # '''
