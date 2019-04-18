@@ -10,8 +10,12 @@ apppath = (os.path.join(possible_topdir,
                                'tokenleader'))
 
 sys.path.insert(0, apppath)
-
-from tokenleader.app1.configs.prodconfigs import conf
+from tokenleader.app1.configs.config_handler import Configs
+must_have_keys_in_yml = {'flask_default',
+                         'db',
+                         'token',
+                         'secrets'
+                         }
 
 parser = argparse.ArgumentParser()
 
@@ -31,10 +35,11 @@ parser.add_argument('-p', '--password',
 
 try:                  
     options = parser.parse_args()    
-except:
+except Exception as e:
     #print usage help when no argument is provided
     parser.print_help(sys.stderr)
     sys.exit(1)
     
 def main():
+    conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
     conf.generate_secret_file(options.keymap, options.password)
