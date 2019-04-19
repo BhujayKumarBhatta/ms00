@@ -1,6 +1,7 @@
 from flask import request, Blueprint, jsonify, current_app,make_response
 import jwt
 import datetime
+import random
 from tokenleader.app1.authentication.models import User 
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 # from flask.globals import session
@@ -11,7 +12,9 @@ token_login_bp = Blueprint('token_login_bp', __name__)
 # don't try to access it here to avoid RuntimeError: Working outside of application context
 #publickey = current_app.config.get('public_key') 
 
-
+def generate_one_time_password():
+    rand = str(random.random())
+    return rand[-4:]
 def generate_encrypted_auth_token(payload, priv_key):
     try: 
         #print("inside the func start")       
@@ -40,6 +43,10 @@ def decrypt_n_verify_token(auth_token, pub_key):
             return 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
             return 'Invalid token. Please log in again.'
+
+@token_login_bp.route('/token/getotp', methods=['POST'])
+def get_otp():
+    return generate_one_time_password()
 
 @token_login_bp.route('/token/gettoken', methods=['POST'])
 def get_token():
@@ -82,16 +89,16 @@ def get_token():
                      }
 #                 print(payload)
                 
-                try:
-                    auth_token = jwt.encode(
-                        payload,
-                        privkey,
-                        algorithm = 'RS512')
+                # try:
+                #     auth_token = jwt.encode(
+                #         payload,
+                #         privkey,
+                #         algorithm = 'RS512')
                 
-                except Exception as e:
-                    return e
-                #auth_token = generate_encrypted_auth_token(payload, priv_key)
-                #print(auth_token)
+                # except Exception as e:
+                #     return e
+                auth_token = generate_encrypted_auth_token(payload, privkey)
+#                print(auth_token)
                 responseObject = {
                         'status': 'success',
                         'message': 'success',
