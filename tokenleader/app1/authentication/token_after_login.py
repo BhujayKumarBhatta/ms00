@@ -4,7 +4,8 @@ import datetime
 import requests
 import json
 import random
-from tokenleader.app1.authentication.models import User, Organization, Workfunctioncontext 
+from tokenleader.app1 import db
+from tokenleader.app1.authentication.models import User, Organization, Otp 
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 # from flask.globals import session
 
@@ -80,6 +81,9 @@ def get_token():
                 if not org.to_dict['orgtype'] == 'internal':
 #                   ldap authentication goes here
                     otp = generate_one_time_password()
+                    record = Otp(otp=otp,userid=user_from_db['id'])
+                    db.session.add(record)
+                    db.session.commit()
                     mail_to = user_from_db['email']
                     r = requests.post(url='http://10.174.112.79:5000/mail', data=json.dumps({'mail_to':mail_to, 'otp':otp}))
                     if r.status_code == 200:
