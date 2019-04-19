@@ -15,7 +15,15 @@ class Organization(db.Model):
     
     def __repr__(self):
         return '<Organization {}>'.format(self.name)
-    
+        
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'orgtype':  self.orgtype,
+            'auth_backend': self.auth_backend,
+            }
+        return data
 
 class Orgunit(db.Model):
     '''Dont put capital letter inbetween the word. only the first letter 

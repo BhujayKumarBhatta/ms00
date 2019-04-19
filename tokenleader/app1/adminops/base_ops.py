@@ -31,7 +31,7 @@ def register_ops1(obj, cname, orgname=None, ou_name=None, dept_name=None, wfc_na
                    email=None, pwd=None, **kwargs):    
     record = None    
     if obj == 'Organization' :        
-        otype = 'inernal'
+        otype = 'internal'
         org_auth_backend = 'standard'
         if 'orgtype' in kwargs:
             otype = kwargs['orgtype']   

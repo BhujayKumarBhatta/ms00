@@ -1,8 +1,10 @@
 from flask import request, Blueprint, jsonify, current_app,make_response
 import jwt
 import datetime
+import requests
+import json
 import random
-from tokenleader.app1.authentication.models import User 
+from tokenleader.app1.authentication.models import User, Organization, Workfunctioncontext 
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 # from flask.globals import session
 
@@ -16,18 +18,15 @@ def generate_one_time_password():
     rand = str(random.random())
     return rand[-4:]
 def generate_encrypted_auth_token(payload, priv_key):
-    try: 
-        #print("inside the func start")       
+    try:
         auth_token = jwt.encode(
              payload,
              priv_key,
              algorithm='RS512'
-        )  
-        #print("type of auth_token within the func is {}".format(type(auth_token)))
-        return auth_token  
-        #print("inside the func last line")                                
+        )
+        return auth_token
     except Exception as e:
-                    return e
+        return e
                 
 def decrypt_n_verify_token(auth_token, pub_key):
     try:
@@ -40,77 +39,81 @@ def decrypt_n_verify_token(auth_token, pub_key):
         return payload
 #         
     except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
+        return 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'
+        return 'Invalid token. Please log in again.'
 
-@token_login_bp.route('/token/getotp', methods=['POST'])
-def get_otp():
-    return generate_one_time_password()
+#@token_login_bp.route('/token/getotp', methods=['POST'])
+#def get_otp():
+#    return generate_one_time_password()
 
 @token_login_bp.route('/token/gettoken', methods=['POST'])
 def get_token():
     '''        
-     curl -X POST -d '{"username": "admin", "password": "admin"}'  \
+     curl -X POST -d '{"username": "admin", "password": "admin", "domain": "itc"}'  \
      -H "Content-Type: Application/json"  localhost:5001/token/gettoken
      '''
     if request.method == 'POST':
-        if 'username' in request.json and 'password' in request.json:
+        if 'username' in request.json and 'password' in request.json and 'domain' in request.json:
             username = request.json['username']
-            password = request.json['password'] 
-            
-            if username is None or password is None:
+            password = request.json['password']
+            domain = request.json['domain']
+            if username is None or password is None or domain is None:
                 responseObject = {
                         'status': 'missing authentication info ',
                         'message': 'no authentication information provided',}
-                return jsonify(responseObject) 
-                      
+                return jsonify(responseObject)
             user = User.query.filter_by(username=username).first()
-            svcs = ServiceCatalog.query.all()
-            service_catalog = {}
-            for s in svcs:
-                service_catalog[s.name]=s.to_dict()
-               
             if user is None:
                 responseObject = {
                         'status': 'User not registered',
                         'message': 'user not found, not registered yet',}
                 return jsonify(responseObject )
-               
-            if user.check_password(password):
-                user_from_db = user.to_dict()
-    
-                privkey = current_app.config.get('private_key')     
-#                print(privkey)
-                payload = {
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
-                    'iat': datetime.datetime.utcnow(),
-                    'sub': user_from_db
-                     }
-#                 print(payload)
-                
-                # try:
-                #     auth_token = jwt.encode(
-                #         payload,
-                #         privkey,
-                #         algorithm = 'RS512')
-                
-                # except Exception as e:
-                #     return e
-                auth_token = generate_encrypted_auth_token(payload, privkey)
-#                print(auth_token)
+            user_from_db = user.to_dict()
+            if not user_from_db['wfc']['org'] == domain:
                 responseObject = {
-                        'status': 'success',
-                        'message': 'success',
-                        'auth_token': auth_token.decode(),
-                        'service_catalog': service_catalog}
-            #         return auth_token
-                return make_response(jsonify(responseObject)), 201
+                    'status': 'Incorrect domain name',
+                    'message': 'domain name not found against this user',}
+                return jsonify(responseObject )
             else:
-                responseObject = {
-                        'status': 'Wrong Password',
-                        'message': 'Password did not match',}
-                return jsonify(responseObject)
+                org = Organization.query.filter_by(name=domain).first()
+                if not org.to_dict['orgtype'] == 'internal':
+#                   ldap authentication goes here
+                    otp = generate_one_time_password()
+                    mail_to = user_from_db['email']
+                    r = requests.post(url='http://10.174.112.79:5000/mail', data=json.dumps({'mail_to':mail_to, 'otp':otp}))
+                    if r.status_code == 200:
+                        responseObject = {
+                            'status': 'success',
+                            'message': r.text,}
+                        return jsonify(responseObject )
+                else:
+                    svcs = ServiceCatalog.query.all()
+                    service_catalog = {}
+                    for s in svcs:
+                        service_catalog[s.name]=s.to_dict()                        
+                    if user.check_password(password):
+                            privkey = current_app.config.get('private_key')     
+            #               print(privkey)
+                            payload = {
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                                'iat': datetime.datetime.utcnow(),
+                                'sub': user_from_db
+                                }
+                            auth_token = generate_encrypted_auth_token(payload, privkey)
+            #                print(auth_token)
+                            responseObject = {
+                                    'status': 'success',
+                                    'message': 'success',
+                                    'auth_token': auth_token.decode(),
+                                    'service_catalog': service_catalog}
+                        #         return auth_token
+                            return make_response(jsonify(responseObject)), 201
+                    else:
+                        responseObject = {
+                                'status': 'Wrong Password',
+                                'message': 'Password did not match',}
+                        return jsonify(responseObject)
                 
             
                 
