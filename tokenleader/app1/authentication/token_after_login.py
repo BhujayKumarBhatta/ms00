@@ -4,7 +4,8 @@ import datetime
 import requests
 import json
 import random
-from tokenleader.app1 import db
+import ldap
+from tokenleader.app1 import db, app
 from tokenleader.app1.authentication.models import User, Organization, Otp 
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 # from flask.globals import session
@@ -15,9 +16,24 @@ token_login_bp = Blueprint('token_login_bp', __name__)
 # don't try to access it here to avoid RuntimeError: Working outside of application context
 #publickey = current_app.config.get('public_key') 
 
-def generate_one_time_password():
+def generate_one_time_password(userid):
     rand = str(random.random())
-    return rand[-4:]
+    otp = rand[-4:]
+    record = Otp(otp=otp,userid=userid,creation_date=datetime.datetime.utcnow)
+    db.session.add(record)
+    db.session.commit()
+    mail_to = user_from_db['email']
+    r = requests.post(url='http://10.174.112.79:5000/mail', data=json.dumps({'mail_to':mail_to, 'otp':otp}))
+    if r.status_code == 200:
+        responseObject = {
+            'status': 'success',
+            'message': r.text,}
+        return jsonify(responseObject )
+    else:
+        responseObject = {
+            'status': 'failed',
+            'message': 'Mail failed!'}
+        return jsonify(responseObject)
 def generate_encrypted_auth_token(payload, priv_key):
     try:
         auth_token = jwt.encode(
@@ -37,8 +53,7 @@ def decrypt_n_verify_token(auth_token, pub_key):
             algorithm=['RS512']
         )
         
-        return payload
-#         
+        return payload         
     except jwt.ExpiredSignatureError:
         return 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
@@ -51,9 +66,10 @@ def decrypt_n_verify_token(auth_token, pub_key):
 @token_login_bp.route('/token/gettoken', methods=['POST'])
 def get_token():
     '''        
-     curl -X POST -d '{"username": "admin", "password": "admin", "domain": "itc"}'  \
+     curl -X POST -d '{"username": "admin", "password": "admin", "domain": "itc", "otp": "3376"}'  \
      -H "Content-Type: Application/json"  localhost:5001/token/gettoken
      '''
+    privkey = current_app.config.get('private_key')
     if request.method == 'POST':
         if 'username' in request.json and 'password' in request.json and 'domain' in request.json:
             username = request.json['username']
@@ -78,40 +94,61 @@ def get_token():
                 return jsonify(responseObject )
             else:
                 org = Organization.query.filter_by(name=domain).first()
+                svcs = ServiceCatalog.query.all()
+                service_catalog = {}
+                for s in svcs:
+                    service_catalog[s.name]=s.to_dict()
                 if not org.to_dict['orgtype'] == 'internal':
-#                   ldap authentication goes here
-                    otp = generate_one_time_password()
-                    record = Otp(otp=otp,userid=user_from_db['id'])
-                    db.session.add(record)
-                    db.session.commit()
-                    mail_to = user_from_db['email']
-                    r = requests.post(url='http://10.174.112.79:5000/mail', data=json.dumps({'mail_to':mail_to, 'otp':otp}))
-                    if r.status_code == 200:
-                        responseObject = {
-                            'status': 'success',
-                            'message': r.text,}
-                        return jsonify(responseObject )
-                else:
-                    svcs = ServiceCatalog.query.all()
-                    service_catalog = {}
-                    for s in svcs:
-                        service_catalog[s.name]=s.to_dict()                        
+                    if 'otp' in request.json:
+                        otp = request.json['otp']
+                        otpwd = Otp.query.filter_by(otp=otp).first()
+                        otpdet = otpwd.to_dict()
+                        creation_date = otpdet['creation_date']
+                        if otpwd is not None and otpdet['userid']==user_from_db['id'] and datetime.datetime.utcnow() - creation_date <= 10:
+    #                   ldap authentication goes here
+                            try:
+                                conn = ldap.initialize(app.config['LDAP_PROVIDER_URL'])
+                                conn.simple_bind_s(
+                        'cn=%s,ou=Users,dc=test,dc=tspbillldap,dc=itc' % username, password
+                                )
+                                payload = {
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                                'iat': datetime.datetime.utcnow(),
+                                'sub': user_from_db
+                                }
+                                auth_token = generate_encrypted_auth_token(payload, privkey)
+                                responseObject = {
+                                        'status': 'success',
+                                        'message': 'success',
+                                        'auth_token': auth_token.decode(),
+                                        'service_catalog': service_catalog}
+                                return make_response(jsonify(responseObject)), 201
+                            except ldap.INVALID_CREDENTIALS:
+                                responseObject = {
+                                    'status': 'Invalid credentials',
+                                    'message': 'Username or password not found',}
+                                return jsonify(responseObject )    
+                        else:
+                            responseObject = {
+                                'status': 'Incorrect OTP',
+                                'message': 'OTP not found',}
+                            return jsonify(responseObject )
+                    else:
+                        otp = generate_one_time_password(user_from_db['id'])
+                        return make_response(otp)
+                else:                        
                     if user.check_password(password):
-                            privkey = current_app.config.get('private_key')     
-            #               print(privkey)
                             payload = {
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                                 'iat': datetime.datetime.utcnow(),
                                 'sub': user_from_db
                                 }
                             auth_token = generate_encrypted_auth_token(payload, privkey)
-            #                print(auth_token)
                             responseObject = {
                                     'status': 'success',
                                     'message': 'success',
                                     'auth_token': auth_token.decode(),
                                     'service_catalog': service_catalog}
-                        #         return auth_token
                             return make_response(jsonify(responseObject)), 201
                     else:
                         responseObject = {

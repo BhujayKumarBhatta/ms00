@@ -11,7 +11,10 @@ db:
      UID: root
      db_pwd_key_map: db_pwd
      engine_connect_string: 'mssql+pymysql:///{0}'
-
+ldap:
+   Server: localhost
+   Port: 389
+   Version: 3
 token:
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different

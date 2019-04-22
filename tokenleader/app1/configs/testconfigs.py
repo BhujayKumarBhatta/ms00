@@ -27,6 +27,7 @@ try:
     conf = Configs('tokenleader', _SETTINGS_FILE, must_have_keys_in_yml=must_have_keys_in_yml)
     ymldict = conf.yml
     flask_default_setiings_map = ymldict.get('flask_default')
+    ldap_default_settings_map = ymldict.get('ldap')
     token_settings_map = ymldict.get('token')
     db_settings_map = ymldict.get('db')
     dbs = db_settings_map.get('database')
@@ -71,8 +72,9 @@ key_attr = {'private_key': private_key, 'public_key': public_key}
 token_settings_map.update(key_attr)
 
 connection_string = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}'.format(quote_plus(dbs.get('UID')), quote_plus(conf.decrypt_password(dbs.get('db_pwd_key_map'))), dbs.get('Server'), dbs.get('Port'), dbs.get('Database'))
+ldap_conn_string = 'ldap://{0}:{1}'.format(ldap_default_settings_map.get('Server'),ldap_default_settings_map.get('Port'))
 #converted_safe_uri #use quote_plus to construct the uri
-test_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False }
+test_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'LDAP_PROVIDER_URL': ldap_conn_string, 'LDAP_PROTOCOL_VERSION': ldap_default_settings_map.get('Version') }
 # pick up values from yml and construct other confs here
 test_configs_from_file = {**flask_default_setiings_map, **token_settings_map, **test_db_conf}
 test_conf_list = [test_configs_from_file ,   ymldict ]

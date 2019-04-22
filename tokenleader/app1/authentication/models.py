@@ -98,11 +98,19 @@ class Otp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     otp = db.Column(db.String(64), index=True, unique=True, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    creation_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    creation_date = db.Column(db.DateTime, nullable=False)
     # is_active = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return '<Otp {}>'.format(self.otp)
+    
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'otp': self.otp,
+            'userid': self.userid,
+            'creation_date': self.creation_date
+        }
 
 #This mapper table is used for many to many relationship between user and role
 roles_n_user_map = db.Table('roles_n_user_map',
