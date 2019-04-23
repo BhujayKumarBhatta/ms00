@@ -4,7 +4,7 @@ import datetime
 import requests
 import json
 import random
-import ldap
+import ldap3
 from tokenleader.app1 import db, app
 from tokenleader.app1.authentication.models import User, Organization, Otp 
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
@@ -107,7 +107,7 @@ def get_token():
                         if otpwd is not None and otpdet['userid']==user_from_db['id'] and datetime.datetime.utcnow() - creation_date <= 10:
     #                   ldap authentication goes here
                             try:
-                                conn = ldap.initialize(app.config['LDAP_PROVIDER_URL'])
+                                conn = ldap3.initialize(app.config['LDAP_PROVIDER_URL'])
                                 conn.simple_bind_s(
                         'cn=%s,ou=Users,dc=test,dc=tspbillldap,dc=itc' % username, password
                                 )
@@ -123,7 +123,7 @@ def get_token():
                                         'auth_token': auth_token.decode(),
                                         'service_catalog': service_catalog}
                                 return make_response(jsonify(responseObject)), 201
-                            except ldap.INVALID_CREDENTIALS:
+                            except ldap3.INVALID_CREDENTIALS:
                                 responseObject = {
                                     'status': 'Invalid credentials',
                                     'message': 'Username or password not found',}
