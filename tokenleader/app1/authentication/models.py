@@ -1,6 +1,7 @@
 from flask import  current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+from sqlalchemy.sql import func
 from tokenleader.app1 import db
 
 
@@ -98,7 +99,7 @@ class Otp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     otp = db.Column(db.String(64), index=True, unique=True, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    creation_date = db.Column(db.DateTime, nullable=False)
+    creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     # is_active = db.Column(db.Integer, default=0)
 
     def __repr__(self):
@@ -111,6 +112,7 @@ class Otp(db.Model):
             'userid': self.userid,
             'creation_date': self.creation_date
         }
+        return data
 
 #This mapper table is used for many to many relationship between user and role
 roles_n_user_map = db.Table('roles_n_user_map',

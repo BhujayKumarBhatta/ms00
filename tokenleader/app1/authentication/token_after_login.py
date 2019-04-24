@@ -18,13 +18,17 @@ token_login_bp = Blueprint('token_login_bp', __name__)
 
 def generate_one_time_password(userid):
     rand = str(random.random())
-    otp = rand[-4:]
-    record = Otp(otp=otp,userid=userid,creation_date=datetime.datetime.utcnow)
+    num = rand[-4:]
+    record = Otp(otp=num,userid=userid)
+#    print(record)
     db.session.add(record)
     db.session.commit()
+    user = User.query.filter_by(id=userid).first()
+    user_from_db = user.to_dict()
     mail_to = user_from_db['email']
-    r = requests.post(url='http://10.174.112.79:5000/mail', data=json.dumps({'mail_to':mail_to, 'otp':otp}))
+    r = requests.post(url='http://10.174.112.79:5000/mail', data=json.dumps({'mail_to':mail_to, 'otp':num}))
     if r.status_code == 200:
+        print('mail success')
         responseObject = {
             'status': 'success',
             'message': r.text,}
@@ -71,6 +75,7 @@ def get_token():
      '''
     privkey = current_app.config.get('private_key')
     if request.method == 'POST':
+#        print(json.loads(request.json))
         if 'username' in request.json and 'password' in request.json and 'domain' in request.json:
             username = request.json['username']
             password = request.json['password']
@@ -87,7 +92,7 @@ def get_token():
                         'message': 'user not found, not registered yet',}
                 return jsonify(responseObject )
             user_from_db = user.to_dict()
-            if not user_from_db['wfc']['org'] == domain:
+            if not user_from_db['wfc']['org'] == str(domain).strip():
                 responseObject = {
                     'status': 'Incorrect domain name',
                     'message': 'domain name not found against this user',}
@@ -98,13 +103,17 @@ def get_token():
                 service_catalog = {}
                 for s in svcs:
                     service_catalog[s.name]=s.to_dict()
-                if not org.to_dict['orgtype'] == 'internal':
+                if not org.to_dict()['orgtype'] == 'internal':
+                    print('incase of external domain')
                     if 'otp' in request.json:
+                        print('otp found')
                         otp = request.json['otp']
+                        print(otp)
                         otpwd = Otp.query.filter_by(otp=otp).first()
-                        otpdet = otpwd.to_dict()
-                        creation_date = otpdet['creation_date']
-                        if otpwd is not None and otpdet['userid']==user_from_db['id'] and datetime.datetime.utcnow() - creation_date <= 10:
+                        if otpwd:
+                           otpdet = otpwd.to_dict()
+                           creation_date = otpdet['creation_date']
+                        if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
     #                   ldap authentication goes here
                             try:
                                 conn = ldap3.initialize(app.config['LDAP_PROVIDER_URL'])
@@ -123,10 +132,10 @@ def get_token():
                                         'auth_token': auth_token.decode(),
                                         'service_catalog': service_catalog}
                                 return make_response(jsonify(responseObject)), 201
-                            except ldap3.INVALID_CREDENTIALS:
+                            except Exception as e:
                                 responseObject = {
-                                    'status': 'Invalid credentials',
-                                    'message': 'Username or password not found',}
+                                    'status': 'failed',
+                                    'message': e,}
                                 return jsonify(responseObject )    
                         else:
                             responseObject = {
@@ -136,7 +145,7 @@ def get_token():
                     else:
                         otp = generate_one_time_password(user_from_db['id'])
                         return make_response(otp)
-                else:                        
+                else:
                     if user.check_password(password):
                             payload = {
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
