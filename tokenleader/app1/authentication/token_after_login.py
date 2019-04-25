@@ -4,9 +4,9 @@ import datetime
 import requests
 import json
 import random
-import ldap3
+from ldap3 import Server, Connection, ALL
 from tokenleader.app1 import db, app
-from tokenleader.app1.authentication.models import User, Organization, Otp 
+from tokenleader.app1.authentication.models import User, Organization, Otp
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 # from flask.globals import session
 
@@ -75,10 +75,12 @@ def get_token():
      '''
     privkey = current_app.config.get('private_key')
     if request.method == 'POST':
-#        print(json.loads(request.json))
+#        print(str(request.json))
         if 'username' in request.json and 'password' in request.json and 'domain' in request.json:
             username = request.json['username']
+#            print(username)
             password = request.json['password']
+#            print(password)
             domain = request.json['domain']
             if username is None or password is None or domain is None:
                 responseObject = {
@@ -104,27 +106,32 @@ def get_token():
                 for s in svcs:
                     service_catalog[s.name]=s.to_dict()
                 if not org.to_dict()['orgtype'] == 'internal':
-                    print('incase of external domain')
+#                    print('incase of external domain')
                     if 'otp' in request.json:
-                        print('otp found')
+#                        print('otp found')
                         otp = request.json['otp']
-                        print(otp)
+#                        print(otp)
                         otpwd = Otp.query.filter_by(otp=otp).first()
                         if otpwd:
                            otpdet = otpwd.to_dict()
                            creation_date = otpdet['creation_date']
                         if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
-    #                   ldap authentication goes here
+#                           ldap authentication goes here
                             try:
-                                conn = ldap3.initialize(app.config['LDAP_PROVIDER_URL'])
-                                conn.simple_bind_s(
-                        'cn=%s,ou=Users,dc=test,dc=tspbillldap,dc=itc' % username, password
-                                )
+                                s = Server('localhost', port=389, get_info=ALL)
+                                username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(username)
+                                c = Connection(s, user=username, password=password)
+                                if not c.bind():
+                                     responseObject = {
+                                     'status': 'Wrong Password',
+                                     'message': 'Password did not match',}
+                                     return jsonify(responseObject)
                                 payload = {
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                                 'iat': datetime.datetime.utcnow(),
                                 'sub': user_from_db
                                 }
+#                               here 'sub' will have value from ldap
                                 auth_token = generate_encrypted_auth_token(payload, privkey)
                                 responseObject = {
                                         'status': 'success',
@@ -136,7 +143,7 @@ def get_token():
                                 responseObject = {
                                     'status': 'failed',
                                     'message': e,}
-                                return jsonify(responseObject )    
+                                return jsonify(responseObject )
                         else:
                             responseObject = {
                                 'status': 'Incorrect OTP',
@@ -164,22 +171,16 @@ def get_token():
                                 'status': 'Wrong Password',
                                 'message': 'Password did not match',}
                         return jsonify(responseObject)
-                
-            
-                
-    
+
 @token_login_bp.route('/token/verify_token', methods=['GET'])
-def verify_token():    
+def verify_token():
     '''
-    curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token    
-    
+    curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token
     '''
     publickey = current_app.config.get('public_key')
-    
     if 'X-Auth-Token' in request.headers:
         auth_token = request.headers.get('X-Auth-Token')
-        payload = decrypt_n_verify_token(auth_token, publickey) 
-        
+        payload = decrypt_n_verify_token(auth_token, publickey)
         if payload == "Signature expired. Please log in again." :
             status = "Signature expired"
             message = "Signature expired. Please log in and get a fresh token and send it for reverify."
@@ -188,21 +189,19 @@ def verify_token():
             message = "Invalid token. obtain a valid token and send it for verifiaction"
         else:
             status = "Verification Successful"
-            message = "Token has been successfully decrypted"    
-        
+            message = "Token has been successfully decrypted"
     else:
         status = "request header  missing 'X-Auth-Token' key or token value"
         message = "The request header must carry a 'X-Auth-Token' key whose value should be a valid JWT token  "
-        payload = {}    
-        
-        
+        payload = {}
     responseObject = {
                         'status': status,
                         'message': message,
-                        'payload': payload}
-            #         return auth_token
-    return make_response(jsonify(responseObject)), 201       
-#    
+                        'payload': payload
+                     }
+#                     return auth_token
+    return make_response(jsonify(responseObject)), 201
+#
 
 
 # '''
@@ -215,5 +214,5 @@ def verify_token():
 # nbf: �Not before� time that identifies the time before which the JWT must not be accepted for processing
 # iat: �Issued at� time, in Unix time, at which the token was issued
 # jti: JWT ID claim provides a unique identifier for the JWT
-# 
+#
 # '''
