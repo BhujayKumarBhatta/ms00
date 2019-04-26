@@ -118,7 +118,7 @@ def get_token():
                         if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
 #                           ldap authentication goes here
                             try:
-                                s = Server('localhost', port=389, get_info=ALL)
+                                s = Server(app.config['ldap']['Server'], port=app.config['ldap']['Port'], get_info=ALL)
                                 username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(username)
                                 c = Connection(s, user=username, password=password)
                                 if not c.bind():
