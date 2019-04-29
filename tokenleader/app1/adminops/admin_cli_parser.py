@@ -193,8 +193,12 @@ def main():
     
     if  sys.argv[1] == 'add':
         
-        if options.entity == 'org':      
-            af.register_org(options.name)
+        if options.entity == 'org':
+            orgtype = options.orgtype
+            if orgtype:      
+                af.register_org(options.name, orgtype)
+            else:
+                af.register_org(options.name)
                 
         
         if options.entity == 'ou':      

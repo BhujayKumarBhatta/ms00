@@ -26,7 +26,7 @@ def generate_one_time_password(userid):
     user = User.query.filter_by(id=userid).first()
     user_from_db = user.to_dict()
     mail_to = user_from_db['email']
-    r = requests.post(url='http://10.174.112.79:5000/mail', data=json.dumps({'mail_to':mail_to, 'otp':num}))
+    r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'otp':num}))
     if r.status_code == 200:
         print('mail success')
         responseObject = {
@@ -123,8 +123,8 @@ def get_token():
                                 c = Connection(s, user=username, password=password)
                                 if not c.bind():
                                      responseObject = {
-                                     'status': 'Wrong Password',
-                                     'message': 'Password did not match',}
+                                     'status': 'Invalid Credential',
+                                     'message': 'Username/Password did not match',}
                                      return jsonify(responseObject)
                                 payload = {
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),

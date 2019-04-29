@@ -10,8 +10,11 @@ from tokenleader.app1.adminops import base_ops as bops
 def register_user(uname, email, pwd, wfc_name, roles=None ):
     return bops.register_ops1('User', uname, email=email, pwd=pwd, wfc_name=wfc_name, roles=roles, )   
 
-def register_org(oname):   
-   return bops.register_ops1('Organization', oname)
+def register_org(oname, orgtype=None):
+   if not orgtype==None:   
+      return bops.register_ops1('Organization', oname, orgtype)
+   else:
+      return bops.register_ops1('Organization', oname)
 
 def register_ou(ouname):
     return bops.register_ops1('Orgunit', ouname)
@@ -31,7 +34,7 @@ def register_role(rname):
     return bops.register_ops1('Role', rname)
 
 def register_work_func_context(fname, orgname, ou_name, dept_name):
-    return bops.register_ops1('Workfunctioncontext', fname, orgname, ou_name, dept_name )
+    return bops.register_ops1('Workfunctioncontext', cname=fname, orgname=orgname, ou_name=ou_name, dept_name=dept_name )
 
 def list_users(uname=None):    
     return bops.list_ops('User', uname)

@@ -3,18 +3,20 @@ flask_default:
   host_port: 5001
   ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
   ssl_settings: adhoc
-db:
-  database:
-     Server: tldbserver130
-     Port: 3306
-     Database: test_auth
-     UID: root
-     db_pwd_key_map: db_pwd
-     engine_connect_string: 'mssql+pymysql:///{0}'
+database:
+   Server: tldbserver130
+   Port: 3306
+   Database: test_auth
+   UID: root
+   db_pwd_key_map: db_pwd
+   #engine_connect_string: 'mssql+pymysql:///{0}'
 ldap:
-   Server: 10.174.112.130
+   Server: localhost
    Port: 389
    Version: 3
+testotpmailservice:
+   Server: '10.174.112.79'
+   Port: 5000
 token:
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different

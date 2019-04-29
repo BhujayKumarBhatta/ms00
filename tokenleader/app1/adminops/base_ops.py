@@ -27,17 +27,19 @@ def get_validated_roles(roles):
     if valid_role_list:
         return valid_role_list
 
-def register_ops1(obj, cname, orgname=None, ou_name=None, dept_name=None, wfc_name=None, roles=None,
+def register_ops1(obj, cname, otype=None, orgname=None, ou_name=None, dept_name=None, wfc_name=None, roles=None,
                    email=None, pwd=None, **kwargs):    
     record = None    
     if obj == 'Organization' :        
-        otype = 'internal'
+        orgtype = 'internal'
         org_auth_backend = 'standard'
-        if 'orgtype' in kwargs:
-            otype = kwargs['orgtype']   
-        if 'auth_backend' in kwargs:
-            org_auth_backend = kwargs['auth_backend'] 
-        record =  Organization(name=cname, orgtype=otype, auth_backend=org_auth_backend)  
+        if otype:
+            orgtype = otype
+        # if 'orgtype' in kwargs:
+        #     otype = kwargs['orgtype']   
+        # if 'auth_backend' in kwargs:
+        #     org_auth_backend = kwargs['auth_backend'] 
+        record =  Organization(name=cname, orgtype=orgtype, auth_backend=org_auth_backend)  
     if obj == 'Orgunit' :
         record =  Orgunit(name=cname)
     if obj == 'Department' :
