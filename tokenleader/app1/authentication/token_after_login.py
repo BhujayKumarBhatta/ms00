@@ -116,7 +116,6 @@ def get_token():
                            otpdet = otpwd.to_dict()
                            creation_date = otpdet['creation_date']
                         if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
-#                           ldap authentication goes here
                             try:
                                 s = Server(app.config['ldap']['Server'], port=app.config['ldap']['Port'], get_info=ALL)
                                 username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(username)
@@ -131,7 +130,7 @@ def get_token():
                                 'iat': datetime.datetime.utcnow(),
                                 'sub': user_from_db
                                 }
-#                               here 'sub' will have value from ldap
+#                               here will 'sub' have value from ldap ?
                                 auth_token = generate_encrypted_auth_token(payload, privkey)
                                 responseObject = {
                                         'status': 'success',
@@ -171,6 +170,40 @@ def get_token():
                                 'status': 'Wrong Password',
                                 'message': 'Password did not match',}
                         return jsonify(responseObject)
+        else:
+            if 'email' in request.json:
+                email = request.json['email'] 
+                else:
+                    if email is not None:
+                        user = User.query.filter_by(email=email).first()
+                        if user is not None:
+                            user_from_db = user.to_dict()
+                            if 'otp' in request.json:
+                                otp = request.json['otp']
+                                otpwd = Otp.query.filter_by(otp=otp).first()
+                                if otpwd:
+                                    otpdet = otpwd.to_dict()
+                                    creation_date = otpdet['creation_date']
+                                if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
+                                    payload = {
+                                        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                                        'iat': datetime.datetime.utcnow(),
+                                        'sub': otpdet
+                                    }
+                                    auth_token = generate_encrypted_auth_token(payload, privkey)
+                                    responseObject = {
+                                            'status': 'success',
+                                            'message': 'success',
+                                            'auth_token': auth_token.decode()}
+                                    return make_response(jsonify(responseObject)), 201
+                            else:
+                                otp = generate_one_time_password(user_from_db['id'])
+                        else:
+                            responseObject = {
+                            'status': 'User not registered',
+                            'message': 'user not found, not registered yet',}
+                            return jsonify(responseObject )
+
 
 @token_login_bp.route('/token/verify_token', methods=['GET'])
 def verify_token():
