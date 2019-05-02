@@ -15,7 +15,7 @@ ldap:
    Port: 389
    Version: 3
 testotpmailservice:
-   Server: testoptmailserver79
+   Server: '10.174.112.79'
    Port: 5000
 token:
      #default will take the id_rsa keys from the  users home directory and .ssh directiry

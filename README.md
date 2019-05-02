@@ -9,7 +9,6 @@ page labelled as docker installation
 	docker run -d -p 5001:5001  --name tokenleader  -v tokenleader_vol:/tmp bhujay/tokenleader:1.8 
 	echo '10.174.112.130   tldbserver130' >> /etc/hosts
 	echo '10.174.112.100   testldapserver100' >> /etc/hosts
-	echo '10.174.112.79   testoptmailserver79' >> /etc/hosts
 	docker exec -it tokenleader 'bash'
 	
 change the tl_url to https
@@ -81,7 +80,7 @@ configure the /etc/tokenleader/tokenleader_configs.yml
     Port: 389
     Version: 3
   testotpmailservice:
-    Server: testoptmailserver79
+    Server: '10.174.112.79'
     Port: 5000	
 	token:
 		#default will take the id_rsa keys from the  users home directory and .ssh directiry
