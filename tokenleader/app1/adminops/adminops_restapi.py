@@ -135,15 +135,20 @@ def add_dept():
 @adminops_bp.route('/add/org', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_org')
 def add_org():
-    data_must_contain = ['oname','otype']
+    data_must_contain = ['oname']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
     oname = request.json['oname']
-    otype = request.json['otype']
     print('i got the name from http argument {}'.format(oname))
-    record = af.register_org(oname, otype)
+    if 'otype' in request.json and request.json['otype'] is not None:
+        otype = request.json['otype']
+        record = af.register_org(oname, otype)
+        print('i got the name {0}, otype {1} from http argument'.format(oname, otype))
+    else:
+        record = af.register_org(oname)
+        print('i got the name from http argument {}'.format(oname))
     response_obj = {"status": record}
     return jsonify(response_obj)
 
