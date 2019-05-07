@@ -76,13 +76,12 @@ def get_token():
     privkey = current_app.config.get('private_key')
     if request.method == 'POST':
 #        print(str(request.json))
-        if 'username' in request.json and 'password' in request.json and 'domain' in request.json:
+        if 'username' in request.json and 'password' in request.json:
             username = request.json['username']
 #            print(username)
             password = request.json['password']
 #            print(password)
-            domain = request.json['domain']
-            if username is None or password is None or domain is None:
+            if username is None or password is None:
                 responseObject = {
                         'status': 'missing authentication info ',
                         'message': 'no authentication information provided',}
@@ -94,70 +93,47 @@ def get_token():
                         'message': 'user not found, not registered yet',}
                 return jsonify(responseObject )
             user_from_db = user.to_dict()
-            if not user_from_db['wfc']['org'] == str(domain).strip():
-                responseObject = {
-                    'status': 'Incorrect domain name',
-                    'message': 'domain name not found against this user',}
-                return jsonify(responseObject )
+            if 'domain' in request.json:
+                if request.json['domain'] is not None and not user_from_db['wfc']['org'] == str(request.json['domain']).strip():
+                    responseObject = {
+                        'status': 'Incorrect domain name',
+                        'message': 'domain name not found against this user',}
+                    return jsonify(responseObject )
+                org = Organization.query.filter_by(name=request.json['domain']).first()
             else:
-                org = Organization.query.filter_by(name=domain).first()
-                svcs = ServiceCatalog.query.all()
-                service_catalog = {}
-                for s in svcs:
-                    service_catalog[s.name]=s.to_dict()
-                if not org.to_dict()['orgtype'] == 'internal':
+#                print('domain not in request')
+                org = Organization.query.filter_by(name=user_from_db['wfc']['org']).first()
+#            print('generic')
+            svcs = ServiceCatalog.query.all()
+            service_catalog = {}
+            for s in svcs:
+                service_catalog[s.name]=s.to_dict()
+            if not org.to_dict()['orgtype'] == 'internal':
 #                    print('incase of external domain')
-                    if 'otp' in request.json:
+                if 'otp' in request.json:
 #                        print('otp found')
-                        otp = request.json['otp']
+                    otp = request.json['otp']
 #                        print(otp)
-                        otpwd = Otp.query.filter_by(otp=otp).first()
-                        if otpwd:
-                           otpdet = otpwd.to_dict()
-                           creation_date = otpdet['creation_date']
-                        if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
-                            try:
-                                s = Server(app.config['ldap']['Server'], port=app.config['ldap']['Port'], get_info=ALL)
-                                username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(username)
-                                c = Connection(s, user=username, password=password)
-                                if not c.bind():
-                                     responseObject = {
-                                     'status': 'Invalid Credential',
-                                     'message': 'Username/Password did not match',}
-                                     return jsonify(responseObject)
-                                payload = {
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
-                                'iat': datetime.datetime.utcnow(),
-                                'sub': user_from_db
-                                }
-#                               here will 'sub' have value from ldap ?
-                                auth_token = generate_encrypted_auth_token(payload, privkey)
+                    otpwd = Otp.query.filter_by(otp=otp).first()
+                    if otpwd:
+                        otpdet = otpwd.to_dict()
+                        creation_date = otpdet['creation_date']
+                    if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
+                        try:
+                            s = Server(app.config['ldap']['Server'], port=app.config['ldap']['Port'], get_info=ALL)
+                            username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(username)
+                            c = Connection(s, user=username, password=password)
+                            if not c.bind():
                                 responseObject = {
-                                        'status': 'success',
-                                        'message': 'success',
-                                        'auth_token': auth_token.decode(),
-                                        'service_catalog': service_catalog}
-                                return make_response(jsonify(responseObject)), 201
-                            except Exception as e:
-                                responseObject = {
-                                    'status': 'failed',
-                                    'message': e,}
-                                return jsonify(responseObject )
-                        else:
-                            responseObject = {
-                                'status': 'Incorrect OTP',
-                                'message': 'OTP not found',}
-                            return jsonify(responseObject )
-                    else:
-                        otp = generate_one_time_password(user_from_db['id'])
-                        return make_response(otp)
-                else:
-                    if user.check_password(password):
+                                'status': 'Invalid Credential',
+                                'message': 'Username/Password did not match',}
+                                return jsonify(responseObject)
                             payload = {
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
-                                'iat': datetime.datetime.utcnow(),
-                                'sub': user_from_db
-                                }
+                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                            'iat': datetime.datetime.utcnow(),
+                            'sub': user_from_db
+                            }
+#                               here will 'sub' have value from ldap ?
                             auth_token = generate_encrypted_auth_token(payload, privkey)
                             responseObject = {
                                     'status': 'success',
@@ -165,44 +141,71 @@ def get_token():
                                     'auth_token': auth_token.decode(),
                                     'service_catalog': service_catalog}
                             return make_response(jsonify(responseObject)), 201
+                        except Exception as e:
+                            responseObject = {
+                                'status': 'failed',
+                                'message': e,}
+                            return jsonify(responseObject )
                     else:
                         responseObject = {
-                                'status': 'Wrong Password',
-                                'message': 'Password did not match',}
-                        return jsonify(responseObject)
-        else:
-            if 'email' in request.json:
-                email = request.json['email'] 
+                            'status': 'Incorrect OTP',
+                            'message': 'OTP not found',}
+                        return jsonify(responseObject )
                 else:
-                    if email is not None:
-                        user = User.query.filter_by(email=email).first()
-                        if user is not None:
-                            user_from_db = user.to_dict()
-                            if 'otp' in request.json:
-                                otp = request.json['otp']
-                                otpwd = Otp.query.filter_by(otp=otp).first()
-                                if otpwd:
-                                    otpdet = otpwd.to_dict()
-                                    creation_date = otpdet['creation_date']
-                                if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
-                                    payload = {
-                                        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
-                                        'iat': datetime.datetime.utcnow(),
-                                        'sub': otpdet
-                                    }
-                                    auth_token = generate_encrypted_auth_token(payload, privkey)
-                                    responseObject = {
-                                            'status': 'success',
-                                            'message': 'success',
-                                            'auth_token': auth_token.decode()}
-                                    return make_response(jsonify(responseObject)), 201
-                            else:
-                                otp = generate_one_time_password(user_from_db['id'])
-                        else:
-                            responseObject = {
-                            'status': 'User not registered',
-                            'message': 'user not found, not registered yet',}
-                            return jsonify(responseObject )
+                    otp = generate_one_time_password(user_from_db['id'])
+                    return make_response(otp)
+            else:
+                if user.check_password(password):
+                        payload = {
+                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                            'iat': datetime.datetime.utcnow(),
+                            'sub': user_from_db
+                            }
+                        auth_token = generate_encrypted_auth_token(payload, privkey)
+                        responseObject = {
+                                'status': 'success',
+                                'message': 'success',
+                                'auth_token': auth_token.decode(),
+                                'service_catalog': service_catalog}
+                        return make_response(jsonify(responseObject)), 201
+                else:
+                    responseObject = {
+                            'status': 'Wrong Password',
+                            'message': 'Password did not match',}
+                    return jsonify(responseObject)
+        # else:
+        #     if 'email' in request.json:
+        #         email = request.json['email'] 
+        #         else:
+        #             if email is not None:
+        #                 user = User.query.filter_by(email=email).first()
+        #                 if user is not None:
+        #                     user_from_db = user.to_dict()
+        #                     if 'otp' in request.json:
+        #                         otp = request.json['otp']
+        #                         otpwd = Otp.query.filter_by(otp=otp).first()
+        #                         if otpwd:
+        #                             otpdet = otpwd.to_dict()
+        #                             creation_date = otpdet['creation_date']
+        #                         if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
+        #                             payload = {
+        #                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+        #                                 'iat': datetime.datetime.utcnow(),
+        #                                 'sub': otpdet
+        #                             }
+        #                             auth_token = generate_encrypted_auth_token(payload, privkey)
+        #                             responseObject = {
+        #                                     'status': 'success',
+        #                                     'message': 'success',
+        #                                     'auth_token': auth_token.decode()}
+        #                             return make_response(jsonify(responseObject)), 201
+        #                     else:
+        #                         otp = generate_one_time_password(user_from_db['id'])
+        #                 else:
+        #                     responseObject = {
+        #                     'status': 'User not registered',
+        #                     'message': 'user not found, not registered yet',}
+        #                     return jsonify(responseObject )
 
 
 @token_login_bp.route('/token/verify_token', methods=['GET'])
