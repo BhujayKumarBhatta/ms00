@@ -99,6 +99,7 @@ def get_token():
                         'status': 'Incorrect domain name',
                         'message': 'domain name not found against this user',}
                     return jsonify(responseObject )
+#                print('domain is in request')
                 org = Organization.query.filter_by(name=request.json['domain']).first()
             else:
 #                print('domain not in request')
@@ -109,9 +110,9 @@ def get_token():
             for s in svcs:
                 service_catalog[s.name]=s.to_dict()
             if not org.to_dict()['orgtype'] == 'internal':
-#                    print('incase of external domain')
+#                print('incase of external domain')
                 if 'otp' in request.json:
-#                        print('otp found')
+#                    print('otp found')
                     otp = request.json['otp']
 #                        print(otp)
                     otpwd = Otp.query.filter_by(otp=otp).first()
