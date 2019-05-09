@@ -122,7 +122,7 @@ def get_token():
 #                    print('otp found')
                     otp = request.json['otp']
 #                        print(otp)
-                    otpwd = Otp.query.filter_by(otp=otp).first()
+                    otpwd = Otp.query.filter_by(otp=otp, is_active=1).first()
                     if otpwd:
                         otpdet = otpwd.to_dict()
                         creation_date = otpdet['creation_date']
