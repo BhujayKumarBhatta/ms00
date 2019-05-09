@@ -100,7 +100,7 @@ class Otp(db.Model):
     otp = db.Column(db.String(64), index=True, unique=True, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
-    # is_active = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Integer, default=1)
 
     def __repr__(self):
         return '<Otp {}>'.format(self.otp)

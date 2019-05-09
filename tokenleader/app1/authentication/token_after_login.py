@@ -5,6 +5,7 @@ import requests
 import json
 import random
 from ldap3 import Server, Connection, ALL
+from sqlalchemy.sql.expression import func
 from tokenleader.app1 import db, app
 from tokenleader.app1.authentication.models import User, Organization, Otp
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
@@ -17,27 +18,33 @@ token_login_bp = Blueprint('token_login_bp', __name__)
 #publickey = current_app.config.get('public_key') 
 
 def generate_one_time_password(userid):
-    rand = str(random.random())
-    num = rand[-4:]
-    record = Otp(otp=num,userid=userid)
-#    print(record)
-    db.session.add(record)
-    db.session.commit()
-    user = User.query.filter_by(id=userid).first()
-    user_from_db = user.to_dict()
-    mail_to = user_from_db['email']
-    r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'otp':num}))
-    if r.status_code == 200:
-        print('mail success')
-        responseObject = {
-            'status': 'success',
-            'message': r.text,}
-        return jsonify(responseObject )
-    else:
-        responseObject = {
-            'status': 'failed',
-            'message': 'Mail failed!'}
-        return jsonify(responseObject)
+    try:
+        rand = str(random.random())
+        num = rand[-4:]
+        lastotp = Otp.query.filter_by(func.max(id)).first()
+        lastotp.is_active = 0
+        db.session.commit()
+        record = Otp(otp=num,userid=userid)
+    #    print(record)
+        db.session.add(record)
+        db.session.commit()
+        user = User.query.filter_by(id=userid).first()
+        user_from_db = user.to_dict()
+        mail_to = user_from_db['email']
+        r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'otp':num}))
+        if r.status_code == 200:
+            print('mail success')
+            responseObject = {
+                'status': 'success',
+                'message': r.text,}
+            return jsonify(responseObject )
+        else:
+            responseObject = {
+                'status': 'failed',
+                'message': 'Mail failed!'}
+            return jsonify(responseObject)
+    except Exception as e:
+        return e
 def generate_encrypted_auth_token(payload, priv_key):
     try:
         auth_token = jwt.encode(
