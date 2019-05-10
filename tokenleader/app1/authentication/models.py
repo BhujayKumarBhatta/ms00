@@ -13,51 +13,63 @@ class Organization(db.Model):
     orgtype = db.Column(db.String(64))
     auth_backend = db.Column(db.String(64))
 #     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
-    
+
     def __repr__(self):
         return '<Organization {}>'.format(self.name)
-        
+
     def to_dict(self):
         data = {
             'id': self.id,
             'name': self.name,
             'orgtype':  self.orgtype,
-            'auth_backend': self.auth_backend,
+            'auth_backend': self.auth_backend
             }
         return data
 
 class Orgunit(db.Model):
-    '''Dont put capital letter inbetween the word. only the first letter 
+    '''Dont put capital letter inbetween the word. only the first letter
     should be capital'''
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
 #     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
-    
+
     def __repr__(self):
         return '<OrgUnit {}>'.format(self.name)
-    
+
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'name': self.name
+            }
+        return data
+
 
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
 #     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
-    
+
     def __repr__(self):
         return '<Department {}>'.format(self.name)
-    
+
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'name': self.name
+            }
+        return data
 
 class Workfunctioncontext(db.Model):
     '''relationship from wfc to  Organization, OrgUnit and Department are 'Many to One' type
        whereas  User to Workfunctioncontext is 'Many to one' and
-        Workfunctioncontext to User is one to many, i,e, wfc.users  which is created 
+        Workfunctioncontext to User is one to many, i,e, wfc.users  which is created
         Users class side, rule1: a.Relation to one b.Backref of (wfc.users) rule2: one_id(ForeignKey to one.id)'''
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
 #     org_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
-#     org = db.relationship("Workfunctioncontext", backref="users")    
+#     org = db.relationship("Workfunctioncontext", backref="users")
     org_id = db.Column(db.Integer, db.ForeignKey('organization.id'), nullable=False) #Rule 2
     org = db.relationship('Organization', backref = 'wfcs') #rule 1
-    
     orgunit_id = db.Column(db.Integer, db.ForeignKey('orgunit.id'), nullable=False)
     orgunit = db.relationship('Orgunit', backref = 'orgunits')
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
@@ -65,11 +77,11 @@ class Workfunctioncontext(db.Model):
 ##################################################################################################
 # the follwinf line is no more required as User class is providing  a 'users'  backref to Workfunctioncontext
 #     users = db.relationship('User', backref='wfc', lazy=True)
-# as a result we get 
+# as a result we get
 # >>> w.users
 # >>>[<User user1>, <User user2>]
 ################################################################################################
-    
+
     def __repr__(self):
         return '<WorkFunctionContext {} {} {} {} >'.format(self.name,
                                                            self.org,
@@ -81,7 +93,7 @@ class Workfunctioncontext(db.Model):
             'name': self.name,
             'org':  self.org.name,
             'orgunit':  self.orgunit.name,
-            'department':  self.department.name            
+            'department':  self.department.name
             }
         return data
 
@@ -93,7 +105,15 @@ class Role(db.Model):
 #     functional_context = db.relationship('Workfunctioncontext', backref = 'role', uselist=False, lazy = True)
 
     def __repr__(self):
-        return '<Role {}>'.format(self.rolename)    
+        return '<Role {}>'.format(self.rolename)
+
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'name': self.rolename,
+            'userid': self.userid
+            }
+        return data
 
 class Otp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -104,13 +124,14 @@ class Otp(db.Model):
 
     def __repr__(self):
         return '<Otp {}>'.format(self.otp)
-    
+
     def to_dict(self):
         data = {
             'id': self.id,
             'otp': self.otp,
             'userid': self.userid,
-            'creation_date': self.creation_date
+            'creation_date': self.creation_date,
+            'is_active': self.is_active
         }
         return data
 
@@ -124,51 +145,50 @@ roles_n_user_map = db.Table('roles_n_user_map',
 class User(db.Model):
     '''
     ######################################################################################
-# the following line is for one to one relationship and was moving the relationship 
+# the following line is for one to one relationship and was moving the relationship
 # pointer to  one wfc as we create users with same wfc .e.g user1 -->wfc1 , when user2--wfc2
 # will be created user1 to wfc1 will be deleted
 #     wfc = db.relationship('Workfunctioncontext', backref = 'user', uselist=False, ) #lazy = True
 
-# We need to use many to one realtionship instead as given below.  by giving backref , 
+# We need to use many to one realtionship instead as given below.  by giving backref ,
 #Workfunctioncontext will have the Workfunctioncontext.users avilable
 #no need for creating users relationship st the Workfunctioncontext class end
 
 # moreover , while user  exists with a wfc assigned to it , the wfc can not be deleted . the error will be
 # wfc1 could not be deleted , the erro is:
-# (sqlite3.IntegrityError) NOT NULL constraint failed: 
-# user.wfc_id [SQL: 'UPDATE user SET wfc_id=? WHERE user.id = ?'] 
+# (sqlite3.IntegrityError) NOT NULL constraint failed:
+# user.wfc_id [SQL: 'UPDATE user SET wfc_id=? WHERE user.id = ?']
 # [parameters: ((None, 1), (None, 2))] (Background on this error at: http://sqlalche.me/e/gkpj)
 #################################################################################################
 '''
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    email = db.Column(db.String(120), index=True, unique=True)    
+    email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 #     roles = db.relationship('Role', secondary=roles_n_user_map, lazy='dynamic' ,
 #         backref=db.backref('users', lazy='dynamic' ))
-    roles = db.relationship('Role', secondary=roles_n_user_map, 
+    roles = db.relationship('Role', secondary=roles_n_user_map,
         backref=db.backref('users' ))
 
     wfc_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
-    wfc = db.relationship("Workfunctioncontext", backref="users")    
-    
+    wfc = db.relationship("Workfunctioncontext", backref="users")
+
 #     roles = db.relationship('Role', lazy='dynamic' ,
 #         backref=db.backref('users', lazy='dynamic' ))
-    
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
-    
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
-     
+
     def check_password(self, password):
         return  check_password_hash(self.password_hash, password)
     #Todo: need changes as well
     def is_admin(self):
         if self.role == 'admin' or self.role=='Admin' or self.role=='ADMIN':
             return True
-        
-    
+
     def to_dict(self):
         data = {
             'id': self.id,
@@ -178,18 +198,18 @@ class User(db.Model):
             #'roles': [role for role in self.roles] flsk is not able to return sql object , expecting string
             'wfc': self.wfc.to_dict()
             }
-        return data    
+        return data
 ################################################################################################ The user object listing will be like this
 
 # [{'username': 'user1', 'wfc': {'name': 'wfc1', 'orgunit': 'ou1', 'department': 'dept1', 'id': 1, 'org': 'org1'}, 'roles': ['role1'], 'id': 1, 'email': 'user1'}, 
 # {'username': 'user2', 'wfc': {'name': 'wfc1', 'orgunit': 'ou1', 'department': 'dept1', 'id': 1, 'org': 'org1'}, 'roles': ['role1'], 'id': 2, 'email': 'user2'}]    
-#     
+#
 
 
 
-    
 
-    
+
+
 
 
 

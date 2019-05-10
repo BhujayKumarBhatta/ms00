@@ -101,47 +101,47 @@ def get_records_from_db(obj, cname=None):
     if obj == 'Organization' :
         if cname:
             record = Organization.query.filter_by(name=cname).first()
-            print('got record  {}'.format(record))
+#            print('got record  {}'.format(record))
         else:
             record_list = Organization.query.all()
-            print('got record list {}'.format(record_list))
+#            print('got record list {}'.format(record_list))
     if obj == 'Orgunit':
         if cname:
             record = Orgunit.query.filter_by(name=cname).first()
-            print('got record  {}'.format(record))
+#            print('got record  {}'.format(record))
         else:
             record_list = Orgunit.query.all()
-            print('got record list {}'.format(record_list))
+#            print('got record list {}'.format(record_list))
     if obj == 'Department':
         if cname:
             record = Department.query.filter_by(name=cname).first()
-            print('got record  {}'.format(record))
+#            print('got record  {}'.format(record))
         else:
             record_list = Department.query.all()
-            print('got record list {}'.format(record_list))
+#            print('got record list {}'.format(record_list))
     if obj == 'Workfunctioncontext':
         if cname:
             record = Workfunctioncontext.query.filter_by(name=cname).first()
-            print('got record  {}'.format(record))
+#            print('got record  {}'.format(record))
         else:
             record_list = Workfunctioncontext.query.all()
-            print('got record list {}'.format(record_list))
+#            print('got record list {}'.format(record_list))
     if obj == 'Role':
         if cname:
             record = Role.query.filter_by(rolename=cname).first()
-            print('got record  {}'.format(record))
+#            print('got record  {}'.format(record))
         else:
             record_list = Role.query.all()
-            print('got record list {}'.format(record_list))
+#            print('got record list {}'.format(record_list))
     if obj == 'User':
         if cname:
             record = User.query.filter_by(username=cname).first()
 #            print(record.wfc)
-            print('got record  {}'.format(record))
+#            print('got record  {}'.format(record))
         else:
             #print('i am inside dbops recordlist')
             record_list = User.query.all()
-            print('got record list {}'.format(record_list))
+#            print('got record list {}'.format(record_list))
 
     if record_list:
         return record_list
@@ -209,7 +209,7 @@ def list_ops(obj, cname=None, *args, **kwargs):
             record_list_of_dict.append(record_to_dict)
 #                 print('i am on the loop  result {}'.format(record_list_of_dict))
             result = record_list_of_dict
-            print(result)
+#            print(result)
            # else:            
             #    result = {'id': record.id, 'name': record.name , 'record': record}
              #   print(result)                

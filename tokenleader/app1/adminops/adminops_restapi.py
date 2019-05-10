@@ -62,7 +62,7 @@ def list_ou(wfc):
 
 @adminops_bp.route('/list/wfc', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_wfc')
-def list_wfc():
+def list_wfc(wfc):
     wfc_dict = af.list_wfc()
 #    obj_json = {"name": wfc_dict.get('name')}
     response_obj = {"status": wfc_dict}
