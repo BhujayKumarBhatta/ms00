@@ -5,6 +5,7 @@ import requests
 import json
 import random
 from ldap3 import Server, Connection, ALL
+#from sqlalchemy.sql import func
 from tokenleader.app1 import db, app
 from tokenleader.app1.authentication.models import User, Organization, Otp
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
@@ -17,27 +18,37 @@ token_login_bp = Blueprint('token_login_bp', __name__)
 #publickey = current_app.config.get('public_key') 
 
 def generate_one_time_password(userid):
-    rand = str(random.random())
-    num = rand[-4:]
-    record = Otp(otp=num,userid=userid)
-#    print(record)
-    db.session.add(record)
-    db.session.commit()
-    user = User.query.filter_by(id=userid).first()
-    user_from_db = user.to_dict()
-    mail_to = user_from_db['email']
-    r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'otp':num}))
-    if r.status_code == 200:
-        print('mail success')
-        responseObject = {
-            'status': 'success',
-            'message': r.text,}
-        return jsonify(responseObject )
-    else:
-        responseObject = {
-            'status': 'failed',
-            'message': 'Mail failed!'}
-        return jsonify(responseObject)
+    try:
+        rand = str(random.random())
+        num = rand[-4:]
+        found = Otp.query.all()
+        if found:
+            lastotp = Otp.query.filter_by(is_active='Y').first()
+            if lastotp:
+#                print('old active otp found')
+                lastotp.is_active = 'N'
+                db.session.commit()
+            record = Otp(otp=num,userid=userid)
+#            print(record)
+            db.session.add(record)
+            db.session.commit()
+            user = User.query.filter_by(id=userid).first()
+            user_from_db = user.to_dict()
+            mail_to = user_from_db['email']
+            r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'otp':num}))
+            if r.status_code == 200:
+                print('mail success')
+                responseObject = {
+                   'status': 'success',
+                   'message': r.text,}
+                return jsonify(responseObject )
+            else:
+                responseObject = {
+                    'status': 'failed',
+                    'message': 'Mail failed!'}
+                return jsonify(responseObject)
+    except Exception as e:
+        return e
 def generate_encrypted_auth_token(payload, priv_key):
     try:
         auth_token = jwt.encode(
@@ -99,6 +110,7 @@ def get_token():
                         'status': 'Incorrect domain name',
                         'message': 'domain name not found against this user',}
                     return jsonify(responseObject )
+#                print('domain is in request')
                 org = Organization.query.filter_by(name=request.json['domain']).first()
             else:
 #                print('domain not in request')
@@ -109,12 +121,12 @@ def get_token():
             for s in svcs:
                 service_catalog[s.name]=s.to_dict()
             if not org.to_dict()['orgtype'] == 'internal':
-#                    print('incase of external domain')
+#                print('incase of external domain')
                 if 'otp' in request.json:
-#                        print('otp found')
+#                    print('otp found')
                     otp = request.json['otp']
-#                        print(otp)
-                    otpwd = Otp.query.filter_by(otp=otp).first()
+#                    print(otp)
+                    otpwd = Otp.query.filter_by(otp=otp, is_active="Y").first()
                     if otpwd:
                         otpdet = otpwd.to_dict()
                         creation_date = otpdet['creation_date']
