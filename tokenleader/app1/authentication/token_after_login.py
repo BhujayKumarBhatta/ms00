@@ -139,13 +139,12 @@ def get_token():
                     'status': 'Incorrect OTP',
                     'message': 'OTP not found',}
                 return jsonify(responseObject )
-        if 'username' in request.json and 'password' in request.json and 'domain' in request.json:
+        if 'username' in request.json and 'password' in request.json:
             username = request.json['username']
 #            print(username)
             password = request.json['password']
 #            print(password)
-            domain = request.json['domain']
-            if username is None or password is None or domain is None:
+            if username is None or password is None:
                 responseObject = {
                         'status': 'missing authentication info ',
                         'message': 'no authentication information provided',}
@@ -157,48 +156,52 @@ def get_token():
                         'message': 'user not found, not registered yet',}
                 return jsonify(responseObject )
             user_from_db = user.to_dict()
-            if not user_from_db['wfc']['org'] == str(domain).strip():
-                responseObject = {
-                    'status': 'Incorrect domain name',
-                    'message': 'domain name not found against this user',}
-                return jsonify(responseObject )
+            if 'domain' in request.json:
+                if request.json['domain'] is not None and not user_from_db['wfc']['org'] == str(request.json['domain']).strip():
+                    responseObject = {
+                        'status': 'Incorrect domain name',
+                        'message': 'domain name not found against this user',}
+                    return jsonify(responseObject )
+#                print('domain is in request')
+                org = Organization.query.filter_by(name=request.json['domain']).first()
             else:
-                org = Organization.query.filter_by(name=domain).first()
-                svcs = ServiceCatalog.query.all()
-                service_catalog = {}
-                for s in svcs:
-                    service_catalog[s.name]=s.to_dict()
-                if not org.to_dict()['orgtype'] == 'internal':
+#                print('domain not in request')
+                org = Organization.query.filter_by(name=user_from_db['wfc']['org']).first()
+            svcs = ServiceCatalog.query.all()
+            service_catalog = {}
+            for s in svcs:
+                service_catalog[s.name]=s.to_dict()
+            if not org.to_dict()['orgtype'] == 'internal':
 #                    print('incase of external domain')
-                    s = Server(app.config['ldap']['Server'], port=app.config['ldap']['Port'], get_info=ALL)
-                    username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(username)
-                    c = Connection(s, user=username, password=password)
-                    if not c.bind():
+                s = Server(app.config['ldap']['Server'], port=app.config['ldap']['Port'], get_info=ALL)
+                username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(username)
+                c = Connection(s, user=username, password=password)
+                if not c.bind():
+                    responseObject = {
+                        'status': 'Invalid Credential',
+                        'message': 'Username/Password did not match',}
+                    return jsonify(responseObject)
+                otp = generate_one_time_password(user_from_db['id'])
+                return make_response(otp)
+            else:
+                if user.check_password(password):
+                        payload = {
+                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                            'iat': datetime.datetime.utcnow(),
+                            'sub': user_from_db
+                            }
+                        auth_token = generate_encrypted_auth_token(payload, privkey)
                         responseObject = {
-                            'status': 'Invalid Credential',
-                            'message': 'Username/Password did not match',}
-                        return jsonify(responseObject)
-                    otp = generate_one_time_password(user_from_db['id'])
-                    return make_response(otp)
+                                'status': 'success',
+                                'message': 'success',
+                                'auth_token': auth_token.decode(),
+                                'service_catalog': service_catalog}
+                        return make_response(jsonify(responseObject)), 201
                 else:
-                    if user.check_password(password):
-                            payload = {
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
-                                'iat': datetime.datetime.utcnow(),
-                                'sub': user_from_db
-                                }
-                            auth_token = generate_encrypted_auth_token(payload, privkey)
-                            responseObject = {
-                                    'status': 'success',
-                                    'message': 'success',
-                                    'auth_token': auth_token.decode(),
-                                    'service_catalog': service_catalog}
-                            return make_response(jsonify(responseObject)), 201
-                    else:
-                        responseObject = {
-                                'status': 'Wrong Password',
-                                'message': 'Password did not match',}
-                        return jsonify(responseObject)
+                    responseObject = {
+                            'status': 'Wrong Password',
+                            'message': 'Password did not match',}
+                    return jsonify(responseObject)
         # else:
         #     if 'email' in request.json:
         #         email = request.json['email'] 
