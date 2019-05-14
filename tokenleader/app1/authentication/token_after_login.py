@@ -111,6 +111,7 @@ def get_token():
             if otpwd:
                 otpdet = otpwd.to_dict()
                 creation_date = otpdet['creation_date']
+                otpdet['creation_date'] = str(otpdet['creation_date'])
             if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
                 try:
                     svcs = ServiceCatalog.query.all()
@@ -120,9 +121,11 @@ def get_token():
                     payload = {
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                     'iat': datetime.datetime.utcnow(),
-                    'sub': otpdet
+                    'sub': {**otpdet, **user_from_db}
                     }
+                    # print(otpdet)
                     auth_token = generate_encrypted_auth_token(payload, privkey)
+                    # print(auth_token)
                     responseObject = {
                             'status': 'success',
                             'message': 'success',
