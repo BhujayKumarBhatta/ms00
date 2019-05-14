@@ -35,17 +35,17 @@ def generate_one_time_password(userid):
             user = User.query.filter_by(id=userid).first()
             user_from_db = user.to_dict()
             mail_to = user_from_db['email']
-            r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'otp':num}))
-            if r.status_code == 200:
-                print('mail success')
+            r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg':'<html><body>Your OTP is <b><font color=blue>'+str(num)+'</font></b>. It is only valid for 10 minutes.</body></html>'}))
+            if r.status_code == 201:
+                # print('mail success')
                 responseObject = {
                    'status': 'success',
-                   'message': r.text,}
+                   'message': 'Otp has been sent to your email id: '+mail_to}
                 return jsonify(responseObject )
             else:
                 responseObject = {
                     'status': 'failed',
-                    'message': 'Mail failed!'}
+                    'message': e}
                 return jsonify(responseObject)
     except Exception as e:
         return e
@@ -205,39 +205,52 @@ def get_token():
                             'status': 'Wrong Password',
                             'message': 'Password did not match',}
                     return jsonify(responseObject)
-        # else:
-        #     if 'email' in request.json:
-        #         email = request.json['email'] 
-        #         else:
-        #             if email is not None:
-        #                 user = User.query.filter_by(email=email).first()
-        #                 if user is not None:
-        #                     user_from_db = user.to_dict()
-        #                     if 'otp' in request.json:
-        #                         otp = request.json['otp']
-        #                         otpwd = Otp.query.filter_by(otp=otp).first()
-        #                         if otpwd:
-        #                             otpdet = otpwd.to_dict()
-        #                             creation_date = otpdet['creation_date']
-        #                         if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
-        #                             payload = {
-        #                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
-        #                                 'iat': datetime.datetime.utcnow(),
-        #                                 'sub': otpdet
-        #                             }
-        #                             auth_token = generate_encrypted_auth_token(payload, privkey)
-        #                             responseObject = {
-        #                                     'status': 'success',
-        #                                     'message': 'success',
-        #                                     'auth_token': auth_token.decode()}
-        #                             return make_response(jsonify(responseObject)), 201
-        #                     else:
-        #                         otp = generate_one_time_password(user_from_db['id'])
-        #                 else:
-        #                     responseObject = {
-        #                     'status': 'User not registered',
-        #                     'message': 'user not found, not registered yet',}
-        #                     return jsonify(responseObject )
+        else:
+            if 'email' in request.json:
+                email = request.json['email']
+            if email is not None:
+                user = User.query.filter_by(email=email).first()
+                if user is not None:
+                    user_from_db = user.to_dict()
+                    if 'otp' in request.json:
+                        otp = request.json['otp']
+                        otpwd = Otp.query.filter_by(otp=otp).first()
+                        if otpwd:
+                            otpdet = otpwd.to_dict()
+                            creation_date = otpdet['creation_date']
+                            otpdet['creation_date'] = str(otpdet['creation_date'])
+                        if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
+                            payload = {
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                                'iat': datetime.datetime.utcnow(),
+                                'sub': {**user_from_db, **otpdet}
+                            }
+                            auth_token = generate_encrypted_auth_token(payload, privkey)
+                            responseObject = {
+                                    'status': 'success',
+                                    'message': 'success',
+                                    'auth_token': auth_token.decode()}
+                            return make_response(jsonify(responseObject)), 201
+                        else:
+                            responseObject = {
+                                'status': 'Incorrect OTP',
+                                'message': 'OTP not found',}
+                            return jsonify(responseObject )
+                    else:
+                        responseObject = {
+                                    'status': 'Otp not found',
+                                    'message': 'otp not found, please tell infobahn to generate otp for you.',}
+                        return jsonify(responseObject )
+                else:
+                    responseObject = {
+                            'status': 'User not registered',
+                            'message': 'user not found, not registered yet.',}
+                    return jsonify(responseObject )
+            else:
+                responseObject = {
+                        'status': 'missing authentication info ',
+                        'message': 'no authentication information provided',}
+                return jsonify(responseObject)
 
 
 @token_login_bp.route('/token/verify_token', methods=['GET'])
