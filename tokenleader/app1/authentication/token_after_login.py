@@ -113,7 +113,10 @@ def get_token():
                     otpdet = otpwd.to_dict()
                     creation_date = otpdet['creation_date']
                     otpdet['creation_date'] = str(otpdet['creation_date'])
-                if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
+                org = user_from_db['wfc']['org']
+                otpvalidtime = app.config['otpvalidfortsp'][org]
+                # print(otpvalidtime)
+                if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
                     try:
                         svcs = ServiceCatalog.query.all()
                         service_catalog = {}
@@ -223,7 +226,10 @@ def get_token():
                         otpdet = otpwd.to_dict()
                         creation_date = otpdet['creation_date']
                         otpdet['creation_date'] = str(otpdet['creation_date'])
-                    if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= 10:
+                        org = user_from_db['wfc']['org']
+                        otpvalidtime = app.config['otpvalidfortsp'][org]
+                        # print(otpvalidtime)
+                    if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
                         payload = {
                             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                             'iat': datetime.datetime.utcnow(),

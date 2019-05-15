@@ -5,6 +5,7 @@ must_have_keys_in_yml = {'flask_default',
                          'database',
                          'ldap',
                          'testotpmailservice',
+                         'otpvalidfortsp',
                          'token',
                          'secrets'
                          }
@@ -18,6 +19,13 @@ must_have_in_flask_default_section = {'host_name',
 must_have_in_token_section = {'private_key_file_location',
                               'public_key_file_location',
                              }
+
+must_have_in_otpval_section = {'TATA',
+                               'RELIANCE',
+                               'BHARTI',
+                               'SIFY',
+                               'VODAFONE'
+                              }
 
 must_have_in_db_section = {'Server',
                            'Port',
@@ -42,6 +50,7 @@ try:
     mailservice_default_settings_map = ymldict.get('testotpmailservice')
     token_settings_map = ymldict.get('token')
     dbs = ymldict.get('database')
+    otpvaltime = ymldict.get('otpvalidfortsp')
 except:   
     print("did you configured the file {} correctly ? \n"
           "see readme for a sample settings \n".format(conf.config_file))
@@ -70,6 +79,11 @@ if not token_settings_map.keys() >= must_have_in_token_section:
 if not dbs.keys() >= must_have_in_db_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
        conf.config_file, must_have_in_db_section ))
+    sys.exit()
+
+if not otpvaltime.keys() >= must_have_in_otpval_section:
+    print("{} must have  the following parameters {}  under the flask_default section".format(
+       conf.config_file, must_have_in_otpval_section ))
     sys.exit()
 
 

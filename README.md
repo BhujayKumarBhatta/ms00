@@ -81,7 +81,13 @@ configure the /etc/tokenleader/tokenleader_configs.yml
     Version: 3
   testotpmailservice:
     Server: '10.174.112.79'
-    Port: 5000	
+    Port: 5000
+	otpvalidfortsp:
+		TATA: 10
+		RELIANCE: 20
+		BHARTI: 30
+		SIFY: 20
+		VODAFONE: 20	
 	token:
 		#default will take the id_rsa keys from the  users home directory and .ssh directiry
 		#put the file name here if  the file name is different
@@ -187,17 +193,21 @@ CLI utilities
 ====================================================================
 using user name and password from config file 
 
-		tokenleader  gettoken 
+		tokenleader  gettoken							for internal user only, reads from client_configs and secrets
 		
 or username and password can be supplied  theough the CLI 
 
 		tokenleader gettoken --authuser user1 --authpwd user1 --domain domainname
 		tokenleader gettoken --authuser user1 --authpwd user1 --domain domainname --otp otpnum
+		tokenleader gettoken --authuser user1 --authpwd user1											as domain is not mandate
+		tokenleader gettoken --authuser user1 --authpwd user1 --otp otpnum
+
 		
 Other CLI operaions 
 
 		tokenleader  verify -t <paste the token here>
-		tokenleader  list -e user (throwing errors for the being, need to be fixed)
+		tokenleader  list -e user								for internal user
+		tokenleader  list -e user -u <common name of ldap> -o <otp>				for external user
  
  
 Python client 

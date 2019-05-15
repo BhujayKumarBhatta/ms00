@@ -16,6 +16,7 @@ must_have_keys_in_yml = {'flask_default',
                          'database',
                          'ldap',
                          'testotpmailservice',
+                         'otpvalidfortsp',
                          'token',
                          'secrets'
                          }

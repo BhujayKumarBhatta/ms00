@@ -17,6 +17,12 @@ ldap:
 testotpmailservice:
    Server: '10.174.112.79'
    Port: 5000
+otpvalidfortsp:
+   TATA: 10
+   RELIANCE: 20
+   BHARTI: 30
+   SIFY: 20
+   VODAFONE: 20
 token:
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
