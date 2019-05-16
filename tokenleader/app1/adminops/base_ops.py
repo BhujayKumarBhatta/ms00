@@ -27,7 +27,7 @@ def get_validated_roles(roles):
     if valid_role_list:
         return valid_role_list
 
-def register_ops1(obj, cname, otype=None, orgname=None, ou_name=None, dept_name=None, wfc_name=None, roles=None,
+def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou_name=None, dept_name=None, wfc_name=None, roles=None,
                    email=None, pwd=None, **kwargs):    
     record = None    
     if obj == 'Organization' :        
@@ -35,10 +35,6 @@ def register_ops1(obj, cname, otype=None, orgname=None, ou_name=None, dept_name=
         org_auth_backend = 'standard'
         if otype:
             orgtype = otype
-        # if 'orgtype' in kwargs:
-        #     otype = kwargs['orgtype']   
-        # if 'auth_backend' in kwargs:
-        #     org_auth_backend = kwargs['auth_backend'] 
         record =  Organization(name=cname, orgtype=orgtype, auth_backend=org_auth_backend)  
     if obj == 'Orgunit' :
         record =  Orgunit(name=cname)
@@ -69,13 +65,19 @@ def register_ops1(obj, cname, otype=None, orgname=None, ou_name=None, dept_name=
                 return None   
         if roles:
             valid_role_objects = get_validated_roles(roles)
-            if  isinstance(valid_role_objects, list):          
-                record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc)
+            if  isinstance(valid_role_objects, list):
+                if not allowemaillogin == '':          
+                    record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, allowemaillogin=allowemaillogin)
+                else:
+                    record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc)
                 record.set_password(pwd)
             else:
                 msg = "user registration aborted"  
-        else:            
-            record = User(username=cname, email=email)
+        else:
+            if not allowemaillogin == '':            
+                record = User(username=cname, email=email, allowemaillogin=allowemaillogin)
+            else:
+                record = User(username=cname, email=email)
             record.set_password(pwd)   
                    
     if record:

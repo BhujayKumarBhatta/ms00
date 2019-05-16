@@ -19,34 +19,37 @@ token_login_bp = Blueprint('token_login_bp', __name__)
 
 def generate_one_time_password(userid):
     try:
+        # print('generating otp')
         rand = str(random.random())
         num = rand[-4:]
         found = Otp.query.all()
         if found:
             lastotp = Otp.query.filter_by(is_active='Y').first()
             if lastotp:
-#                print('old active otp found')
+                print('old active otp found')
                 lastotp.is_active = 'N'
                 db.session.commit()
-            record = Otp(otp=num,userid=userid)
-#            print(record)
-            db.session.add(record)
-            db.session.commit()
-            user = User.query.filter_by(id=userid).first()
-            user_from_db = user.to_dict()
-            mail_to = user_from_db['email']
-            r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg':'<html><body>Your OTP is <b><font color=blue>'+str(num)+'</font></b>. It is only valid for 10 minutes.</body></html>'}))
-            if r.status_code == 200:
-                # print('mail success')
-                responseObject = {
-                   'status': 'success',
-                   'message': 'Otp has been sent to your email id: '+mail_to}
-                return jsonify(responseObject )
-            else:
-                responseObject = {
-                    'status': 'failed',
-                    'message': e}
-                return jsonify(responseObject)
+        else:
+            print('no records where there in otp table')
+        record = Otp(otp=num,userid=userid)
+        # print(record)
+        db.session.add(record)
+        db.session.commit()
+        user = User.query.filter_by(id=userid).first()
+        user_from_db = user.to_dict()
+        mail_to = user_from_db['email']
+        r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg':'<html><body>Your OTP is <b><font color=blue>'+str(num)+'</font></b>. It is only valid for 10 minutes.</body></html>'}))
+        if r.status_code == 200:
+            print('mail success')
+            responseObject = {
+                'status': 'success',
+                'message': 'Otp has been sent to your email id: '+mail_to}
+            return jsonify(responseObject )
+        else:
+            responseObject = {
+                'status': 'failed',
+                'message': e}
+            return jsonify(responseObject)
     except Exception as e:
         return e
 def generate_encrypted_auth_token(payload, priv_key):
@@ -95,6 +98,7 @@ def get_token():
                 user = User.query.filter_by(username=username).first()
                 if user is not None:
                     user_from_db = user.to_dict()
+                    # print(user_from_db)
                 else:
                     responseObject = {
                         'status': 'failed',
@@ -106,7 +110,7 @@ def get_token():
                     'message': 'no authentication information provided',}
                 return jsonify(responseObject)
             otp = request.json['otp']
-#               print(otp)
+            # print(otp)
             if otp is not None:
                 otpwd = Otp.query.filter_by(otp=otp).first()
                 if otpwd:
@@ -128,6 +132,7 @@ def get_token():
                             'sub': {**otpdet, **user_from_db}
                         }
                         # print(otpdet)
+                        # print(payload)
                         auth_token = generate_encrypted_auth_token(payload, privkey)
                         # print(auth_token)
                         responseObject = {
@@ -221,31 +226,37 @@ def get_token():
                 user = User.query.filter_by(email=email).first()
                 if user is not None:
                     user_from_db = user.to_dict()
-                    otpwd = Otp.query.filter_by(otp=otp).first()
-                    if otpwd:
-                        otpdet = otpwd.to_dict()
-                        creation_date = otpdet['creation_date']
-                        otpdet['creation_date'] = str(otpdet['creation_date'])
-                        org = user_from_db['wfc']['org']
-                        otpvalidtime = app.config['otpvalidfortsp'][org]
-                        # print(otpvalidtime)
-                    if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
-                        payload = {
-                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
-                            'iat': datetime.datetime.utcnow(),
-                            'sub': {**user_from_db, **otpdet}
-                        }
-                        auth_token = generate_encrypted_auth_token(payload, privkey)
-                        responseObject = {
-                            'status': 'success',
-                            'message': 'success',
-                            'auth_token': auth_token.decode()}
-                        return make_response(jsonify(responseObject)), 201
+                    if user_from_db['allowemaillogin'] == 'Y':
+                        otpwd = Otp.query.filter_by(otp=otp).first()
+                        if otpwd:
+                            otpdet = otpwd.to_dict()
+                            creation_date = otpdet['creation_date']
+                            otpdet['creation_date'] = str(otpdet['creation_date'])
+                            org = user_from_db['wfc']['org']
+                            otpvalidtime = app.config['otpvalidfortsp'][org]
+                            # print(otpvalidtime)
+                        if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
+                            payload = {
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                                'iat': datetime.datetime.utcnow(),
+                                'sub': {**user_from_db, **otpdet}
+                            }
+                            auth_token = generate_encrypted_auth_token(payload, privkey)
+                            responseObject = {
+                                'status': 'success',
+                                'message': 'success',
+                                'auth_token': auth_token.decode()}
+                            return make_response(jsonify(responseObject)), 201
+                        else:
+                            responseObject = {
+                                'status': 'failed',
+                                'message': 'Incorrect OTP',}
+                            return jsonify(responseObject )
                     else:
                         responseObject = {
                             'status': 'failed',
-                            'message': 'Incorrect OTP',}
-                        return jsonify(responseObject )
+                            'message': 'Unauthorized',}
+                        return make_response(jsonify(responseObject)), 401
                 else:
                     responseObject = {
                         'status': 'failed',

@@ -7,8 +7,12 @@ from tokenleader.app1.authentication import models
 from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
 from tokenleader.app1.adminops import base_ops as bops
 
-def register_user(uname, email, pwd, wfc_name, roles=None ):
-    return bops.register_ops1('User', uname, email=email, pwd=pwd, wfc_name=wfc_name, roles=roles, )   
+def register_user(uname, email, pwd, wfc_name, roles=None, allowemaillogin=None ):
+   print(allowemaillogin)
+   if not allowemaillogin=='':
+      return bops.register_ops1('User', uname, email=email, allowemaillogin=allowemaillogin, pwd=pwd, wfc_name=wfc_name, roles=roles, )
+   else:
+      return bops.register_ops1('User', uname, email=email, pwd=pwd, wfc_name=wfc_name, roles=roles )   
 
 def register_org(oname, orgtype=None):
    if not orgtype==None:   

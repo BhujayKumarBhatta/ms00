@@ -82,8 +82,12 @@ def add_user(wfc):
     pwd = request.json['password']
     wfc_name  = request.json['wfc']
     roles = request.json['roles']
-    print('i got the name from http argument {}'.format(uname))
-    record = af.register_user(uname, email, pwd, wfc_name, roles=roles)
+    if 'allowemaillogin' in request and request.json['allowemaillogin'] is not None:
+        record = af.register_user(uname, email, pwd, wfc_name, roles=roles, allowemaillogin=allowemaillogin)    
+        print('i got the name {0}, allow email login {1} from http argument'.format(uname, allowemaillogin))
+    else:
+        record = af.register_user(uname, email, pwd, wfc_name, roles=roles)
+        print('i got the name from http argument {}'.format(uname))
     response_obj = {"status": record}
     return jsonify(response_obj)
 
