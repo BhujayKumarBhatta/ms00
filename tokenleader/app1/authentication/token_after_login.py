@@ -26,7 +26,7 @@ def generate_one_time_password(userid):
         if found:
             lastotp = Otp.query.filter_by(is_active='Y').first()
             if lastotp:
-                print('old active otp found')
+                # print('old active otp found')
                 lastotp.is_active = 'N'
                 db.session.commit()
         else:
