@@ -167,6 +167,13 @@ when running from source (git clone) adminops command  is avilable from shell as
 	 adminops adduser -n user1 --password user1 --emailid user1 --rolenames role1  --wfc wfc1
 	 adminops  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
 
+./adminops.sh addservice  -n linkInventory --password tokenleader --urlint http://localhost:5004 --urlext https://localhost:5004
+./adminops.sh addservice  -n micros2 --password tokenleader --urlint http://localhost:5003 --urlext https://localhost:5003
+./adminops.sh addservice  -n micros1 --password tokenleader --urlint http://localhost:5002 --urlext https://localhost:5002
+
+
+
+
 start the service :
 ==============================================================
 when running from source (git clone) adminops command  is avilable from shell as python tokenleader-start.sh or ./tokenleader-start.sh 
