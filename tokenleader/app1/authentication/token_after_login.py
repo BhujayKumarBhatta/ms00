@@ -122,6 +122,8 @@ def get_token():
                 org = user_from_db['wfc']['org']
                 otpvalidtime = app.config['otpvalidfortsp'][org]
                 # print(otpvalidtime)
+                print('current time              ', 'otp creation time  	', 'time diff       ')
+                print(datetime.datetime.utcnow(),creation_date,datetime.datetime.utcnow()-creation_date)
                 if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
                     try:
                         svcs = ServiceCatalog.query.all()
