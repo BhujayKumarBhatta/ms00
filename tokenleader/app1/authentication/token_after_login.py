@@ -37,8 +37,10 @@ def generate_one_time_password(userid):
         db.session.commit()
         user = User.query.filter_by(id=userid).first()
         user_from_db = user.to_dict()
+        org = user_from_db['wfc']['org']
+        otpvalidtime = app.config['otpvalidfortsp'][org]
         mail_to = user_from_db['email']
-        r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg':'<html><body>Your OTP is <b><font color=blue>'+str(num)+'</font></b>. It is only valid for 10 minutes.</body></html>'}))
+        r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg':'<html><body>Your OTP is <b><font color=blue>'+str(num)+'</font></b>. It is only valid for '+otpvalidtime+' minutes.</body></html>'}))
         if r.status_code == 200:
             print('mail success')
             responseObject = {
