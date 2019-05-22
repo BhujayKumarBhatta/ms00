@@ -213,8 +213,14 @@ or username and password can be supplied  theough the CLI
 Other CLI operaions 
 
 		tokenleader  verify -t <paste the token here>
-		tokenleader  list -e user								for internal user
-		tokenleader  list -e user -u <common name of ldap> -o <otp>				for external user
+		tokenleader  list -e <entity> -u <username> -p <password>					for internal user
+		tokenleader  list -e <entity> -u <common name of ldap> -o <otp>				for external user,
+entity can be user, role, dept, org, ou, wfc etc.
+        tokenleader add org -n <orgname> -u <username> -p <password>                       for internal user
+        tokenleader add org -n <orgname> --orgtype external -u <username> -p <password>    for external user,
+same for ou, dept and role.        
+        tokenleader add org -n <orgname> -u <common name of ldap> -o <otp>				when external user adds it, if allowed in role_to_acl.yml
+        tokenleader adduser -n <username> --password <password> --emailid <emailid> --rolenames <role1,role2> --wfc <wfcname> -u <common name of ldap> -o <otp>				when external user adds it, if allowed in role_to_acl.yml
  
  
 Python client 
