@@ -40,7 +40,7 @@ def generate_one_time_password(userid):
         org = user_from_db['wfc']['org']
         otpvalidtime = app.config['otpvalidfortsp'][org]
         mail_to = user_from_db['email']
-        r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg':'<html><body>Your OTP is <b><font color=blue>'+str(num)+'</font></b>. It is only valid for '+otpvalidtime+' minutes.</body></html>'}))
+        r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg': "<html><body>Your OTP is <b><font color=blue>"+str(num)+"</font></b>. It is only valid for "+str(otpvalidtime)+" minutes.</body></html>"}))
         if r.status_code == 200:
             print('mail success')
             responseObject = {
@@ -118,7 +118,7 @@ def get_token():
                 if otpwd:
                     otpdet = otpwd.to_dict()
                     creation_date = otpdet['creation_date']
-                    otpdet['creation_date'] = str(otpdet['creation_date'])
+                    # otpdet['creation_date'] = str(otpdet['creation_date'])
                 org = user_from_db['wfc']['org']
                 otpvalidtime = app.config['otpvalidfortsp'][org]
                 # print(otpvalidtime)

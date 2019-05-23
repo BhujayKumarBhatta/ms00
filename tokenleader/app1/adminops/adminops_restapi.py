@@ -72,7 +72,7 @@ def list_wfc(wfc):
 @adminops_bp.route('/add/user', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_user')
 def add_user(wfc):
-    data_must_contain = ['username', 'email', 'password', 'wfc', 'roles']
+    data_must_contain = ['username', 'email', 'password', 'wfc', 'roles', 'created_by']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
@@ -82,19 +82,21 @@ def add_user(wfc):
     pwd = request.json['password']
     wfc_name  = request.json['wfc']
     roles = request.json['roles']
+    created_by = request.json['created_by']
+    created_by = af.list_users(created_by).get('id')
     if 'allowemaillogin' in request and request.json['allowemaillogin'] is not None:
-        record = af.register_user(uname, email, pwd, wfc_name, roles=roles, allowemaillogin=allowemaillogin)    
-        print('i got the name {0}, allow email login {1} from http argument'.format(uname, allowemaillogin))
+        record = af.register_user(uname, email, pwd, wfc_name, roles=roles, allowemaillogin=allowemaillogin, created_by=created_by)    
+        print('i got the name {0}, allow email login {1}, created_by {2} from http argument'.format(uname, allowemaillogin, created_by))
     else:
-        record = af.register_user(uname, email, pwd, wfc_name, roles=roles)
-        print('i got the name from http argument {}'.format(uname))
+        record = af.register_user(uname, email, pwd, wfc_name, roles=roles, created_by=created_by)
+        print('i got the name {0}, created_by {1} from http argument'.format(uname, created_by))
     response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/add/wfc', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_wfc')
 def add_wfc(wfc):
-    data_must_contain = ['fname', 'orgname', 'ou_name', 'dept_name']
+    data_must_contain = ['fname', 'orgname', 'ou_name', 'dept_name', 'created_by']
     for f in data_must_contain:
         if f not in request.json:
             return {"status": " the request must have the following \
@@ -103,35 +105,41 @@ def add_wfc(wfc):
     orgname = request.json['orgname']
     ou_name = request.json['ou_name']
     dept_name  = request.json['dept_name']
-    record = af.register_work_func_context(fname, orgname, ou_name, dept_name)
+    created_by = request.json['created_by']
+    created_by = af.list_users(created_by).get('id')
+    record = af.register_work_func_context(fname, orgname, ou_name, dept_name, created_by)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/add/ou', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_ou')
 def add_orgunit(wfc):
-    data_must_contain = ['ouname']
+    data_must_contain = ['ouname', 'created_by']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
     ouname = request.json['ouname']
-    print('i got the name from http argument {}'.format(ouname))
-    record = af.register_ou(ouname)
+    created_by = request.json['created_by']
+    created_by = af.list_users(created_by).get('id')
+    print('i got the name {0}, created_by {1} from http argument'.format(ouname, created_by))
+    record = af.register_ou(ouname, created_by)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
 @adminops_bp.route('/add/dept', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_dept')
 def add_dept(wfc):
-    data_must_contain = ['deptname']
+    data_must_contain = ['deptname', 'created_by']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
     deptname = request.json['deptname']
-    print('i got the name from http argument {}'.format(deptname))
-    record = af.register_dept(deptname)
+    created_by = request.json['created_by']
+    created_by = af.list_users(created_by).get('id')
+    print('i got the name {0}, created_by {1} from http argument'.format(deptname, created_by))
+    record = af.register_dept(deptname, created_by)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
@@ -139,20 +147,22 @@ def add_dept(wfc):
 @adminops_bp.route('/add/org', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_org')
 def add_org(wfc):
-    data_must_contain = ['oname']
+    data_must_contain = ['oname', 'created_by']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
     oname = request.json['oname']
+    created_by = request.json['created_by']
+    created_by = af.list_users(created_by).get('id')
     print('i got the name from http argument {}'.format(oname))
     if 'otype' in request.json and request.json['otype'] is not None:
         otype = request.json['otype']
-        record = af.register_org(oname, otype)
-        print('i got the name {0}, otype {1} from http argument'.format(oname, otype))
+        record = af.register_org(oname, otype, created_by)
+        print('i got the name {0}, otype {1}, created_by {2} from http argument'.format(oname, otype, created_by))
     else:
-        record = af.register_org(oname)
-        print('i got the name from http argument {}'.format(oname))
+        record = af.register_org(oname, created_by)
+        print('i got the name {0}, created_by {1} from http argument'.format(oname, created_by))
     response_obj = {"status": record}
     return jsonify(response_obj)
 
@@ -160,14 +170,16 @@ def add_org(wfc):
 @adminops_bp.route('/add/role', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_role')
 def add_role(wfc):
-    data_must_contain = ['rolename']
+    data_must_contain = ['rolename', 'created_by']
     for k in data_must_contain:
         if k not in request.json:
             return jsonify({"status": " the request must have the following \
             information {}".format(json.dumps(data_must_contain))})
     rolename = request.json['rolename']
-    print('i got the name from http argument {}'.format(rolename))
-    record = af.register_role(rolename)
+    created_by = request.json['created_by']
+    created_by = af.list_users(created_by).get('id')
+    print('i got the name {0}, created_by {1} from http argument'.format(rolename, created_by))
+    record = af.register_role(rolename, created_by)
     response_obj = {"status": record}
     return jsonify(response_obj)
 

@@ -28,20 +28,20 @@ def get_validated_roles(roles):
         return valid_role_list
 
 def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou_name=None, dept_name=None, wfc_name=None, roles=None,
-                   email=None, pwd=None, **kwargs):    
+                   email=None, pwd=None, created_by=None, **kwargs):    
     record = None    
     if obj == 'Organization' :        
         orgtype = 'internal'
         org_auth_backend = 'standard'
         if otype:
             orgtype = otype
-        record =  Organization(name=cname, orgtype=orgtype, auth_backend=org_auth_backend)  
+        record =  Organization(name=cname, orgtype=orgtype, auth_backend=org_auth_backend, created_by=created_by)  
     if obj == 'Orgunit' :
-        record =  Orgunit(name=cname)
+        record =  Orgunit(name=cname, created_by=created_by)
     if obj == 'Department' :
-        record =  Department(name=cname)
+        record =  Department(name=cname, created_by=created_by)
     if obj == 'Role' :
-        record = Role(rolename=cname)
+        record = Role(rolename=cname, created_by=created_by)
     if obj == 'Workfunctioncontext' :
         try:
             o = Organization.query.filter_by(name=orgname).first()
@@ -53,7 +53,7 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
                    the error is {}".format(e)
             print(msg)
             return None      
-        record =  Workfunctioncontext(name=cname, org=o, orgunit=ou, department=dept ) 
+        record =  Workfunctioncontext(name=cname, org=o, orgunit=ou, department=dept, created_by=created_by) 
     if obj == 'User':
         if wfc_name:
             try:
@@ -67,17 +67,17 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
             valid_role_objects = get_validated_roles(roles)
             if  isinstance(valid_role_objects, list):
                 if not allowemaillogin == '':          
-                    record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, allowemaillogin=allowemaillogin)
+                    record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, allowemaillogin=allowemaillogin, created_by=created_by)
                 else:
-                    record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc)
+                    record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, created_by=created_by)
                 record.set_password(pwd)
             else:
                 msg = "user registration aborted"  
         else:
             if not allowemaillogin == '':            
-                record = User(username=cname, email=email, allowemaillogin=allowemaillogin)
+                record = User(username=cname, email=email, allowemaillogin=allowemaillogin, created_by=created_by)
             else:
-                record = User(username=cname, email=email)
+                record = User(username=cname, email=email, created_by=created_by)
             record.set_password(pwd)   
                    
     if record:
