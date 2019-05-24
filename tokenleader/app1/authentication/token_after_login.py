@@ -44,7 +44,7 @@ def generate_one_time_password(userid):
         if r.status_code == 200:
             print('mail success')
             responseObject = {
-                'status': 'success',
+                'status': 'mail success',
                 'message': 'Otp has been sent to your email id: '+mail_to}
             return jsonify(responseObject )
         else:
@@ -118,13 +118,13 @@ def get_token():
                 if otpwd:
                     otpdet = otpwd.to_dict()
                     creation_date = otpdet['creation_date']
-                    # otpdet['creation_date'] = str(otpdet['creation_date'])
+                    otpdet['creation_date'] = str(otpdet['creation_date'])
                 org = user_from_db['wfc']['org']
                 otpvalidtime = app.config['otpvalidfortsp'][org]
                 # print(otpvalidtime)
-                print('current time              ', 'otp creation time  	', 'time diff       ')
-                print(datetime.datetime.utcnow(),creation_date,datetime.datetime.utcnow()-creation_date)
-                if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
+                # print('current time              ', 'otp creation time  	', 'time diff       ')
+                # print(datetime.datetime.utcnow(),creation_date,datetime.datetime.utcnow()-creation_date)
+                if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
                     try:
                         svcs = ServiceCatalog.query.all()
                         service_catalog = {}
@@ -239,7 +239,7 @@ def get_token():
                             org = user_from_db['wfc']['org']
                             otpvalidtime = app.config['otpvalidfortsp'][org]
                             # print(otpvalidtime)
-                        if otpwd is not None and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
+                        if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
                             payload = {
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                                 'iat': datetime.datetime.utcnow(),

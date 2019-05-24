@@ -161,7 +161,7 @@ class Otp(db.Model):
             'id': self.id,
             'otp': self.otp,
             'userid': self.userid,
-            'creation_date': str(self.creation_date),
+            'creation_date': self.creation_date,
             'is_active': self.is_active,
         }
         return data
