@@ -28,12 +28,16 @@ class TestToken(TestUserModel):
         user_from_db = {'id': 1,
                         'username': 'u1', 
                         'email': 'u1@abc.com', 
-                        'roles': ['role1'], 
+                        'roles': ['role1'],
+                        'creation_date': str(datetime.datetime.utcnow()),
+                        'allowemaillogin': 'N',
+                        'is_active': 'Y', 
                         'wfc': {'department': 'dept1', 
                                 'name': 'wfc1', 
                                 'orgunit': 'ou1',
                                 'id': 1, 
-                                'org': 'org1'}                       
+                                'org': 'org1'},
+                        'created_by': 1                       
                         }
         
         payload = {
@@ -103,7 +107,7 @@ class TestToken(TestUserModel):
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
             #print(data['message'])
-            self.assertTrue(data['status'] == 'User not registered')
+            self.assertTrue(data['message'] == 'User not registered')
             self.assertFalse('auth_token' in data)
     
     def test_token_gen_n_verify_success_for_registered_user_with_role(self):
@@ -120,6 +124,8 @@ class TestToken(TestUserModel):
             self.assertTrue('payload' in data)
             roles_retrived_from_token = data['payload'].get('sub').get('roles')
             self.assertTrue(data['payload'].get('sub').get('username') == 'u1')
+            self.assertTrue(data['payload'].get('sub').get('is_active') == 'Y')
+            self.assertTrue(data['payload'].get('sub').get('allowemaillogin') == 'N')
             self.assertTrue(roles_retrived_from_token, list)#== ['test_role_1', 'test_role_2'])
             self.assertTrue(sorted(roles_retrived_from_token) == sorted(['role1']))
             self.assertTrue((data['payload'].get('sub').get('wfc').get('org')) == 'org1')
@@ -199,7 +205,7 @@ class TestToken(TestUserModel):
 #             print('response is {}'.format(response))
             data = json.loads(response.data.decode())
             #print(data['message'])
-            self.assertTrue(data['status'] == 'Wrong Password')
+            self.assertTrue(data['message'] == 'Password did not match')
             self.assertFalse('auth_token' in data)
             
 

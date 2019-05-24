@@ -1,4 +1,4 @@
-from tokenleader.app1.authentication.models import Organization, Orgunit, Department, Workfunctioncontext, Role, User
+from tokenleader.app1.authentication.models import Organization, Orgunit, Department, Workfunctioncontext, Role, User, Otp
 from tokenleader.app1 import db
 from sqlalchemy import exc
 
@@ -26,6 +26,11 @@ def get_validated_roles(roles):
         print(msg)    
     if valid_role_list:
         return valid_role_list
+
+def create_otp(num, userid):
+    generated = Otp(otp=num,userid=userid)
+    if generated:
+        return generated.to_dict()
 
 def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou_name=None, dept_name=None, wfc_name=None, roles=None,
                    email=None, pwd=None, created_by=None, **kwargs):    
