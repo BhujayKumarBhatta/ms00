@@ -6,6 +6,7 @@ from tokenleader.app1.authentication.models import User, Role, Workfunctionconte
 from tokenleader.app1.adminops import admin_functions as af
 from tokenleader.tests.base_test import  BaseTestCase
 from unittest.mock import patch
+import random
 #app.app_context().push()
 
 class TestUserModel(BaseTestCase):
@@ -19,14 +20,18 @@ class TestUserModel(BaseTestCase):
 #         db.session.close()
 
          from the api_function   '''
-    
-    def test_create_otp(self):
+    def create_otp_for_test(self, num):
+        self.external_user_creation_for_test()
+        user = User.query.filter_by(username='u2').first()
+        userid = user.to_dict()['id']
+        otp = af.create_otp(num, userid)
+        return otp
+
+    def test_create_otp(self, num):
         rand = str(random.random())
         num = rand[-4:]
-        self.external_user_creation_for_test()
-        user = User.query.filter_by(username='u1').first()
-        userid = user.to_dict()['id']
-        self.assertTrue(af.create_otp(num, userid).get('otp'), num)
+        otp = create_org_for_test(num)
+        self.assertTrue(otp.get('otp'), num)
         
     def create_org_for_test(self):
         return af.register_org('org1')

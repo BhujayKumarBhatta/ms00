@@ -3,6 +3,7 @@ import datetime
 import json
 import jwt
 from flask import current_app
+import random
 from tokenleader.app1.authentication.token_after_login import \
  generate_encrypted_auth_token , decrypt_n_verify_token
 
@@ -94,6 +95,41 @@ class TestToken(TestUserModel):
             
             mytoken = data['auth_token']
             return mytoken
+    
+    def test_get_token_for_external_user(self):
+        '''
+        user_creation_for_test method comes from parent class TestUserModel from test_admin_ops module
+        this method registers an user with name as u1 
+        '''             
+        # u1 = self.user_creation_for_test()
+        rand = str(random.random())
+        num = rand[-4:]
+        self.create_otp_for_test(num)
+        tc.add_service()
+        #print(u1.to_dict())
+        data=json.dumps(dict(
+                    username='u2',
+                    otp= num,
+                ))
+        #print(data)
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken', 
+                data=data,
+                content_type='application/json')
+                
+            #print('response is {}'.format(response))
+            data = json.loads(response.data.decode())
+#            print(data)
+            #print(data['message'])
+            self.assertTrue(data['status'] == 'success')
+            self.assertTrue('auth_token' in data)
+            #print(service_catalog)
+            #print(data['service_catalog'])
+            self.assertTrue(data['service_catalog'] == service_catalog )
+            
+            mytoken = data['auth_token']
+            return mytoken
 
     #this method is used again in the token verification test
     def test_token_gen_failed_for_unregistered_user(self):
@@ -131,7 +167,28 @@ class TestToken(TestUserModel):
             self.assertTrue((data['payload'].get('sub').get('wfc').get('org')) == 'org1')
             #print(data)
 #            print(response.data.decode())
-            
+    def test_token_gen_n_verify_success_for_registered_external_user_with_role(self):
+        mytoken = self.test_get_token_for_external_user()
+        with self.client:
+            self.headers = {'X-Auth-Token': mytoken}
+            response = self.client.get(
+                '/token/verify_token',                
+                headers=self.headers)
+            #print('response is {}'.format(response))
+            data = json.loads(response.data.decode())
+            #print(data)
+            self.assertTrue(data['status'] == 'Verification Successful')
+            self.assertTrue('payload' in data)
+            roles_retrived_from_token = data['payload'].get('sub').get('roles')
+            self.assertTrue(data['payload'].get('sub').get('username') == 'u2')
+            self.assertTrue(data['payload'].get('sub').get('is_active') == 'Y')
+            self.assertTrue(data['payload'].get('sub').get('allowemaillogin') == 'Y')
+            self.assertTrue(roles_retrived_from_token, list)#== ['test_role_1', 'test_role_2'])
+            self.assertTrue(sorted(roles_retrived_from_token) == sorted(['role2']))
+            self.assertTrue((data['payload'].get('sub').get('wfc').get('org')) == 'org2')
+            #print(data)
+#            print(response.data.decode())
+
 #     def test_token_gen_n_verify_success_for_registered_user_without_role(self):
 #         u1 = User(username='susan', email='susan@abc.com')
 #         u1.set_password('mysecret')       
