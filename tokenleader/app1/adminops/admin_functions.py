@@ -7,7 +7,7 @@ from tokenleader.app1.authentication import models
 from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
 from tokenleader.app1.adminops import base_ops as bops
 
-def create_otp(num, userid)
+def create_otp(num, userid):
    return bops.create_otp(num, userid)
    
 def register_user(uname, email, pwd, wfc_name, roles=None, allowemaillogin=None, created_by=None ):
