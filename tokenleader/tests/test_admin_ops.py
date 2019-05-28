@@ -25,12 +25,13 @@ class TestUserModel(BaseTestCase):
         user = User.query.filter_by(username='u3').first()
         userid = user.to_dict()['id']
         otp = af.create_otp(num, userid)
+        print(otp)
         return otp
 
-    def test_create_otp(self, num):
+    def test_create_otp(self):
         rand = str(random.random())
         num = rand[-4:]
-        otp = create_org_for_test(num)
+        otp = self.create_otp_for_test(num)
         self.assertTrue(otp.get('otp'), num)
         
     def create_org_for_test(self):

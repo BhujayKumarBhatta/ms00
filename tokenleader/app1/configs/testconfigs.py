@@ -24,12 +24,7 @@ must_have_in_token_section = {'private_key_file_location',
                               'public_key_file_location',
                              }
 
-must_have_in_otpval_section = {'TATA',
-                               'RELIANCE',
-                               'BHARTI',
-                               'SIFY',
-                               'VODAFONE'
-                              }
+must_have_in_otpval_section = {'org2'}
 
 must_have_in_db_section = {'Server',
                            'Port',
