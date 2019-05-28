@@ -25,7 +25,6 @@ class TestUserModel(BaseTestCase):
         user = User.query.filter_by(username='u3').first()
         userid = user.to_dict()['id']
         otp = af.create_otp(num, userid)
-        print(otp)
         return otp
 
     def test_create_otp(self):

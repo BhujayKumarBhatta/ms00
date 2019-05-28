@@ -29,6 +29,8 @@ def get_validated_roles(roles):
 
 def create_otp(num, userid):
     generated = Otp(otp=num,userid=userid)
+    db.session.add(generated)
+    db.session.commit()
     if generated:
         return generated.to_dict()
 
