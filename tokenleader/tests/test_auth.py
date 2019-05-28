@@ -108,7 +108,7 @@ class TestToken(TestUserModel):
         tc.add_service()
         #print(u1.to_dict())
         data=json.dumps(dict(
-                    username='u2',
+                    username='u3',
                     otp= num,
                 ))
         #print(data)
@@ -160,6 +160,7 @@ class TestToken(TestUserModel):
             self.assertTrue('payload' in data)
             roles_retrived_from_token = data['payload'].get('sub').get('roles')
             self.assertTrue(data['payload'].get('sub').get('username') == 'u1')
+            self.assertTrue(data['payload'].get('sub').get('email') == 'u1@abc.com')
             self.assertTrue(data['payload'].get('sub').get('is_active') == 'Y')
             self.assertTrue(data['payload'].get('sub').get('allowemaillogin') == 'N')
             self.assertTrue(roles_retrived_from_token, list)#== ['test_role_1', 'test_role_2'])
@@ -180,7 +181,8 @@ class TestToken(TestUserModel):
             self.assertTrue(data['status'] == 'Verification Successful')
             self.assertTrue('payload' in data)
             roles_retrived_from_token = data['payload'].get('sub').get('roles')
-            self.assertTrue(data['payload'].get('sub').get('username') == 'u2')
+            self.assertTrue(data['payload'].get('sub').get('username') == 'u3')
+            self.assertTrue(data['payload'].get('sub').get('email') == 'u3@xyz.com')
             self.assertTrue(data['payload'].get('sub').get('is_active') == 'Y')
             self.assertTrue(data['payload'].get('sub').get('allowemaillogin') == 'Y')
             self.assertTrue(roles_retrived_from_token, list)#== ['test_role_1', 'test_role_2'])

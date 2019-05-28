@@ -30,6 +30,19 @@ class TestAdminRestApi(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertTrue(isinstance(data['status'], list))
     
+    def test_list_users_with_token_of_external_user(self):
+        u1 = t.user_creation_for_test()
+        token_in_byte = test_token_instance.test_get_token_for_external_user()
+        #print(token_in_byte)
+        with self.client:
+            self.headers = {'X-Auth-Token': token_in_byte}
+            response = self.client.get(
+                '/list/users',                
+                headers=self.headers)
+            #print('response is {}'.format(response))
+            data = json.loads(response.data.decode())
+            self.assertTrue(isinstance(data['status'], list))
+
     def test_list_users_byid_restapi(self):
         u1 = t.user_creation_for_test()
         with self.client:
