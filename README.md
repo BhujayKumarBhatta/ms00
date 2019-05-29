@@ -591,7 +591,7 @@ clone from git and then run
 to run single unit test 
  
 	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes (ImportError: No module named 'tokenleader.tests.unittests') --> 2 
-    python -m unittest tokenleader.tests.test_admin_ops.Test_User_Model.test_delete_org  (Recommended instead of 2)
+    python -m unittest tokenleader.tests.test_admin_ops.TestUserModel.test_delete_org  (Recommended instead of 2)
 
 for token generation and verification  testing this is a useful test  
 
