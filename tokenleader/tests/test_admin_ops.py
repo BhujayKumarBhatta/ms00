@@ -11,17 +11,19 @@ import random
 
 class TestUserModel(BaseTestCase):
     '''
-    (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover test  
-    
-        if we are getting the 
+    (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover test
+        if we are getting the
         # sqlalchemy.orm.exc.DetachedInstanceError: Instance <Role at 0x7f41a5a4c9e8> is not bound to a Session; attribute refresh operation cannot proceed (Background on this error at: http://sqlalche.me/e/bhk3)
-         
         remove the  block  finally:
 #         db.session.close()
+         from the api_function
+    '''
 
-         from the api_function   '''
     def create_otp_for_test(self, num):
-        self.external_user_creation_for_test()
+        if not User.query.filter_by(username='u3').first():
+            self.external_user_creation_for_test()
+        else:
+            print('u3 was registered before.')
         user = User.query.filter_by(username='u3').first()
         userid = user.to_dict()['id']
         otp = af.create_otp(num, userid)

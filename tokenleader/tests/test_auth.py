@@ -12,7 +12,7 @@ from tokenleader.tests.test_admin_ops import TestUserModel
 from tokenleader.app1 import db
 from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
 #from app1.authentication import admin_ops
-from tokenleader.app1.adminops import admin_functions as admin_ops
+from tokenleader.app1.adminops import admin_functions as af
 from tokenleader.tests.test_catalog_ops import TestCatalog , service_catalog 
 
 #app.app_context().push()
@@ -32,28 +32,25 @@ class TestToken(TestUserModel):
                         'roles': ['role1'],
                         'creation_date': str(datetime.datetime.utcnow()),
                         'allowemaillogin': 'N',
-                        'is_active': 'Y', 
-                        'wfc': {'department': 'dept1', 
-                                'name': 'wfc1', 
+                        'is_active': 'Y',
+                        'wfc': {'department': 'dept1',
+                                'name': 'wfc1',
                                 'orgunit': 'ou1',
                                 'id': 1, 
                                 'org': 'org1'},
-                        'created_by': 1                       
+                        'created_by': 1
                         }
-        
+
         payload = {
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                     'iat': datetime.datetime.utcnow(),
                     'sub': user_from_db
                      }
         __privkey = current_app.config.get('private_key')
-        __publickey = current_app.config.get('public_key')   
-       
-        auth_token = generate_encrypted_auth_token(payload, __privkey) 
-#         print(type(auth_token))       
-        self.assertTrue(isinstance(auth_token, bytes))     
-             
-          
+        __publickey = current_app.config.get('public_key')
+        auth_token = generate_encrypted_auth_token(payload, __privkey)
+        print(type(auth_token))
+        self.assertTrue(isinstance(auth_token, bytes))
         np = decrypt_n_verify_token(auth_token, __publickey)
         self.assertTrue(isinstance(np, dict))
         #print(np.get('sub'))
@@ -68,7 +65,7 @@ class TestToken(TestUserModel):
         '''
         user_creation_for_test method comes from parent class TestUserModel from test_admin_ops module
         this method registers an user with name as u1 
-        '''             
+        '''
         u1 = self.user_creation_for_test()
         tc.add_service()
         #print(u1.to_dict())
@@ -92,44 +89,72 @@ class TestToken(TestUserModel):
             #print(service_catalog)
             #print(data['service_catalog'])
             self.assertTrue(data['service_catalog'] == service_catalog )
-            
             mytoken = data['auth_token']
             return mytoken
-    
+
     def test_get_token_for_external_user(self):
         '''
         user_creation_for_test method comes from parent class TestUserModel from test_admin_ops module
-        this method registers an user with name as u1 
-        '''             
+        this method registers an user with name as u3
+        '''
         # u1 = self.user_creation_for_test()
+        self.external_user_creation_for_test()
+        user = User.query.filter_by(username='u3').first()
+        userid = user.to_dict()['id']
         rand = str(random.random())
         num = rand[-4:]
-        self.create_otp_for_test(num)
+        otpdet=af.create_otp(num, userid)
+        otpdet['creation_date'] = str(otpdet['creation_date'])
         tc.add_service()
         #print(u1.to_dict())
-        data=json.dumps(dict(
-                    username='u3',
-                    otp= num,
-                ))
-        #print(data)
-        with self.client:
-            response = self.client.post(
-                '/token/gettoken', 
-                data=data,
-                content_type='application/json')
+#        data=json.dumps(dict(
+#                    username='u3',
+#                    otp= num,
+#                ))
+        user_from_db = {'id': 3,
+                        'username': 'u3',
+                        'email': 'u3@xyz.com',
+                        'roles': ['role2'],
+                        'creation_date': str(datetime.datetime.utcnow()),
+                        'allowemaillogin': 'Y',
+                        'is_active': 'Y',
+                        'wfc': {'department': 'dept2',
+                                'name': 'wfc2',
+                                'orgunit': 'ou1',
+                                'id': 2,
+                                'org': 'org2'},
+                        'created_by': 1
+                        }
+
+        payload = {
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                    'iat': datetime.datetime.utcnow(),
+                    'sub': {**user_from_db, **otpdet}
+                     }
+        __privkey = current_app.config.get('private_key')
+        __publickey = current_app.config.get('public_key')
+        auth_token = generate_encrypted_auth_token(payload, __privkey)
+        print(type(auth_token))
+        self.assertTrue(isinstance(auth_token, bytes))
+        np = decrypt_n_verify_token(auth_token, __publickey)
+        self.assertTrue((np.get('sub').get('wfc').get('org')) == 'org2')
+        self.assertTrue(isinstance(np, dict))
+#        with self.client:
+#            response = self.client.post(
+#                '/token/gettoken', 
+#                data=data,
+#                content_type='application/json')
                 
             #print('response is {}'.format(response))
-            data = json.loads(response.data.decode())
+            #data = json.loads(response.data.decode())
             # print(data)
             #print(data['message'])
-            self.assertTrue(data['status'] == 'success')
-            self.assertTrue('auth_token' in data)
+            #self.assertTrue(data['status'] == 'success')
+            #self.assertTrue('auth_token' in data)
             #print(service_catalog)
             #print(data['service_catalog'])
-            self.assertTrue(data['service_catalog'] == service_catalog )
-            
-            mytoken = data['auth_token']
-            return mytoken
+#        self.assertTrue(data['service_catalog'] == service_catalog )
+        return auth_token
 
     #this method is used again in the token verification test
     def test_token_gen_failed_for_unregistered_user(self):
