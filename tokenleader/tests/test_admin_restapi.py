@@ -31,7 +31,7 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(isinstance(data['status'], list))
     
     def test_list_users_with_token_of_external_user(self):
-        u1 = t.user_creation_for_test()
+        u1 = t.external_user_creation_for_test()
         token_in_byte = test_token_instance.test_get_token_for_external_user()
         #print(token_in_byte)
         with self.client:
