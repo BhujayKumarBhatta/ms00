@@ -15,7 +15,7 @@ from tokenleader.app1.configs.config_handler import Configs
 must_have_keys_in_yml = {'flask_default',
                          'database',
                          'ldap',
-                         'testotpmailservice',
+                         'otpmailservice',
                          'otpvalidfortsp',
                          'token',
                          'secrets'

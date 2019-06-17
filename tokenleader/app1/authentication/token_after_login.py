@@ -6,7 +6,7 @@ import json
 import random
 from ldap3 import Server, Connection, ALL
 #from sqlalchemy.sql import func
-from tokenleader.app1 import db, app
+from tokenleader.app1 import db
 from tokenleader.app1.authentication.models import User, Organization, Otp
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 # from flask.globals import session
@@ -38,9 +38,9 @@ def generate_one_time_password(userid):
         user = User.query.filter_by(id=userid).first()
         user_from_db = user.to_dict()
         org = user_from_db['wfc']['org']
-        otpvalidtime = app.config['otpvalidfortsp'][org]
+        otpvalidtime = current_app.config['otpvalidfortsp'][org]
         mail_to = user_from_db['email']
-        r = requests.post(url=app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg': "<html><body>Your OTP is <b><font color=blue>"+str(num)+"</font></b>. It is only valid for "+str(otpvalidtime)+" minutes.</body></html>"}))
+        r = requests.post(url=current_app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg': "<html><body>Your OTP is <b><font color=blue>"+str(num)+"</font></b>. It is only valid for "+str(otpvalidtime)+" minutes.</body></html>"}))
         if r.status_code == 200:
             print('mail success')
             responseObject = {
@@ -120,7 +120,7 @@ def get_token():
                     creation_date = otpdet['creation_date']
                     otpdet['creation_date'] = str(otpdet['creation_date'])
                 org = user_from_db['wfc']['org']
-                otpvalidtime = app.config['otpvalidfortsp'][org]
+                otpvalidtime = current_app.config['otpvalidfortsp'][org]
                 # print(otpvalidtime)
                 # print('current time              ', 'otp creation time  	', 'time diff       ')
                 # print(datetime.datetime.utcnow(),creation_date,datetime.datetime.utcnow()-creation_date)
@@ -194,7 +194,7 @@ def get_token():
                 service_catalog[s.name]=s.to_dict()
             if not org.to_dict()['orgtype'] == 'internal':
 #                    print('incase of external domain')
-                s = Server(app.config['ldap']['Server'], port=app.config['ldap']['Port'], get_info=ALL)
+                s = Server(current_app.config['ldap']['Server'], port=current_app.config['ldap']['Port'], get_info=ALL)
                 username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(username)
                 c = Connection(s, user=username, password=password)
                 if not c.bind():
@@ -237,7 +237,7 @@ def get_token():
                             creation_date = otpdet['creation_date']
                             otpdet['creation_date'] = str(otpdet['creation_date'])
                             org = user_from_db['wfc']['org']
-                            otpvalidtime = app.config['otpvalidfortsp'][org]
+                            otpvalidtime = current_app.config['otpvalidfortsp'][org]
                             # print(otpvalidtime)
                         if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
                             payload = {

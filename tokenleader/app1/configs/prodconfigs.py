@@ -4,7 +4,7 @@ from tokenleader.app1.configs.config_handler import Configs
 must_have_keys_in_yml = {'flask_default',
                          'database',
                          'ldap',
-                         'testotpmailservice',
+                         'otpmailservice',
                          'otpvalidfortsp',
                          'token',
                          'secrets'
@@ -47,7 +47,7 @@ try:
     ymldict = conf.yml
     flask_default_setiings_map = ymldict.get('flask_default')
     ldap_default_settings_map = ymldict.get('ldap')
-    mailservice_default_settings_map = ymldict.get('testotpmailservice')
+    mailservice_default_settings_map = ymldict.get('otpmailservice')
     token_settings_map = ymldict.get('token')
     dbs = ymldict.get('database')
     otpvaltime = ymldict.get('otpvalidfortsp')

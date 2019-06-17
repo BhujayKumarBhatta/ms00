@@ -14,7 +14,7 @@ ldap:
    Server: localhost
    Port: 389
    Version: 3
-testotpmailservice:
+otpmailservice:
    Server: 10.174.112.79
    Port: 5000
 otpvalidfortsp:
