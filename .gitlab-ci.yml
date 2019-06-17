@@ -7,13 +7,16 @@ stages:
   
 
 unit testing:
+service mongodb start
   stage: unit_test 
   script: |
     #export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4;
     #echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list;
     export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; apt-get update -y;
     export DEBIAN_FRONTEND=noninteractive
-    apt-get install -y -q systemd python3 virtualenv python-pip net-tools openssh-client mysql-server;    
+    apt-get install -y -q systemd python3 virtualenv python-pip net-tools openssh-client mysql-server;
+    service --status-all
+    service mysql start
     mysqladmin -u root password welcome@123
     mysql -u root -pwelcome@123 -e"CREATE DATABASE test_auth"
     mysql -u root -pwelcome@123 -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'welcome@123';"
