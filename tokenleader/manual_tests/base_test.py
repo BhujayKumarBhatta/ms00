@@ -3,7 +3,7 @@ from flask_testing import TestCase
 from flask import Flask
 from tokenleader import app1
 from tokenleader.app1 import db
-from tokenleader.app1.configs import testconfigs
+from tokenleader.app1.configs import testconf
 import json
 from flask_testing import LiveServerTestCase
 from tokenleader.app1.authentication.token_after_login import token_login_bp
