@@ -42,6 +42,7 @@ unit testing:
     #db.updateUser('test', {roles: [ { role: "dbOwner", db: "test" }] })
     #EOF
     #echo ' after running mongo shell command' 
+    echo -e "\n"|ssh-keygen -t rsa -N ""
     python -m unittest discover -s tokenleader/tests -p "test*.py" -v
     #python -m unittest discover -s micros2/tests/*.py -p "test*.py" -v
   #allow_failure: true 
