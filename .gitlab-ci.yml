@@ -12,7 +12,7 @@ unit testing:
     #export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4;
     #echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list;
     export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; apt-get update -y;
-    apt-get install -y systemd python3 virtualenv python-pip net-tools;
+    apt-get install -y systemd python3 virtualenv python-pip net-tools openssh-client;
     virtualenv -p python3 venv
     source venv/bin/activate
     python -V
