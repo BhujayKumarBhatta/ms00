@@ -137,7 +137,7 @@ def get_token():
                         for s in svcs:
                             service_catalog[s.name]=s.to_dict()                                
                         payload = {
-                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=current_app.config['tokenexpiration']),
                             'iat': datetime.datetime.utcnow(),
                             'sub': {**otpdet, **user_from_db}
                         }
@@ -213,7 +213,7 @@ def get_token():
             else:
                 if user.check_password(password):
                         payload = {
-                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=current_app.config['tokenexpiration']),
                             'iat': datetime.datetime.utcnow(),
                             'sub': user_from_db
                         }
@@ -250,7 +250,7 @@ def get_token():
                             # print(otpvalidtime)
                         if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
                             payload = {
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=current_app.config['tokenexpiration']),
                                 'iat': datetime.datetime.utcnow(),
                                 'sub': {**user_from_db, **otpdet}
                             }

@@ -17,6 +17,7 @@ ldap:
 otpmailservice:
    Server: 10.174.112.79
    Port: 5000
+tokenexpiration: 3600
 otpvalidfortsp:
    TATA: 10
    RELIANCE: 20
