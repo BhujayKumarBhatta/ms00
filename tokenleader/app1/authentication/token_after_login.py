@@ -38,9 +38,9 @@ def generate_one_time_password(userid):
         user = User.query.filter_by(id=userid).first()
         user_from_db = user.to_dict()
         org = user_from_db['wfc']['org']
-        try:
+        if org in current_app.config['otpvalidfortsp']:
             otpvalidtime = current_app.config['otpvalidfortsp'][org]
-        except Exception as e:
+        else:
             otpvalidtime = 10
         mail_to = user_from_db['email']
         r = requests.post(url=current_app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':mail_to, 'msg': "<html><body>Your OTP is <b><font color=blue>"+str(num)+"</font></b>. It is only valid for "+str(otpvalidtime)+" minutes.</body></html>"}))
@@ -123,9 +123,9 @@ def get_token():
                     creation_date = otpdet['creation_date']
                     otpdet['creation_date'] = str(otpdet['creation_date'])
                 org = user_from_db['wfc']['org']
-                try:
+                if org in current_app.config['otpvalidfortsp']:
                     otpvalidtime = current_app.config['otpvalidfortsp'][org]
-                except Exception as e:
+                else:
                     otpvalidtime = 10
                 # print(otpvalidtime)
                 # print('current time              ', 'otp creation time  	', 'time diff       ')
@@ -243,9 +243,9 @@ def get_token():
                             creation_date = otpdet['creation_date']
                             otpdet['creation_date'] = str(otpdet['creation_date'])
                             org = user_from_db['wfc']['org']
-                            try:
+                            if org in current_app.config['otpvalidfortsp']:
                                 otpvalidtime = current_app.config['otpvalidfortsp'][org]
-                            except Exception as e:
+                            else:
                                 otpvalidtime = 10
                             # print(otpvalidtime)
                         if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
