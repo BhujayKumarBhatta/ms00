@@ -31,7 +31,7 @@ def generate_one_time_password(userid):
                 db.session.commit()
         else:
             print('no records where there in otp table')
-        record = Otp(otp=num,userid=userid)
+        record = Otp(otp=num,userid=userid,delivery_method='mail')
         # print(record)
         db.session.add(record)
         db.session.commit()

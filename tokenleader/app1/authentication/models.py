@@ -151,6 +151,7 @@ class Otp(db.Model):
     otp = db.Column(db.String(64), index=True, unique=True, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    delivery_method = db.Column(db.String(4), nullable=False)
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
 
     def __repr__(self):
@@ -162,6 +163,7 @@ class Otp(db.Model):
             'otp': self.otp,
             'userid': self.userid,
             'creation_date': self.creation_date,
+            'delivery_method': self.delivery_method,
             'is_active': self.is_active,
         }
         return data
