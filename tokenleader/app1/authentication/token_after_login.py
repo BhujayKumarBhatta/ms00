@@ -53,7 +53,7 @@ def generate_one_time_password(userid):
         else:
             responseObject = {
                 'status': 'failed',
-                'message': e}
+                'message': r.text}
             return jsonify(responseObject)
     except Exception as e:
         return e
