@@ -11,12 +11,19 @@ database:
    db_pwd_key_map: db_pwd
    #engine_connect_string: 'mssql+pymysql:///{0}'
 ldap:
-   Server: testldapserver100
+   Server: localhost
    Port: 389
    Version: 3
-testotpmailservice:
-   Server: '10.174.112.79'
+otpmailservice:
+   Server: 10.174.112.79
    Port: 5000
+tokenexpiration: 3600
+otpvalidfortsp:
+   TATA: 10
+   RELIANCE: 20
+   BHARTI: 30
+   SIFY: 20
+   VODAFONE: 20
 token:
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different

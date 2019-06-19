@@ -3,7 +3,7 @@ import pymysql
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 
-app = Flask(__name__)
+
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -13,6 +13,7 @@ migrate = Migrate()
 # from app1.views import views_bp
 # flask_app_var.register_blueprint(views_bp)
 def create_app(config_map_list=None, blue_print_list=None):
+    app = Flask(__name__)
     if config_map_list:
         for m in config_map_list:
             app.config.update(m)

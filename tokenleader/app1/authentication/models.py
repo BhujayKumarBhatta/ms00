@@ -11,7 +11,10 @@ class Organization(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     orgtype = db.Column(db.String(64))
+    creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     auth_backend = db.Column(db.String(64))
+    created_by = db.Column(db.Integer)
 #     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
 
     def __repr__(self):
@@ -21,8 +24,11 @@ class Organization(db.Model):
         data = {
             'id': self.id,
             'name': self.name,
-            'orgtype':  self.orgtype,
-            'auth_backend': self.auth_backend
+            'orgtype':  self.orgtype,            
+            'creation_date': str(self.creation_date),
+            'is_active': self.is_active,
+            'auth_backend': self.auth_backend,
+            'created by': self.created_by
             }
         return data
 
@@ -31,6 +37,9 @@ class Orgunit(db.Model):
     should be capital'''
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
+    creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
+    created_by = db.Column(db.Integer)
 #     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
 
     def __repr__(self):
@@ -39,7 +48,10 @@ class Orgunit(db.Model):
     def to_dict(self):
         data = {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+            'creation_date': str(self.creation_date),
+            'is_active': self.is_active,
+            'created by': self.created_by
             }
         return data
 
@@ -47,6 +59,9 @@ class Orgunit(db.Model):
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
+    creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
+    created_by = db.Column(db.Integer)
 #     work_func_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'))
 
     def __repr__(self):
@@ -55,7 +70,10 @@ class Department(db.Model):
     def to_dict(self):
         data = {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+            'creation_date': str(self.creation_date),
+            'is_active': self.is_active,
+            'created by': self.created_by
             }
         return data
 
@@ -68,12 +86,16 @@ class Workfunctioncontext(db.Model):
     name = db.Column(db.String(64), index=True, unique=True, nullable=False)
 #     org_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
 #     org = db.relationship("Workfunctioncontext", backref="users")
+    creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     org_id = db.Column(db.Integer, db.ForeignKey('organization.id'), nullable=False) #Rule 2
     org = db.relationship('Organization', backref = 'wfcs') #rule 1
     orgunit_id = db.Column(db.Integer, db.ForeignKey('orgunit.id'), nullable=False)
     orgunit = db.relationship('Orgunit', backref = 'orgunits')
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
     department = db.relationship('Department', backref = 'departments')
+    created_by = db.Column(db.Integer)
+
 ##################################################################################################
 # the follwinf line is no more required as User class is providing  a 'users'  backref to Workfunctioncontext
 #     users = db.relationship('User', backref='wfc', lazy=True)
@@ -93,7 +115,10 @@ class Workfunctioncontext(db.Model):
             'name': self.name,
             'org':  self.org.name,
             'orgunit':  self.orgunit.name,
-            'department':  self.department.name
+            'creation_date': str(self.creation_date),
+            'is_active': self.is_active,
+            'department':  self.department.name,
+            'created by': self.created_by
             }
         return data
 
@@ -101,7 +126,10 @@ class Workfunctioncontext(db.Model):
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rolename = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
+    creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
+    created_by = db.Column(db.Integer)
+    # userid = db.Column(db.Integer, db.ForeignKey('user.id'))
 #     functional_context = db.relationship('Workfunctioncontext', backref = 'role', uselist=False, lazy = True)
 
     def __repr__(self):
@@ -111,7 +139,10 @@ class Role(db.Model):
         data = {
             'id': self.id,
             'name': self.rolename,
-            'userid': self.userid
+            'creation_date': str(self.creation_date),
+            'is_active': self.is_active,
+            # 'userid': self.userid,
+            'created by': self.created_by
             }
         return data
 
@@ -120,6 +151,7 @@ class Otp(db.Model):
     otp = db.Column(db.String(64), index=True, unique=True, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    delivery_method = db.Column(db.String(4), nullable=False)
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
 
     def __repr__(self):
@@ -131,7 +163,8 @@ class Otp(db.Model):
             'otp': self.otp,
             'userid': self.userid,
             'creation_date': self.creation_date,
-            'is_active': self.is_active
+            'delivery_method': self.delivery_method,
+            'is_active': self.is_active,
         }
         return data
 
@@ -169,9 +202,12 @@ class User(db.Model):
 #         backref=db.backref('users', lazy='dynamic' ))
     roles = db.relationship('Role', secondary=roles_n_user_map,
         backref=db.backref('users' ))
-
+    creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    allowemaillogin = db.Column(db.Enum('N','Y'), nullable=False, server_default=("N"))
+    is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     wfc_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
     wfc = db.relationship("Workfunctioncontext", backref="users")
+    created_by = db.Column(db.Integer)
 
 #     roles = db.relationship('Role', lazy='dynamic' ,
 #         backref=db.backref('users', lazy='dynamic' ))
@@ -185,9 +221,9 @@ class User(db.Model):
     def check_password(self, password):
         return  check_password_hash(self.password_hash, password)
     #Todo: need changes as well
-    def is_admin(self):
-        if self.role == 'admin' or self.role=='Admin' or self.role=='ADMIN':
-            return True
+    # def is_admin(self):
+    #     if self.role == 'admin' or self.role=='Admin' or self.role=='ADMIN':
+    #         return True
 
     def to_dict(self):
         data = {
@@ -195,8 +231,12 @@ class User(db.Model):
             'username': self.username,
             'email':  self.email,
             'roles': [role.rolename for role in self.roles],
+            'creation_date': str(self.creation_date),
+            'allowemaillogin': self.allowemaillogin,
+            'is_active': self.is_active,            
             #'roles': [role for role in self.roles] flsk is not able to return sql object , expecting string
-            'wfc': self.wfc.to_dict()
+            'wfc': self.wfc.to_dict(),
+            'created by': self.created_by
             }
         return data
 ################################################################################################ The user object listing will be like this

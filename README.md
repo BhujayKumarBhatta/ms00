@@ -81,7 +81,13 @@ configure the /etc/tokenleader/tokenleader_configs.yml
     Version: 3
   testotpmailservice:
     Server: '10.174.112.79'
-    Port: 5000	
+    Port: 5000
+	otpvalidfortsp:
+		TATA: 10
+		RELIANCE: 20
+		BHARTI: 30
+		SIFY: 20
+		VODAFONE: 20	
 	token:
 		#default will take the id_rsa keys from the  users home directory and .ssh directiry
 		#put the file name here if  the file name is different
@@ -173,6 +179,13 @@ when running from source (git clone) adminops command  is avilable from shell as
 	 adminops adduser -n user1 --password user1 --emailid user1 --rolenames role1  --wfc wfc1
 	 adminops  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
 
+	./adminops.sh addservice  -n linkInventory --password tokenleader --urlint http://localhost:5004 --urlext https://localhost:5004
+	./adminops.sh addservice  -n micros2 --password tokenleader --urlint http://localhost:5003 --urlext https://localhost:5003
+	./adminops.sh addservice  -n micros1 --password tokenleader --urlint http://localhost:5002 --urlext https://localhost:5002
+
+
+
+
 start the service :
 ==============================================================
 when running from source (git clone) adminops command  is avilable from shell as python tokenleader-start.sh or ./tokenleader-start.sh 
@@ -187,17 +200,33 @@ CLI utilities
 ====================================================================
 using user name and password from config file 
 
-		tokenleader  gettoken 
+		tokenleader  gettoken							for internal user only, reads from client_configs and secrets
 		
 or username and password can be supplied  theough the CLI 
 
 		tokenleader gettoken --authuser user1 --authpwd user1 --domain domainname
 		tokenleader gettoken --authuser user1 --authpwd user1 --domain domainname --otp otpnum
+		tokenleader gettoken --authuser user1 --authpwd user1											as domain is not mandate
+		tokenleader gettoken --authuser user1 --authpwd user1 --otp otpnum
+
 		
 Other CLI operaions 
 
 		tokenleader  verify -t <paste the token here>
-		tokenleader  list -e user (throwing errors for the being, need to be fixed)
+
+		tokenleader  list -e <entity> -u <username> -p <password>					for internal user
+
+		tokenleader  list -e <entity> -u <common name of ldap> -o <otp>				for external user,
+entity can be user, role, dept, org, ou, wfc etc.
+
+        tokenleader add org -n <orgname> -u <username> -p <password>                       for internal user
+
+        tokenleader add org -n <orgname> --orgtype external -u <username> -p <password>    for external user,
+same for ou, dept and role.        
+
+        tokenleader add org -n <orgname> -u <common name of ldap> -o <otp>				when external user adds it, if allowed in role_to_acl.yml
+
+        tokenleader adduser -n <username> --password <password> --emailid <emailid> --rolenames <role1,role2> --wfc <wfcname> -u <common name of ldap> -o <otp>				when external user adds it, if allowed in role_to_acl.yml
  
  
 Python client 
@@ -562,7 +591,7 @@ clone from git and then run
 to run single unit test 
  
 	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes (ImportError: No module named 'tokenleader.tests.unittests') --> 2 
-    python -m unittest tokenleader.tests.test_admin_ops.Test_User_Model.test_delete_org  (Recommended instead of 2)
+    python -m unittest tokenleader.tests.test_admin_ops.TestUserModel.test_delete_org  (Recommended instead of 2)
 
 for token generation and verification  testing this is a useful test  
 
