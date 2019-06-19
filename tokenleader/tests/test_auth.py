@@ -184,13 +184,14 @@ class TestToken(TestUserModel):
             
         
     def test_token_gen_fail_with_wrong_password(self):
+        usrpwd = 'wrong_password'
         u1 = self.user_creation_for_test()
         with self.client:
             response = self.client.post(
                 '/token/gettoken',
                 data=json.dumps(dict(
                     username='u1',
-                    password='wrong_password' )),
+                    password= usrpwd )),
                 content_type='application/json')
             #print('response is {}'.format(response))
 
