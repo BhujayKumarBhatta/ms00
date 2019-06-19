@@ -269,29 +269,49 @@ class TestToken(TestUserModel):
                 '/token/verify_token',                
                 headers=self.headers)
             data = json.loads(response.data.decode())
-            self.assertTrue(data['status'] == 'Signature expired')
+            self.assertTrue(data['status'] == 'Invalid token')
             self.assertTrue(isinstance('payload', str))
-        
             
+        
     def test_token_gen_fail_with_wrong_password(self):
-        u1 = User(username='susan', email='susan@abc.com')
-        u1.set_password('mysecret')       
-        self.assertTrue(u1.check_password('mysecret'))
-        db.session.add(u1)        
-        db.session.commit()
+        u1 = self.user_creation_for_test()
         with self.client:
             response = self.client.post(
                 '/token/gettoken',
                 data=json.dumps(dict(
-                    username='susan',
+                    username='u1',
                     password='wrong_password' )),
                 content_type='application/json')
-#             print('response is {}'.format(response))
+            #print('response is {}'.format(response))
+
             data = json.loads(response.data.decode())
+            #print('#########################################')
             #print(data['message'])
             self.assertTrue(data['message'] == 'Password did not match')
             self.assertFalse('auth_token' in data)
-            
+        
+    
+    
+## Commented Due to User cteation was failing because of WFC is not created    
+#     def test_token_gen_fail_with_wrong_password(self):
+#         u1 = User(username='susan', email='susan@abc.com')
+#         u1.set_password('mysecret')       
+#         self.assertTrue(u1.check_password('mysecret'))
+#         db.session.add(u1)        
+#         db.session.commit()
+#         with self.client:
+#             response = self.client.post(
+#                 '/token/gettoken',
+#                 data=json.dumps(dict(
+#                     username='susan',
+#                     password='wrong_password' )),
+#                 content_type='application/json')
+# #             print('response is {}'.format(response))
+#             data = json.loads(response.data.decode())
+#             #print(data['message'])
+#             self.assertTrue(data['status'] == 'Wrong Password')
+#             self.assertFalse('auth_token' in data)
+#             
 
            
         

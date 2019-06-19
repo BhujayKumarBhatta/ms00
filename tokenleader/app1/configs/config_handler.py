@@ -5,8 +5,10 @@ import six
 from cryptography.fernet import Fernet
 
 
-
 class Configs():
+    
+    test_data_path = os.path.join(os.path.dirname(__file__),
+                               os.pardir, os.pardir, 'tests', 'testdata')
         
     def __init__(self, service_name, conf_file=None, must_have_keys_in_yml={} ):
         #    
@@ -15,14 +17,14 @@ class Configs():
         if conf_file:
             self.config_file = conf_file
         else:            
-            self.config_file='/etc/tokenleader/{}_configs.yml'.format(service_name)
+            self.config_file='/etc/tokenleader/{}_configs.yml'.format(service_name, service_name)
 
         if not os.path.exists(self.config_file):
             print("no configuration file found. you need to create a config file "
                   "first in {} ".format(self.config_file))
             sys.exit()
         else:            
-            self.yml = self.parse_yml(self.config_file)
+            self.yml = self.parse_yml(self.config_file)            
 #         print(self.general_config.keys()) 
             if  sorted(self.yml.keys()) >= sorted(self.must_have_keys_in_yml):
                 pass                                    
@@ -30,8 +32,20 @@ class Configs():
             else:
                 print("{} file must have the following sections {}".format(
                     self.config_file, self.must_have_keys_in_yml ))
+                print('config %s ' % sorted(self.yml.keys()))
+                print('must have %s ' % sorted(self.must_have_keys_in_yml))
                 sys.exit()
-                    
+            if self.yml.get('secrets').get('user_auth_info_file_location') == 'testlocation':  
+                test_secret_file= os.path.join(self.test_data_path,'secrets.yml')                
+                self.secret_file_loc_from_yml = test_secret_file
+            else:
+                self.secret_file_loc_from_yml = self.yml.get('secrets').get('user_auth_info_file_location')
+                
+            if self.yml.get('secrets').get('fernet_key_file') == 'testlocation':
+                test_fernet_file = os.path.join(self.test_data_path,'fernet_key_file.yml')
+                self.fernet_file_loc_from_yml = test_fernet_file
+            else:
+                self.fernet_file_loc_from_yml = self.yml.get('secrets').get('fernet_key_file')
                     
     def parse_yml(self, file):
         with open(file, 'r') as f:
@@ -62,9 +76,8 @@ class Configs():
         stores encrypted password. user should use a cli utility to call this method to generate 
         the file
         '''
-        file_loc_from_yml = self.yml.get('secrets').get('secrets_file_location')
-#        print(file_loc_from_yml)
-        filepath =  os.path.expanduser(file_loc_from_yml)
+        #file_loc_from_yml = self.yml.get('secrets').get('secrets_file_location')
+        filepath =  os.path.expanduser(self.secret_file_loc_from_yml)
         dirpath = os.path.dirname(filepath)
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)  
@@ -76,7 +89,7 @@ class Configs():
             existing_secrets = {}
             
         cipher_suite = self.get_fernet_cipher_from_keyfile(
-            self.yml.get('secrets').get('fernet_key_location'))
+            self.fernet_file_loc_from_yml)
         
         byte_password = text_pwd.encode("utf-8")
         encrypted_password = cipher_suite.encrypt(byte_password)
@@ -95,12 +108,12 @@ class Configs():
 
     def decrypt_password(self, key_map):                
        
-        file_loc_from_yml = self.yml.get('secrets').get('secrets_file_location')
-        filepath =  os.path.expanduser(file_loc_from_yml)
-        
+#         file_loc_from_yml = self.yml.get('secrets').get('secrets_file_location')
+#         filepath =  os.path.expanduser(file_loc_from_yml)
+        filepath =  os.path.expanduser(self.secret_file_loc_from_yml)
         try:    
             cipher_suite = self.get_fernet_cipher_from_keyfile(
-            self.yml.get('secrets').get('fernet_key_location'))
+                                            self.fernet_file_loc_from_yml)
                     
             secret_yml = self.parse_yml(filepath)
             encrpted_text_from_file = secret_yml.get(key_map)               

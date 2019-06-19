@@ -1,0 +1,97 @@
+image: ubuntu:16.04
+
+stages:
+  - unit_test  
+  - coding_style_check
+  - code_security_check
+  
+
+unit testing:
+  stage: unit_test 
+  script: |
+    #export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4;
+    #echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list;
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; apt-get update -y;
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get install -y -q systemd python3 virtualenv python-pip net-tools openssh-client mysql-server;
+    service --status-all;
+    service mysql start;
+    mysqladmin -u root password welcome@123
+    mysql -u root -pwelcome@123 -e"CREATE DATABASE test_auth"
+    mysql -u root -pwelcome@123 -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'welcome@123';"
+    service mysql  restart
+    virtualenv -p python3 venv
+    source venv/bin/activate
+    python -V
+    pip --version
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; python -m pip install -r requirements.txt;
+    #service --status-all;
+    #service mongodb start;
+    #service mongodb status;
+    #echo ' after running mongo start'
+    #sleep 60
+    while true; do echo $(netstat -lntp |grep 3306); netstat -lntp |grep 3306; x=$?;echo $x;test $x -eq 0 && echo 'running' && break|| sleep 2;echo waiting;service mysql start; done
+    #echo $(netstat -lntp)
+    #echo ' before running the grep 27017'
+    #echo $(netstat -lntp |grep 27017)
+    #echo ' after running the grep 27017'
+    #echo '2nd line after running the grep 27017'      
+    #echo ' after running while loop'
+    #mongo   <<EOF
+    #use test
+    #db.createUser(
+    #           {
+    #            user: "test",
+    #            pwd: "welcome@123",   
+    #           roles: [ { role: "readWrite", db: "test" },  ]
+    #          }
+    #      )
+    #db.updateUser('test', {roles: [ { role: "dbOwner", db: "test" }] })
+    #EOF
+    #echo ' after running mongo shell command' 
+    echo -e "\n"|ssh-keygen -t rsa -N ""
+    python -m unittest discover -s tokenleader/tests -p "test*.py" -v
+    #python -m unittest discover -s micros2/tests/*.py -p "test*.py" -v
+  #allow_failure: true 
+
+        
+coding_style_check:
+  stage: coding_style_check
+  script: |
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; apt-get update -y;
+    echo "installation begins"
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;apt-get install -y  python3 virtualenv python3-pip
+    echo "installation is over"
+    pip3 list 
+    #export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;pip install pylint  --quiet
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;pip3 install pylint 
+    virtualenv -p python3 venv
+    source venv/bin/activate
+    python3 -V
+    pip3 --version
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; pip3 install -r requirements.txt
+    pylint --ignored-classes=_socketobject tokenleader --exit-zero
+  #allow_failure: true  
+    
+
+code_security_check:
+  stage: code_security_check
+  script: |
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; apt-get update -y;
+    echo "installation begins"
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;apt-get install -y  python3 virtualenv python3-pip
+    echo "installation is over"
+    pip3 list 
+    #export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;pip install pylint  --quiet
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;pip3 install bandit==1.5.1 
+    virtualenv -p python3 venv
+    source venv/bin/activate
+    python3 -V
+    pip3 --version
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; pip3 install -r requirements.txt
+    bandit -r tokenleader -x tokenleader/tests -s B105
+#- export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;apt-get install -y systemd python3 virtualenv python-pip net-tools
+#export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; pip install -r requirements.txt
+#- export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128;pip install bandit==1.5.1
+#echo $(netstat -lntp |grep 27017;test $? -eq 1 && echo 'mongodb not running')
+#while true; do echo $(netstat -lntp |grep 27017); netstat -lntp |grep 27017; x=$?;echo $x;test $x -eq 0 && echo 'running' && break|| sleep 2;echo waiting;service mongod start; done 

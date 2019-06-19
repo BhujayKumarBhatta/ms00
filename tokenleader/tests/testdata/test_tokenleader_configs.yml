@@ -29,7 +29,7 @@ token:
      #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
      #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
 secrets:
-     secrets_file_location: tokenleader/tests/test_data/secrets.yml # where you have write access
-     fernet_key_location: tokenleader/tests/test_data/fernetkeys # where you have write access and preferebly separated from secrets_file_location
+     user_auth_info_file_location: testlocation # where you have write access , for testing tokenleader client 1.5.1 is required  to detect 'testlocation'
+     fernet_key_file: testlocation # do
      db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
      tokenleader_pwd_key_map: tl_pwd
