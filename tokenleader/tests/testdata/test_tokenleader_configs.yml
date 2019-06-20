@@ -17,17 +17,18 @@ ldap:
 otpmailservice:
    Server: '10.174.112.79'
    Port: 5000
+tokenexpiration: 3600
 otpvalidfortsp:
    org2: 10
 token:
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient
-     private_key_file_location: default
-     public_key_file_location: default
+   #   private_key_file_location: /tmp/test_id_rsa
+   #   public_key_file_location: /tmp/test_id_rsa.pub
      #use full path when deployed with apache
-     #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
-     #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
+     private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
+     public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
 secrets:
      user_auth_info_file_location: testlocation # where you have write access , for testing tokenleader client 1.5.1 is required  to detect 'testlocation'
      fernet_key_file: testlocation # do

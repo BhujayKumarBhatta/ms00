@@ -8,5 +8,6 @@ migrations
 .settings
 dist
 *.egg-info
-
+.jsdtscope
+org.eclipse.*
 
