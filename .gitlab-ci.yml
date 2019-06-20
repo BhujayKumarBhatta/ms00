@@ -50,6 +50,9 @@ unit testing:
     #EOF
     #echo ' after running mongo shell command' 
     echo -e "\n"|ssh-keygen -t rsa -N ""
+    cp tokenleader/tests/testdata/test_id_rsa*    /tmp/
+    mkdir /etc/tokenleader
+    cp tokenleader/tests/testdata/*  /etc/tokenleader
     python -m unittest discover -s tokenleader/tests -p "test*.py" -v
     #python -m unittest discover -s micros2/tests/*.py -p "test*.py" -v
   #allow_failure: true 

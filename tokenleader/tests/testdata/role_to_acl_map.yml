@@ -1,0 +1,24 @@
+- name: role1
+  allow:
+  - tokenleader.list_users
+  - tokenleader.list_user_byname
+  - tokenleader.list_org
+  - tokenleader.list_dept
+  - tokenleader.list_role
+  - tokenleader.list_ou
+  - tokenleader.list_wfc
+  - tokenleader.add_user
+  - tokenleader.add_wfc
+  - tokenleader.add_ou
+  - tokenleader.add_dept
+  - tokenleader.add_org
+  - tokenleader.add_role
+  - tokenleader.delete_user
+  - tokenleader.delete_org
+  - tokenleader.delete_ou
+  - tokenleader.delete_dept
+  - tokenleader.delete_role
+  - tokenleader.delete_wfc
+  
+  
+  

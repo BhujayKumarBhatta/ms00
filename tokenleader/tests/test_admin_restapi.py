@@ -8,7 +8,7 @@ t = TestUserModel()
 class TestAdminRestApi(BaseTestCase):
     
     def test_list_users_without_token(self):
-        u1 = t.user_creation_for_test()        
+        # u1 = t.user_creation_for_test()        
         with self.client:
             response = self.client.get('/list/users')
 #             print('response is {}'.format(response))
@@ -165,4 +165,3 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(data['status'] == 'role1 has been  deleted successfully')         
      
                         
-    

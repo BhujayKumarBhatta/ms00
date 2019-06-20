@@ -751,7 +751,33 @@ ssl_verify: False
 
 
 change log 
-================================================
+=============================================
+tests/testdata/test_tokenleader_configs.yml   have changed 
+
+secrets:
+     user_auth_info_file_location: testlocation # for testing tokenleader client 1.5.1 is required  to detect 'testlocation'. the files under tests/testdata will be 
+     autodetected     
+     fernet_key_file: testlocation # do
+ 
+a pre generated secrets.yml for db_pwd as welcome@123 will be placed here in tesdata
+db_pwd: gAAAAABdCgpm0oJ07suvMLtvg-8CkyMfynhs8ngCOp8R0sDjaPPKK5YrETXpd7NUszSqIDWYOv1jrKUu6u7r5ly0qk1PbKnDYQ==
+
+tests/testdata/test_client_configs.yml will be also there
+
+these files and the changes made  in config_handler will ensure following tests will be success without the need for /etc/tokenleader/files which are required for production.
+
+1. test_configs.py
+2. all other tests except the *_restapi.py 
+
+however  tests mentioned in point 2 are linked to base_test.py which imports 
+from tokenleader.app1.adminops.adminops_restapi import adminops_bp
+this necessitates all the config files under /etc/tokenleader as well 
+
+
+
+
+
+
 
 ver 1.5
 ----------------
