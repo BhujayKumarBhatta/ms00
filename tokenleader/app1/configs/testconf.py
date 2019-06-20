@@ -2,10 +2,14 @@ import os
 import sys
 from urllib.parse import quote_plus
 from tokenleader.app1.configs.config_handler import Configs
+# test_data_path = os.path.join(os.path.dirname(__file__),
+#                                os.pardir, 'tests', 'testdata')
 
 _HERE = os.path.dirname(__file__)
-_SETTINGS_FILE = os.path.join(_HERE, '../../tests/test_configs.yml')
+TEST_DATA_PATH = os.path.join(_HERE, os.pardir, os.pardir, 'tests' , 'testdata')
+SERVER_SETTINGS_FILE = os.path.join(TEST_DATA_PATH, 'test_tokenleader_configs.yml')
 
+CLIENT_CONF_FILE = os.path.join(TEST_DATA_PATH, 'test_client_configs.yml')
 must_have_keys_in_yml = {'flask_default',
                          'database',
                          'ldap',
@@ -43,7 +47,7 @@ must_have_in_mail_default_section = {'Server',
                                     }
 
 try:
-    conf = Configs('tokenleader', _SETTINGS_FILE, must_have_keys_in_yml=must_have_keys_in_yml)
+    conf = Configs('tokenleader', SERVER_SETTINGS_FILE, must_have_keys_in_yml=must_have_keys_in_yml)
     ymldict = conf.yml
     flask_default_setiings_map = ymldict.get('flask_default')
     ldap_default_settings_map = ymldict.get('ldap')
