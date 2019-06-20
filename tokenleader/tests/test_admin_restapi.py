@@ -7,8 +7,7 @@ t = TestUserModel()
 
 class TestAdminRestApi(BaseTestCase):
     
-    def test_list_users_without_token(self):
-        u1 = t.user_creation_for_test()        
+    def test_list_users_without_token(self):   
         with self.client:
             response = self.client.get('/list/users')
 #             print('response is {}'.format(response))
@@ -28,6 +27,7 @@ class TestAdminRestApi(BaseTestCase):
                 headers=self.headers)
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
+            print(data)
             self.assertTrue(isinstance(data['status'], list))
     
     def test_list_users_byid_restapi(self):

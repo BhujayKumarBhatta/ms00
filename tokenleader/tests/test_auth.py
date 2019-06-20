@@ -22,9 +22,9 @@ class TestToken(TestUserModel):
     '''
     (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
     '''
-#       
-    def test_auth_token_with_actual_rsa_keys_fake_user(self):         
-          
+#
+    def test_auth_token_with_actual_rsa_keys_fake_user(self):
+
         user_from_db = {'id': 1,
                         'username': 'u1', 
                         'email': 'u1@abc.com', 
@@ -33,22 +33,23 @@ class TestToken(TestUserModel):
                                 'name': 'wfc1', 
                                 'orgunit': 'ou1',
                                 'id': 1, 
-                                'org': 'org1'}                       
+                                'org': 'org1'}
                         }
-        
+
         payload = {
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
                     'iat': datetime.datetime.utcnow(),
                     'sub': user_from_db
                      }
         __privkey = current_app.config.get('private_key')
-        __publickey = current_app.config.get('public_key')   
-       
+        __publickey = current_app.config.get('public_key')
+        print(__publickey)
+
         auth_token = generate_encrypted_auth_token(payload, __privkey) 
-#         print(type(auth_token))       
-        self.assertTrue(isinstance(auth_token, bytes))     
-             
-          
+#         print(type(auth_token))
+        self.assertTrue(isinstance(auth_token, bytes))
+
+
         np = decrypt_n_verify_token(auth_token, __publickey)
         self.assertTrue(isinstance(np, dict))
         #print(np.get('sub'))
@@ -56,8 +57,8 @@ class TestToken(TestUserModel):
         return auth_token   # the return is required for later usage by the test_admin_restapi
         #self.assertEqual(np.get('sub'), payload.get('sub'))
 #         print('end of  jwt token function.....................')
-#     
-#   
+#
+#
 
     def test_get_token(self):
         '''
