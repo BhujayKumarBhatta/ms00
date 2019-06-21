@@ -22,7 +22,7 @@ def list_users(wfc):
 
 @adminops_bp.route('/list/user/<username>', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_user_byname')
-def list_user_byname(username):
+def list_user_byname(username, wfc):
     #print('i got the name from http argument {}'.format(username))
     record = af.list_users(username)
     response_obj = {"status": record}

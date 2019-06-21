@@ -218,7 +218,7 @@ def list_ops(obj, cname=None, *args, **kwargs):
             record_list_of_dict.append(record_to_dict)
 #                 print('i am on the loop  result {}'.format(record_list_of_dict))
             result = record_list_of_dict
-#            print(result)
+            print(result)
            # else:            
             #    result = {'id': record.id, 'name': record.name , 'record': record}
              #   print(result)                
