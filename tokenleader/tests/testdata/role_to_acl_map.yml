@@ -20,5 +20,6 @@
   - tokenleader.delete_role
   - tokenleader.delete_wfc
   
-  
-  
+- name: role2
+  allow:
+  - tokenleader.list_users

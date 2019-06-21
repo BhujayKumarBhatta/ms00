@@ -8,7 +8,7 @@ t = TestUserModel()
 class TestAdminRestApi(BaseTestCase):
     
     def test_list_users_without_token(self):
-        # u1 = t.user_creation_for_test()        
+        u1 = t.user_creation_for_test()        
         with self.client:
             response = self.client.get('/list/users')
 #             print('response is {}'.format(response))
@@ -58,7 +58,8 @@ class TestAdminRestApi(BaseTestCase):
             self.assertTrue(data['status'].get('username') == 'u1')
 
     def test_list_dept_restapi(self):
-        u1 = t.test_register_dept()
+#         u1 = t.test_register_dept()
+        u1 = t.user_creation_for_test()
         token_in_byte = test_token_instance.test_auth_token_with_actual_rsa_keys_fake_user()
         with self.client:
             self.headers = {'X-Auth-Token': token_in_byte}
@@ -72,15 +73,17 @@ class TestAdminRestApi(BaseTestCase):
  
         
     def test_add_user_restapi(self):
-        t.role_creation_for_test()
+#         t.role_creation_for_test()
+        u1 = t.user_creation_for_test()
         token_in_byte = test_token_instance.test_auth_token_with_actual_rsa_keys_fake_user()
 #         t.register_work_function_for_test()
         data = json.dumps(dict(
-            name = 'u2',
+            username = 'u2',
             email = 'u2@abc.com',
             password = 'u2',
             wfc = 'wfc1',
-            roles = ['role1']
+            roles = ['role1'],
+            created_by = 'u1'
             ))
         print(data)
         with self.client:
@@ -184,19 +187,20 @@ class TestAdminRestApi(BaseTestCase):
         u1 = t.user_creation_for_test()
         token_in_byte = test_token_instance.test_auth_token_with_actual_rsa_keys_fake_user()
         data = json.dumps(dict(          
-            username = 'role3',
+            username = 'u1',
             ))
         with self.client:
             self.headers = {'X-Auth-Token': token_in_byte}
             response = self.client.delete('/delete/user',
                         data=data,
-                        headers=self.headers)
+                        headers=self.headers,
+                        content_type='application/json')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'u1 has been  deleted successfully')
             
     def test_delete_org_restapi(self):
-        u1 = t.user_creation_for_test()
-        # u2 = t.create_org_for_test()
+#         u1 = t.user_creation_for_test()
+        u2 = t.create_org_for_test()
         token_in_byte = test_token_instance.test_auth_token_with_actual_rsa_keys_fake_user()
         data = json.dumps(dict(          
             oname = 'org1',
@@ -205,13 +209,14 @@ class TestAdminRestApi(BaseTestCase):
             self.headers = {'X-Auth-Token': token_in_byte}
             response = self.client.delete('/delete/org',
                         data=data,
-                        headers=self.headers)
+                        headers=self.headers,
+                        content_type='application/json')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'org1 has been  deleted successfully')            
         
     def test_delete_ou_restapi(self):
-        u1 = t.user_creation_for_test()
-        # u2 = t.create_orgunit_for_test()
+#         u1 = t.user_creation_for_test()
+        u2 = t.create_orgunit_for_test()
         token_in_byte = test_token_instance.test_auth_token_with_actual_rsa_keys_fake_user()
         data = json.dumps(dict(          
             ouname = 'ou1',
@@ -220,13 +225,14 @@ class TestAdminRestApi(BaseTestCase):
             self.headers = {'X-Auth-Token': token_in_byte}
             response = self.client.delete('/delete/ou',
                         data=data,
-                        headers=self.headers)
+                        headers=self.headers,
+                        content_type='application/json')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'ou1 has been  deleted successfully')     
  
     def test_delete_dept_restapi(self):
-        u1 = t.user_creation_for_test()
-        # u2 = t.create_dept_for_test()
+#         u1 = t.user_creation_for_test()
+        u2 = t.create_dept_for_test()
         token_in_byte = test_token_instance.test_auth_token_with_actual_rsa_keys_fake_user()
         data = json.dumps(dict(          
             deptname = 'dept1',
@@ -235,14 +241,15 @@ class TestAdminRestApi(BaseTestCase):
             self.headers = {'X-Auth-Token': token_in_byte}
             response = self.client.delete('/delete/dept',
                         data=data,
-                        headers=self.headers)
+                        headers=self.headers,
+                        content_type='application/json')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'dept1 has been  deleted successfully')                
       
   
     def test_delete_wfc_restapi(self):
-        u1 = t.user_creation_for_test()
-        # u2 = t.register_work_function_for_test()
+#         u1 = t.user_creation_for_test()
+        u2 = t.register_work_function_for_test()
         token_in_byte = test_token_instance.test_auth_token_with_actual_rsa_keys_fake_user()
         data = json.dumps(dict(          
             wfcname = 'wfc1',
@@ -251,13 +258,14 @@ class TestAdminRestApi(BaseTestCase):
             self.headers = {'X-Auth-Token': token_in_byte}
             response = self.client.delete('/delete/wfc',
                         data=data,
-                        headers=self.headers)
+                        headers=self.headers,
+                        content_type='application/json')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'wfc1 has been  deleted successfully')  
             
     def test_delete_role_restapi(self):
-        u1 = t.user_creation_for_test()
-        # u2 = t.role_creation_for_test()
+#         u1 = t.user_creation_for_test()
+        u2 = t.role_creation_for_test()
         token_in_byte = test_token_instance.test_auth_token_with_actual_rsa_keys_fake_user()
         data = json.dumps(dict(          
             rolename = 'role1',
@@ -266,7 +274,8 @@ class TestAdminRestApi(BaseTestCase):
             self.headers = {'X-Auth-Token': token_in_byte}
             response = self.client.delete('/delete/role',
                         data=data,
-                        headers=self.headers)
+                        headers=self.headers,
+                        content_type='application/json')
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'role1 has been  deleted successfully')         
      

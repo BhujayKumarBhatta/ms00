@@ -54,6 +54,7 @@ try:
     mailservice_default_settings_map = ymldict.get('otpmailservice')
     token_settings_map = ymldict.get('token')
     dbs = ymldict.get('database')
+    #print(dbs)
     otpvaltime = ymldict.get('otpvalidfortsp')
 except:   
     print("did you configured the file {} correctly ? \n"
