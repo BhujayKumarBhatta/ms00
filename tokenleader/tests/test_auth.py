@@ -43,7 +43,7 @@ class TestToken(TestUserModel):
                      }
         __privkey = current_app.config.get('private_key')
         __publickey = current_app.config.get('public_key')
-        print(__publickey)
+#         print(__publickey)
 
         auth_token = generate_encrypted_auth_token(payload, __privkey) 
 #         print(type(auth_token))
