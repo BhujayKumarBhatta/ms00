@@ -3,6 +3,8 @@
 .project
 .pydevproject
 venv
+migrations
+.vscode
 dist
 *.egg-info
 .jsdtscope

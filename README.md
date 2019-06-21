@@ -8,6 +8,7 @@ page labelled as docker installation
 	docker pull bhujay/tokenleader:1.8 
 	docker run -d -p 5001:5001  --name tokenleader  -v tokenleader_vol:/tmp bhujay/tokenleader:1.8 
 	echo '10.174.112.130   tldbserver130' >> /etc/hosts
+	echo '10.174.112.100   testldapserver100' >> /etc/hosts
 	docker exec -it tokenleader 'bash'
 	
 change the tl_url to https
@@ -68,29 +69,39 @@ configure the /etc/tokenleader/tokenleader_configs.yml
 	  host_port: 5001
 	  ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
 	  ssl_settings: adhoc
-	db:
-	  database:
-	     Server: tldbserver130
-	     Port: 3306
-	     Database: auth
-	     UID: root
-	     db_pwd_key_map: db_pwd
-	     engine_connect_string: 'mssql+pymysql:///{0}'
-	
+	database:
+	  Server: tldbserver130
+	  Port: 3306
+	  Database: auth
+	  UID: root
+	  db_pwd_key_map: db_pwd
+	ldap:
+    Server: testldapserver100
+    Port: 389
+    Version: 3
+  testotpmailservice:
+    Server: '10.174.112.79'
+    Port: 5000
+	otpvalidfortsp:
+		TATA: 10
+		RELIANCE: 20
+		BHARTI: 30
+		SIFY: 20
+		VODAFONE: 20	
 	token:
-	     #default will take the id_rsa keys from the  users home directory and .ssh directiry
-	     #put the file name here if  the file name is different
-	     #also the public ley need to be copied in the client settings file under /etc/tlclient
-	     private_key_file_location: default
-	     public_key_file_location: default
-	     #use full path when deployed with apache
-	     #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
-	     #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
+		#default will take the id_rsa keys from the  users home directory and .ssh directiry
+		#put the file name here if  the file name is different
+		#also the public ley need to be copied in the client settings file under /etc/tlclient
+		private_key_file_location: default
+		public_key_file_location: default
+		#use full path when deployed with apache
+		#private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
+		#public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
 	secrets:
-	     secrets_file_location: tokenleader/tests/test_data/secrets.yml # where you have write access
-	     fernet_key_location: tokenleader/tests/test_data/fernetkeys # where you have write access and preferebly separated from secrets_file_location
-	     db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
-	     tokenleader_pwd_key_map: tl_pwd
+		secrets_file_location: tokenleader/tests/test_data/secrets.yml # where you have write access
+		fernet_key_location: tokenleader/tests/test_data/fernetkeys # where you have write access and preferebly separated from secrets_file_location
+		db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
+		tokenleader_pwd_key_map: tl_pwd
 
 generate an encrypted password for the db(one time)
 ===========================================================================================
@@ -136,7 +147,7 @@ tl_public_key: copy the public key of the server  <cat sh/id_rsa.id> and paste  
 users authentiaction information . The file is generated using  an cli   
 =================================================================================
 
-		pip install tokenleaderclient
+		pip install tokenleaderclient --upgrade
 		tokenleader-auth -p user1 
 **in some systems , the permisson of the /etc/tokenleader/.... files need 777 access ( read , write and execute ) access other wise this and the other commands shown was failing.
 
@@ -158,7 +169,8 @@ when running from source (git clone) adminops command  is avilable from shell as
 	 
 	 adminops initdb 
 	 
-	 adminops   add  org   -n org1  
+	 adminops   add  org   -n org1 (by default orgtype is internal)
+	 adminops   add  org   -n org2 --orgtype external
 	 adminops   add  ou   -n ou1 
 	 adminops   add  dept   -n  dept1  
 	 adminops   addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 	 
@@ -167,9 +179,9 @@ when running from source (git clone) adminops command  is avilable from shell as
 	 adminops adduser -n user1 --password user1 --emailid user1 --rolenames role1  --wfc wfc1
 	 adminops  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
 
-./adminops.sh addservice  -n linkInventory --password tokenleader --urlint http://localhost:5004 --urlext https://localhost:5004
-./adminops.sh addservice  -n micros2 --password tokenleader --urlint http://localhost:5003 --urlext https://localhost:5003
-./adminops.sh addservice  -n micros1 --password tokenleader --urlint http://localhost:5002 --urlext https://localhost:5002
+	./adminops.sh addservice  -n linkInventory --password tokenleader --urlint http://localhost:5004 --urlext https://localhost:5004
+	./adminops.sh addservice  -n micros2 --password tokenleader --urlint http://localhost:5003 --urlext https://localhost:5003
+	./adminops.sh addservice  -n micros1 --password tokenleader --urlint http://localhost:5002 --urlext https://localhost:5002
 
 
 
@@ -188,16 +200,33 @@ CLI utilities
 ====================================================================
 using user name and password from config file 
 
-		tokenleader  gettoken 
+		tokenleader  gettoken							for internal user only, reads from client_configs and secrets
 		
 or username and password can be supplied  theough the CLI 
 
-		gettoken  --authuser user1 --authpwd user1
+		tokenleader gettoken --authuser user1 --authpwd user1 --domain domainname
+		tokenleader gettoken --authuser user1 --authpwd user1 --domain domainname --otp otpnum
+		tokenleader gettoken --authuser user1 --authpwd user1											as domain is not mandate
+		tokenleader gettoken --authuser user1 --authpwd user1 --otp otpnum
+
 		
 Other CLI operaions 
 
-		tokenleader  verify -t <paste the toen here>
-		tokenleader  list -e user
+		tokenleader  verify -t <paste the token here>
+
+		tokenleader  list -e <entity> -u <username> -p <password>					for internal user
+
+		tokenleader  list -e <entity> -u <common name of ldap> -o <otp>				for external user,
+entity can be user, role, dept, org, ou, wfc etc.
+
+        tokenleader add org -n <orgname> -u <username> -p <password>                       for internal user
+
+        tokenleader add org -n <orgname> --orgtype external -u <username> -p <password>    for external user,
+same for ou, dept and role.        
+
+        tokenleader add org -n <orgname> -u <common name of ldap> -o <otp>				when external user adds it, if allowed in role_to_acl.yml
+
+        tokenleader adduser -n <username> --password <password> --emailid <emailid> --rolenames <role1,role2> --wfc <wfcname> -u <common name of ldap> -o <otp>				when external user adds it, if allowed in role_to_acl.yml
  
  
 Python client 
@@ -562,7 +591,7 @@ clone from git and then run
 to run single unit test 
  
 	python -m unittest tokenleader.tests.unittests.test_admin_ops.TestAdminOps.test_abort_delete_admin_user_input_not_yes (ImportError: No module named 'tokenleader.tests.unittests') --> 2 
-    python -m unittest tokenleader.tests.test_admin_ops.Test_User_Model.test_delete_org  (Recommended instead of 2)
+    python -m unittest tokenleader.tests.test_admin_ops.TestUserModel.test_delete_org  (Recommended instead of 2)
 
 for token generation and verification  testing this is a useful test  
 
