@@ -24,36 +24,17 @@ unit testing:
     source venv/bin/activate
     python -V
     pip --version
-    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; python -m pip install -r requirements.txt;
-    #service --status-all;
-    #service mongodb start;
-    #service mongodb status;
-    #echo ' after running mongo start'
-    #sleep 60
-    while true; do echo $(netstat -lntp |grep 3306); netstat -lntp |grep 3306; x=$?;echo $x;test $x -eq 0 && echo 'running' && break|| sleep 2;echo waiting;service mysql start; done
-    #echo $(netstat -lntp)
-    #echo ' before running the grep 27017'
-    #echo $(netstat -lntp |grep 27017)
-    #echo ' after running the grep 27017'
-    #echo '2nd line after running the grep 27017'      
-    #echo ' after running while loop'
-    #mongo   <<EOF
-    #use test
-    #db.createUser(
-    #           {
-    #            user: "test",
-    #            pwd: "welcome@123",   
-    #           roles: [ { role: "readWrite", db: "test" },  ]
-    #          }
-    #      )
-    #db.updateUser('test', {roles: [ { role: "dbOwner", db: "test" }] })
-    #EOF
-    #echo ' after running mongo shell command' 
+    export http_proxy=http://10.172.100.14:3128;export https_proxy=https://10.172.100.14:3128; python -m pip install -r requirements.txt;    
+    while true; do echo $(netstat -lntp |grep 3306); netstat -lntp |grep 3306; x=$?;echo $x;test $x -eq 0 && echo 'running' && break|| sleep 2;echo waiting;service mysql start; done    
     echo -e "\n"|ssh-keygen -t rsa -N ""
+    echo $(pwd)
+    echo pwd
     cp tokenleader/tests/testdata/test_id_rsa*    /tmp/
     ls -l /tmp/test_id_rsa*
     mkdir /etc/tokenleader
-    cp tokenleader/tests/testdata/*  /etc/tokenleader
+    cp tokenleader/tests/testdata/*  /etc/tokenleader/
+    mv /etc/tokenleader/test_tokenleader_configs.yml /etc/tokenleader/tokenleader_configs.yml
+    mv /etc/tokenleader/test_client_configs.yml /etc/tokenleader/client_configs.yml    
     ls -l /etc/tokenleader
     python -m unittest discover -s tokenleader/tests -p "test*.py" -v
     #python -m unittest discover -s micros2/tests/*.py -p "test*.py" -v
