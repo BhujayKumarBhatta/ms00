@@ -64,7 +64,7 @@ class TestToken(TestUserModel):
 #     
 #   
 
-    def test_get_token(self):
+    def test_get_token(self):        
         '''
         user_creation_for_test method comes from parent class TestUserModel from test_admin_ops module
         this method registers an user with name as u1 

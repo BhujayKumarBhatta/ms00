@@ -174,9 +174,9 @@ def get_token():
                 return jsonify(responseObject )
         if 'username' in request.json and 'password' in request.json:
             username = request.json['username']
-#            print(username)
+            print(username)
             password = request.json['password']
-#            print(password)
+            print(password)
             if username is None or password is None:
                 responseObject = {
                     'status': 'missing authentication info ',

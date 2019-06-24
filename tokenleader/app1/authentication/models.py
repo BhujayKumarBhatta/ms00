@@ -203,6 +203,7 @@ class User(db.Model):
     roles = db.relationship('Role', secondary=roles_n_user_map,
         backref=db.backref('users' ))
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    otp_mode = db.Column(db.String(20))
     allowemaillogin = db.Column(db.Enum('N','Y'), nullable=False, server_default=("N"))
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     wfc_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
@@ -233,7 +234,8 @@ class User(db.Model):
             'roles': [role.rolename for role in self.roles],
             'creation_date': str(self.creation_date),
             'allowemaillogin': self.allowemaillogin,
-            'is_active': self.is_active,            
+            'is_active': self.is_active,
+            'otp_mode': self.otp_mode,        
             #'roles': [role for role in self.roles] flsk is not able to return sql object , expecting string
             'wfc': self.wfc.to_dict(),
             'created by': self.created_by
