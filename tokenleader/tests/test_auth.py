@@ -1,4 +1,4 @@
-
+import time
 import unittest
 import datetime
 import json
@@ -43,7 +43,9 @@ class TestToken(TestUserModel):
                         }
 
         payload = {
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
+                    'exp': (datetime.datetime.utcnow() + \
+                            datetime.timedelta(days=0,
+                                               seconds=current_app.config.get('tokenexpiration'))),
                     'iat': datetime.datetime.utcnow(),
                     'sub': user_from_db
                      }
@@ -261,19 +263,20 @@ class TestToken(TestUserModel):
 #            print(data)
             #self.assertTrue(data['status'] == 'Invalid token')
             self.assertTrue(isinstance('payload', str))
-    
+
     def test_expired_token(self):
-        expired_token = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiaWQiOjEsInVzZXJuYW1lIjoic3VzYW4iLCJlbWFpbCI6InN1c2FuQGFiYy5jb20ifSwiaWF0IjoxNTQ3ODI0ODcyLCJleHAiOjE1NDc4Mjg0NzJ9.h8w8NzCC7FGGBo1nUrBKHRrYiFI0KrXujLx-GpThOzk8Gqcw-bWAy_jng-EllHJAay7aWw8u6K3B7T62OrZ5Hkj0qKMcwtZPQMySooTSWGW-I1LI3_vKSYhaXjXwayl--Ke3ZPBI1fFN61wUXDJsMuNydlE4eUv60MIAI5eT7o5GjSwfXETT1uv4mO5uHb-Yxf_tU13UMDt8nHX99h2s8WNZarLr3e5lJv786Y6aB4satzKTE3IhQ2HDqhnlRkxT00kRyd-dBeTzpZeA0SiCSUqF6pRbWHEgEGJPr_p-upxBAc_IP_zfUkyygGsRcUNM_lMF5RGLCRSFzeQ4TxBtDQ"
+        mytoken = self.test_auth_token_with_actual_rsa_keys_fake_user()
+        time.sleep(3)
         with self.client:
-            self.headers = {'X-Auth-Token': expired_token}
+            self.headers = {'X-Auth-Token': mytoken}
             response = self.client.get(
                 '/token/verify_token',                
                 headers=self.headers)
             data = json.loads(response.data.decode())
             self.assertTrue(data['status'] == 'Signature expired')
             self.assertTrue(isinstance('payload', str))
-        
-            
+
+
     def test_token_gen_fail_with_wrong_password(self):
         u1 = User(username='susan', email='susan@abc.com')
         u1.set_password('mysecret')       

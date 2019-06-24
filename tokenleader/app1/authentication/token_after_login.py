@@ -92,6 +92,11 @@ def get_token():
      curl -X POST -d '{"username": "admin", "password": "admin", "domain": "itc", "otp": "3376"}'  \
      -H "Content-Type: Application/json"  localhost:5001/token/gettoken
      '''
+    if 'tokenexpiration' in current_app.config:
+        tokenexpiration = current_app.config['tokenexpiration']
+    else:
+        tokenexpiration = 30
+        
     privkey = current_app.config.get('private_key')
     if request.method == 'POST':
 #        print(str(request.json))
@@ -135,9 +140,10 @@ def get_token():
                         svcs = ServiceCatalog.query.all()
                         service_catalog = {}
                         for s in svcs:
-                            service_catalog[s.name]=s.to_dict()                                
-                        payload = {
-                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=current_app.config['tokenexpiration']),
+                            service_catalog[s.name]=s.to_dict()
+                        payload = {'exp': (datetime.datetime.utcnow() + \
+                                           datetime.timedelta(days=0,
+                                                              seconds=tokenexpiration)),
                             'iat': datetime.datetime.utcnow(),
                             'sub': {**otpdet, **user_from_db}
                         }

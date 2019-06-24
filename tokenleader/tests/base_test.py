@@ -39,6 +39,8 @@ class BaseTestCase(TestCase):
         self.assertTrue(app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] is False)
         self.assertIsNotNone(app.config['private_key'])
         self.assertIsNotNone(app.config['public_key'])
+        self.assertIsNotNone(app.config['token'])
+        self.assertTrue(app.config.get('token').get('tokenexpiration') == 2)
         
         
 #     def test_get_token(self):

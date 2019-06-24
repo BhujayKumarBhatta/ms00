@@ -28,6 +28,7 @@ token:
      #also the public ley need to be copied in the client settings file under /etc/tlclient
      private_key_file_location: /tmp/test_id_rsa
      public_key_file_location: /tmp/test_id_rsa.pub
+     tokenexpiration: 2  # in sec
      #use full path when deployed with apache
      #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
      #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub

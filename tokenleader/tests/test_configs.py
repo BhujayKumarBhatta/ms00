@@ -2,6 +2,7 @@
 import os
 from unittest import TestCase
 from tokenleader.app1.configs.testconf import conf as testconf
+from flask import current_app
 
 test_data_path = os.path.join(os.path.dirname(__file__), 'testdata')
 test_secret_file= os.path.join(test_data_path,'secrets.yml')
@@ -25,7 +26,8 @@ class  TestConf(TestCase):
         #conf = Configs('tokenleader', conf_file=SERVER_SETTINGS_FILE, must_have_keys_in_yml=must_have_keys_in_yml)
         c = testconf.yml
         self.assertTrue(c.get('flask_default').get('host_name') == '0.0.0.0')
-        print(c.get('celery'))
+        print(c.get('celery'))        
+        print(current_app.configs)
         
     def test_encrypt_conf(self):
         #conf = Configs('tokenleader', conf_file=SERVER_SETTINGS_FILE)
