@@ -50,8 +50,8 @@ class Authenticator():
                 self.USERNAME = request.json['username']
             if 'password' in request.json:
                 self.PASSWORD = request.json['password']
-            if 'org' in request.json:
-                self.ORG = request.json['org']
+            if 'domain' in request.json:
+                self.ORG = request.json['domain']   # change domain key as org
             if 'otp' in request.json:
                 self.OTP = request.json['otp']
             if 'email' in request.json:
@@ -64,16 +64,16 @@ class Authenticator():
             service_catalog[s.name]=s.to_dict()
         return service_catalog
     
-    def _validate_request(self):
-        # check pair of data in request and return True/False/Issue
-        if ('username', 'otp') in request.json and not ('password','email') in request.json:
-            return True
-        elif ('username', 'password') in request.json and not ('otp','email') in request.json:
-            return True
-        elif ('email', 'otp') in request.json and not ('password','username') in request.json:
-            return True
-        else:
-            return False
+#     def _validate_request(self):
+#         # check pair of data in request and return True/False/Issue
+#         if ('username', 'otp') in request.json and not ('password','email') in request.json:
+#             return True
+#         elif ('username', 'password', 'domain') in request.json and not ('otp','email') in request.json:
+#             return True
+#         elif ('email', 'otp') in request.json and not ('password','username') in request.json:
+#             return True
+#         else:
+#             return False
         
     def _fetch_usrinfo_fm_db(self, validuser):
         if validuser is not None:
@@ -250,102 +250,102 @@ def get_token():
           
     '''
     auth = Authenticator(request)    
-    isvalidrequest =auth._validate_request(request)
-    if isvalidrequest:
-        # CASE 1: Username & Otp        
-        if auth.USERNAME is not None:
-            user_from_db = auth.get_user_info_from_db_byusername()
+#     isvalidrequest =auth._validate_request(request)
+#     if isvalidrequest is True:
+    # CASE 1: Username & Otp        
+    if auth.USERNAME is not None:
+        user_from_db = auth.get_user_info_from_db_byusername()
+    else:
+        responseObject = {
+            'status': 'missing authentication info ',
+            'message': 'no authentication information provided',}
+        return jsonify(responseObject)
+    if auth.OTP is not None:
+        otpwd = Otp.query.filter_by(otp=auth.OTP).first()
+        if otpwd:
+            otpdet = otpwd.to_dict()
+            creation_date = otpdet['creation_date']
+            otpdet['creation_date'] = str(otpdet['creation_date'])
+        org = user_from_db['wfc']['org']
+        if org in current_app.config['otpvalidfortsp']:
+            otpvalidtime = current_app.config['otpvalidfortsp'][org]
         else:
-            responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
-            return jsonify(responseObject)
-        if auth.OTP is not None:
-            otpwd = Otp.query.filter_by(otp=auth.OTP).first()
-            if otpwd:
-                otpdet = otpwd.to_dict()
-                creation_date = otpdet['creation_date']
-                otpdet['creation_date'] = str(otpdet['creation_date'])
-            org = user_from_db['wfc']['org']
-            if org in current_app.config['otpvalidfortsp']:
-                otpvalidtime = current_app.config['otpvalidfortsp'][org]
-            else:
-                otpvalidtime = 10
-            if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
-                try:                   
-                    # ------ payload to put in seperate function ------                    
-                    return auth.response_using_payload(user_from_db, otpdet)
-                except Exception as e:
-                    responseObject = {
-                        'status': 'failed',
-                        'message': e,}
-                    return jsonify(responseObject )
-            else:
+            otpvalidtime = 10
+        if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
+            try:                   
+                # ------ payload to put in seperate function ------                    
+                return auth.response_using_payload(user_from_db, otpdet)
+            except Exception as e:
                 responseObject = {
                     'status': 'failed',
-                    'message': 'Incorrect OTP',}
+                    'message': e,}
                 return jsonify(responseObject )
         else:
             responseObject = {
                 'status': 'failed',
-                'message': 'OTP is required',}
+                'message': 'Incorrect OTP',}
             return jsonify(responseObject )
-        # Case 2: Username & Password
-        if auth.USERNAME is None or auth.PASSWORD is None:
-            responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
-            return jsonify(responseObject)
-        user_from_db = auth.get_user_info_from_db_byusername()
-        if auth.chk_external_user(user_from_db) == 'True':
-            if auth.ldap_auth() is True:
-                otp = auth.generate_one_time_password(user_from_db['id'])
-                return make_response(otp)
+    else:
+        responseObject = {
+            'status': 'failed',
+            'message': 'OTP is required',}
+        return jsonify(responseObject )
+    # Case 2: Username & Password
+    if auth.USERNAME is None or auth.PASSWORD is None:
+        responseObject = {
+            'status': 'missing authentication info ',
+            'message': 'no authentication information provided',}
+        return jsonify(responseObject)
+    user_from_db = auth.get_user_info_from_db_byusername()
+    if auth.chk_external_user(user_from_db) is True:
+        if auth.ldap_auth() is True:
+            otp = auth.generate_one_time_password(user_from_db['id'])
+            return make_response(otp)
+    else:
+        validuser = auth.get_validuserobject()
+        if validuser.check_password(auth.PASSWORD):
+            return auth.response_using_payload(user_from_db)
         else:
-            validuser = auth.get_validuserobject()
-            if validuser.check_password(auth.PASSWORD):
-                return auth.response_using_payload(user_from_db)
-            else:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'Password did not match',}
-                return jsonify(responseObject)
-        # Case 3: Email & Otp
-        if auth.EMAIL is not None or auth.OTP is not None:
-            user_from_db = auth.get_user_info_from_db_byemail()
-                if user_from_db['allowemaillogin'] == 'Y':
-                    otpwd = Otp.query.filter_by(otp=otp).first()
-                    if otpwd:
-                        otpdet = otpwd.to_dict()
-                        creation_date = otpdet['creation_date']
-                        otpdet['creation_date'] = str(otpdet['creation_date'])
-                        org = user_from_db['wfc']['org']
-                        if org in current_app.config['otpvalidfortsp']:
-                            otpvalidtime = current_app.config['otpvalidfortsp'][org]
-                        else:
-                            otpvalidtime = 10
-                    if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
-                        return auth.response_using_payload(user_from_db, otpdet)
+            responseObject = {
+                'status': 'failed',
+                'message': 'Password did not match',}
+            return jsonify(responseObject)
+    # Case 3: Email & Otp
+    if auth.EMAIL is not None or auth.OTP is not None:
+        user_from_db = auth.get_user_info_from_db_byemail()
+            if user_from_db['allowemaillogin'] == 'Y':
+                otpwd = Otp.query.filter_by(otp=otp).first()
+                if otpwd:
+                    otpdet = otpwd.to_dict()
+                    creation_date = otpdet['creation_date']
+                    otpdet['creation_date'] = str(otpdet['creation_date'])
+                    org = user_from_db['wfc']['org']
+                    if org in current_app.config['otpvalidfortsp']:
+                        otpvalidtime = current_app.config['otpvalidfortsp'][org]
                     else:
-                        responseObject = {
-                            'status': 'failed',
-                            'message': 'Incorrect OTP',}
-                        return jsonify(responseObject )
+                        otpvalidtime = 10
+                if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
+                    return auth.response_using_payload(user_from_db, otpdet)
                 else:
                     responseObject = {
                         'status': 'failed',
-                        'message': 'Unauthorized',}
-                    return make_response(jsonify(responseObject)), 401
-        else:
-            responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
-            return jsonify(responseObject)
+                        'message': 'Incorrect OTP',}
+                    return jsonify(responseObject )
+            else:
+                responseObject = {
+                    'status': 'failed',
+                    'message': 'Unauthorized',}
+                return make_response(jsonify(responseObject)), 401
     else:
         responseObject = {
-            'status': 'restricted',
-            'message': 'invalid request',}
+            'status': 'missing authentication info ',
+            'message': 'no authentication information provided',}
         return jsonify(responseObject)
+# else:
+#     responseObject = {
+#         'status': 'restricted',
+#         'message': 'invalid request',}
+#     return jsonify(responseObject)
 
 
 @token_login_bp.route('/token/verify_token', methods=['GET'])

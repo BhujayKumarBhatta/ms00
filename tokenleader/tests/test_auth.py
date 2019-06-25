@@ -75,6 +75,7 @@ class TestToken(TestUserModel):
         data=json.dumps(dict(
                     username='u1',
                     password='secret' ,
+                    domain='org1'
                 ))
         #print(data)
         with self.client:
@@ -85,7 +86,7 @@ class TestToken(TestUserModel):
                 
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-#            print(data)
+            print(data)
             #print(data['message'])
             self.assertTrue(data['status'] == 'success')
             self.assertTrue('auth_token' in data)
