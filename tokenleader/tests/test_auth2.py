@@ -11,7 +11,7 @@ from tokenleader.app1.authentication.token_after_login import \
 from tokenleader.tests.base_test import  BaseTestCase
 from tokenleader.tests.test_admin_ops import TestUserModel
 from tokenleader.app1 import db
-from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department
+from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department, Otp
 #from app1.authentication import admin_ops
 from tokenleader.app1.adminops import admin_functions as af
 from tokenleader.tests.test_catalog_ops import TestCatalog , service_catalog 
@@ -24,6 +24,8 @@ class TestToken(TestUserModel):
     '''
     (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
     '''
+    EMAIL_TEST='Srijib.Bhattacharyya@itc.in'
+
 #       
     def test_auth_token_with_actual_rsa_keys_fake_user(self):         
           
@@ -75,6 +77,7 @@ class TestToken(TestUserModel):
         data=json.dumps(dict(
                     username='u1',
                     password='secret' ,
+                    domain='org1'
                 ))
         #print(data)
         print(self.client)
@@ -86,7 +89,7 @@ class TestToken(TestUserModel):
                 
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-#            print(data)
+            print(data)
             #print(data['message'])
             self.assertTrue(data['status'] == 'success')
             self.assertTrue('auth_token' in data)
@@ -95,23 +98,30 @@ class TestToken(TestUserModel):
             self.assertTrue(data['service_catalog'] == service_catalog )
             mytoken = data['auth_token']
             return mytoken
-    def test_external_validate_user(self):
+        
+    def test_user_authenticate_external(self):
         # Valid user create and Validate
         self.external_user_creation_for_test()
         data=json.dumps(dict(
                     username='u3',
                     password='secret' ,
+                    domain='org2'
                 ))
         #print(data)
-        print(self.client)
+#         print(self.client)
         with self.client:
             response = self.client.post(
                 '/token/gettoken', 
                 data=data,
                 content_type='application/json')
         data = json.loads(response.data.decode())
-#         print(data)
-        self.assertTrue(data['status'], 'mail success')
+        userdet = User.query.filter_by(username='u3').first()
+        userid = userdet.to_dict()['id']
+        otpdet = Otp.query.filter_by(userid=userid).first()
+        otp = otpdet.to_dict()['otp']
+        self.assertTrue(otp,not None)
+        self.assertTrue(len(otp), 4)
+        self.assertTrue(type(otp), "<class 'int'>")
         
         # Calling with invalid Data
         data=json.dumps(dict(
@@ -129,22 +139,65 @@ class TestToken(TestUserModel):
 #         print(data)
         self.assertTrue(data['status'], 'failed')
         
-    def test_external_validate_user_otp(self):
+    def test_get_token_uname_otp(self):
         self.external_user_creation_for_test()
         data=json.dumps(dict(
                     username='u3',
                     password='secret' ,
+                    domain='org2'
                 ))
-        #print(data)
-        print(self.client)
         with self.client:
             response = self.client.post(
                 '/token/gettoken', 
                 data=data,
                 content_type='application/json')
         data = json.loads(response.data.decode())
-#         print(data)
-        self.assertTrue(data['status'], 'mail success')
+        userdet = User.query.filter_by(username='u3').first()
+        userid = userdet.to_dict()['id']
+        otpdet = Otp.query.filter_by(userid=userid).first()
+        otp = otpdet.to_dict()['otp']
+        data=json.dumps(dict(
+                    username='u3',
+                    otp=otp
+                ))
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken', 
+                data=data,
+                content_type='application/json')
+        data = json.loads(response.data.decode())
+        self.assertTrue(data['status'] == 'success')
+        self.assertTrue('auth_token' in data)
+        
+    def test_get_token_email_otp(self):
+        self.external_user_creation_for_test()
+        data=json.dumps(dict(
+                    username='u3',
+                    password='secret' ,
+                    domain='org2'
+                ))
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken', 
+                data=data,
+                content_type='application/json')
+        data = json.loads(response.data.decode())
+        userdet = User.query.filter_by(username='u3').first()
+        userid = userdet.to_dict()['id']
+        otpdet = Otp.query.filter_by(userid=userid).first()
+        otp = otpdet.to_dict()['otp']
+        data=json.dumps(dict(
+                    email=self.EMAIL_TEST,
+                    otp=otp
+                ))
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken', 
+                data=data,
+                content_type='application/json')
+        data = json.loads(response.data.decode())
+        self.assertTrue(data['status'] == 'success')
+        self.assertTrue('auth_token' in data)
         
     def test_get_token_for_external_user(self):
         '''
@@ -217,11 +270,12 @@ class TestToken(TestUserModel):
                 '/token/gettoken',
                 data=json.dumps(dict(
                     username='susan',
-                    password='mysecret' )),
+                    password='mysecret',
+                    domain='torg' )),
                 content_type='application/json')
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-            #print(data['message'])
+#             print(data)
             self.assertTrue(data['message'] == 'User not registered')
             self.assertFalse('auth_token' in data)
     
@@ -234,7 +288,7 @@ class TestToken(TestUserModel):
                 headers=self.headers)
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-            #print(data)
+            print(data)
             self.assertTrue(data['status'] == 'Verification Successful')
             self.assertTrue('payload' in data)
             roles_retrived_from_token = data['payload'].get('sub').get('roles')
@@ -329,21 +383,18 @@ class TestToken(TestUserModel):
 
 
     def test_token_gen_fail_with_wrong_password(self):
-        u1 = User(username='susan', email='susan@abc.com')
-        u1.set_password('mysecret')       
-        self.assertTrue(u1.check_password('mysecret'))
-        db.session.add(u1)        
-        db.session.commit()
+        u1 = self.user_creation_for_test()
         with self.client:
             response = self.client.post(
                 '/token/gettoken',
                 data=json.dumps(dict(
-                    username='susan',
-                    password='wrong_password' )),
+                    username='u1',
+                    password='wrong_password',
+                    domain='org1' )),
                 content_type='application/json')
 #             print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-            #print(data['message'])
+            print(data['message'])
             self.assertTrue(data['message'] == 'Password did not match')
             self.assertFalse('auth_token' in data)
             

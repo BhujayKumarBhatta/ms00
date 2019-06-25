@@ -9,6 +9,8 @@ from ldap3 import Server, Connection, ALL
 from tokenleader.app1 import db
 from tokenleader.app1.authentication.models import User, Organization, Otp
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
+from pip._internal import req
+from flask.globals import request
 # from flask.globals import session
 
 
@@ -125,25 +127,30 @@ class Authenticator():
         else:
             print('no records where there in otp table')
         record = Otp(otp=num,userid=userid,delivery_method=self.OTP_MODE)
-        # print(record)
+#         print(record)
         db.session.add(record)
         db.session.commit()
 
-    def send_otp_thru_mail(self, email):
-
-
-        r = requests.post(url=current_app.config['MAIL_SERVICE_URI'], data=json.dumps({'mail_to':email, 'msg': "<html><body>Your OTP is <b><font color=blue>"+str(num)+"</font></b>. It is only valid for "+str(otpvalidtime)+" minutes.</body></html>"}))
+    def send_otp_thru_mail(self, email, num, otpvalidtime):
+#         print('check mail')  
+#         print(email, num, otpvalidtime)      
+        msg = ("<html><body>Your OTP is <b><font color=blue>"+ \
+               str(num)+"</font></b>. It is only valid for "+ \
+               str(otpvalidtime)+" minutes.</body></html>")
+        r = requests.post(url=current_app.config['MAIL_SERVICE_URI'], 
+                          data=json.dumps({'mail_to':email, 'msg': msg}))
         if r.status_code == 200:
             print('mail success')
             responseObject = {
                 'status': 'mail success',
-                'message': 'Otp has been sent to your email id: '+email}
+                'message': 'Otp has been sent to your email id: '+email }
             return jsonify(responseObject )
         else:
             responseObject = {
                 'status': 'failed',
                 'message': r.text}
             return jsonify(responseObject)
+        
     
     def send_otp_thru_sms(self, phno):
         return phno
@@ -197,14 +204,15 @@ class Authenticator():
             else:
                 otpvalidtime = 10
             mail_to = user_from_db['email']
-            phno = '5656565653'
+#             phno = '5656565653'
             if self.OTP_MODE == 'mail':
-                self.send_otp_thru_mail(email)
-            elif self.OTP_MODE == 'sms':
-                self.send_otp_thru_sms(phno)
-            elif self.OTP_MODE == 'both':
-                self.send_otp_thru_mail(email)
-                self.send_otp_thru_sms(phno)
+#                 print('mode mail')
+                return self.send_otp_thru_mail(mail_to, num, otpvalidtime)
+#             elif self.OTP_MODE == 'sms':
+#                 self.send_otp_thru_sms(phno, num, otpvalidtime)
+#             elif self.OTP_MODE == 'both':
+#                 self.send_otp_thru_mail(mail_to, num, otpvalidtime)
+#                 self.send_otp_thru_sms(phno)
             else:
                 return 'No mail id or phone no. is available'
         except Exception as e:
@@ -258,77 +266,147 @@ def get_token():
         based on  internal or external 
           
     '''
-    auth = Authenticator(request)
+    
+    #gettoken_by_usr_pwd(request)
+    #gettoken_by_usr_otp(request)
+    #gettoken_by_email_otp(request)
+    
     # CASE 1: Username & Otp      
     if 'username' in request.json and 'otp' in request.json:  
-        if auth.USERNAME is not None:
-            user_from_db = auth.get_user_info_from_db_byusername()
+        return gettoken_byusr_otp(request)
+    # Case 2: Username & Password
+    elif 'username' in request.json and 'password' in request.json and 'domain' in request.json:
+        return gettoken_by_usr_pwd(request)
+    # Case 3: Email & Otp
+    elif 'email' in request.json and 'otp' in request.json:
+        return gettoken_by_email_otp(request)
+    else:
+        responseObject = {
+            'status': 'restricted',
+            'message': 'invalid request',}
+        return jsonify(responseObject)
+
+def gettoken_by_usr_pwd(request):
+    auth = Authenticator(request)
+    if auth.USERNAME is None or auth.PASSWORD is None:
+        responseObject = {
+            'status': 'missing authentication info ',
+            'message': 'no authentication information provided',}
+        return jsonify(responseObject)
+    validuser = auth.get_validuserobject()
+    if validuser is None:
+            responseObject = {
+                'status': 'failed',
+                'message': 'User not registered',}
+            return jsonify(responseObject )
+    user_from_db = auth.get_user_info_from_db_byusername()
+    if auth.chk_external_user(user_from_db) is True:
+        if auth.ldap_auth() is True:
+            otp = auth.generate_one_time_password(user_from_db['id'])
+            return make_response(otp)
         else:
             responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
+                'status': 'failed',
+                'message': 'Password did not match',}
             return jsonify(responseObject)
-        if auth.OTP is not None:
+    else:
+        if validuser.check_password(auth.PASSWORD):
+            payload = {
+                        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
+                        'iat': datetime.datetime.utcnow(),
+                        'sub': user_from_db
+                    }
+            auth_token = generate_encrypted_auth_token(payload, auth.privkey)
+            responseObject = {
+                'status': 'success',
+                'message': 'success',
+                'auth_token': auth_token.decode(),
+                'service_catalog': auth.service_catalog()}
+            return make_response(jsonify(responseObject)), 201
+        else:
+            responseObject = {
+                'status': 'failed',
+                'message': 'Password did not match',}
+            return jsonify(responseObject)
+
+def gettoken_byusr_otp(request):
+    auth = Authenticator(request)  
+    if auth.USERNAME is not None:
+        validuser = auth.get_validuserobject()
+        if validuser is None:
+            responseObject = {
+                'status': 'failed',
+                'message': 'User not registered',}
+            return jsonify(responseObject )
+        user_from_db = auth.get_user_info_from_db_byusername()
+    else:
+        responseObject = {
+            'status': 'missing authentication info ',
+            'message': 'no authentication information provided',}
+        return jsonify(responseObject)
+    if auth.OTP is not None:
+        otpwd = Otp.query.filter_by(otp=auth.OTP).first()
+        if otpwd:
+            otpdet = otpwd.to_dict()
+            creation_date = otpdet['creation_date']
+            otpdet['creation_date'] = str(otpdet['creation_date'])
+        org = user_from_db['wfc']['org']
+        if org in current_app.config['otpvalidfortsp']:
+            otpvalidtime = current_app.config['otpvalidfortsp'][org]
+        else:
+            otpvalidtime = 10
+        if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
+            try:                   
+                # ------ payload to put in seperate function ------                    
+                payload = {'exp': (datetime.datetime.utcnow() + \
+                                       datetime.timedelta(days=0,
+                                                          seconds=auth.tokenexpiration)),
+                        'iat': datetime.datetime.utcnow(),
+                        'sub': {**otpdet, **user_from_db}
+                    }
+                auth_token = generate_encrypted_auth_token(payload, auth.privkey)
+                responseObject = {
+                    'status': 'success',
+                    'message': 'success',
+                    'auth_token': auth_token.decode(),  
+                    'service_catalog': auth.service_catalog()}
+                return make_response(jsonify(responseObject)), 201
+            except Exception as e:
+                responseObject = {
+                    'status': 'failed',
+                    'message': e,}
+                return jsonify(responseObject )
+        else:
+            responseObject = {
+                'status': 'failed',
+                'message': 'Incorrect OTP',}
+            return jsonify(responseObject )
+    else:
+        responseObject = {
+            'status': 'failed',
+            'message': 'OTP is required',}
+        return jsonify(responseObject )
+        
+def gettoken_by_email_otp(request):
+    auth = Authenticator(request)
+    if auth.EMAIL is not None or auth.OTP is not None:
+        user_from_db = auth.get_user_info_from_db_byemail()
+        if user_from_db['allowemaillogin'] == 'Y':
             otpwd = Otp.query.filter_by(otp=auth.OTP).first()
             if otpwd:
                 otpdet = otpwd.to_dict()
                 creation_date = otpdet['creation_date']
                 otpdet['creation_date'] = str(otpdet['creation_date'])
-            org = user_from_db['wfc']['org']
-            if org in current_app.config['otpvalidfortsp']:
-                otpvalidtime = current_app.config['otpvalidfortsp'][org]
-            else:
-                otpvalidtime = 10
+                org = user_from_db['wfc']['org']
+                if org in current_app.config['otpvalidfortsp']:
+                    otpvalidtime = current_app.config['otpvalidfortsp'][org]
+                else:
+                    otpvalidtime = 10
             if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
-                try:                   
-                    # ------ payload to put in seperate function ------                    
-                    payload = {'exp': (datetime.datetime.utcnow() + \
-                                           datetime.timedelta(days=0,
-                                                              seconds=auth.tokenexpiration)),
-                            'iat': datetime.datetime.utcnow(),
-                            'sub': {**otpdet, **user_from_db}
-                        }
-                    auth_token = generate_encrypted_auth_token(payload, auth.privkey)
-                    responseObject = {
-                        'status': 'success',
-                        'message': 'success',
-                        'auth_token': auth_token.decode(),  
-                        'service_catalog': auth.service_catalog()}
-                    return make_response(jsonify(responseObject)), 201
-                except Exception as e:
-                    responseObject = {
-                        'status': 'failed',
-                        'message': e,}
-                    return jsonify(responseObject )
-            else:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'Incorrect OTP',}
-                return jsonify(responseObject )
-        else:
-            responseObject = {
-                'status': 'failed',
-                'message': 'OTP is required',}
-            return jsonify(responseObject )
-    # Case 2: Username & Password
-    if 'username' in request.json and 'password' in request.json:
-        if auth.USERNAME is None or auth.PASSWORD is None:
-            responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
-            return jsonify(responseObject)
-        user_from_db = auth.get_user_info_from_db_byusername()
-        if auth.chk_external_user(user_from_db) is True:
-            if auth.ldap_auth() is True:
-                otp = auth.generate_one_time_password(user_from_db['id'])
-                return make_response(otp)
-        else:
-            validuser = auth.get_validuserobject()
-            if validuser.check_password(auth.PASSWORD):
                 payload = {
                             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
                             'iat': datetime.datetime.utcnow(),
-                            'sub': user_from_db
+                            'sub': {**user_from_db, **otpdet}
                         }
                 auth_token = generate_encrypted_auth_token(payload, auth.privkey)
                 responseObject = {
@@ -340,58 +418,20 @@ def get_token():
             else:
                 responseObject = {
                     'status': 'failed',
-                    'message': 'Password did not match',}
-                return jsonify(responseObject)
-    # Case 3: Email & Otp
-    if 'email' in request.json and 'otp' in request.json:
-        if auth.EMAIL is not None or auth.OTP is not None:
-            user_from_db = auth.get_user_info_from_db_byemail()
-            if user_from_db['allowemaillogin'] == 'Y':
-                otpwd = Otp.query.filter_by(otp=otp).first()
-                if otpwd:
-                    otpdet = otpwd.to_dict()
-                    creation_date = otpdet['creation_date']
-                    otpdet['creation_date'] = str(otpdet['creation_date'])
-                    org = user_from_db['wfc']['org']
-                    if org in current_app.config['otpvalidfortsp']:
-                        otpvalidtime = current_app.config['otpvalidfortsp'][org]
-                    else:
-                        otpvalidtime = 10
-                if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
-                    payload = {
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
-                                'iat': datetime.datetime.utcnow(),
-                                'sub': {**user_from_db, **otpdet}
-                            }
-                    auth_token = generate_encrypted_auth_token(payload, auth.privkey)
-                    responseObject = {
-                        'status': 'success',
-                        'message': 'success',
-                        'auth_token': auth_token.decode(),
-                        'service_catalog': auth.service_catalog()}
-                    return make_response(jsonify(responseObject)), 201
-                else:
-                    responseObject = {
-                        'status': 'failed',
-                        'message': 'Incorrect OTP',}
-                    return jsonify(responseObject )
-            else:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'Unauthorized',}
-                return make_response(jsonify(responseObject)), 401
+                    'message': 'Incorrect OTP',}
+                return jsonify(responseObject )
         else:
             responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
-            return jsonify(responseObject)
+                'status': 'failed',
+                'message': 'Unauthorized',}
+            return make_response(jsonify(responseObject)), 401
     else:
         responseObject = {
-            'status': 'restricted',
-            'message': 'invalid request',}
+            'status': 'missing authentication info ',
+            'message': 'no authentication information provided',}
         return jsonify(responseObject)
-
-
+     
+        
 @token_login_bp.route('/token/verify_token', methods=['GET'])
 def verify_token():
     '''
