@@ -20,7 +20,18 @@ token_login_bp = Blueprint('token_login_bp', __name__)
 #publickey = current_app.config.get('public_key') 
 
 class Authenticator():
+    ''' 1. move this class to a different module( auth_class.py )file
+    2.  get_token and verify token to be  api routes to be in auth_routes.py 
+    3.  dont use ldap only for authentication and dont consider all user info shd be in local db.
+        user to provide org name ( if not provided it is taken as 'default' )
+        based on user provided orgtype , search config yml what is its auth_backend 
+        retrieve the user from that auth_backend (currenty it always  retrieves it from
+        local db is a  design problem
+        for org type default -  user is retrived from local
+    4. rectify   the error as suggested by pylint hints  underlined as blue or red , 
+       remove leading and trailing white space , too long lines , uppercase cinstant names etc'''
     
+
     STATUS = None
     USERNAME = None
     PASSWORD = None
@@ -30,7 +41,7 @@ class Authenticator():
     OTP_MODE=None
     tokenexpiration=30
     privkey=None
-    
+
     def __init__(self, request):
         self._extract_n_validate_data_from_request(request)        
         print(current_app.config['tokenexpiration'])
@@ -150,8 +161,7 @@ class Authenticator():
                 'status': 'failed',
                 'message': r.text}
             return jsonify(responseObject)
-        
-    
+     
     def send_otp_thru_sms(self, phno):
         return phno
         # config for sms
@@ -216,35 +226,7 @@ class Authenticator():
             else:
                 return 'No mail id or phone no. is available'
         except Exception as e:
-            return e
-
-
-def generate_encrypted_auth_token(payload, priv_key):
-    print(payload)
-    try:
-        auth_token = jwt.encode(
-             payload,
-             priv_key,
-             algorithm='RS512'
-        )
-        return auth_token
-    except Exception as e:
-        return e
-                    
-def decrypt_n_verify_token(auth_token, pub_key):
-    try:
-        payload = jwt.decode(
-            auth_token,
-            pub_key,
-            algorithm=['RS512']
-        )
-        
-        return payload         
-    except jwt.ExpiredSignatureError:
-        return 'Signature expired. Please log in again.'
-    except jwt.InvalidTokenError:
-        return 'Invalid token. Please log in again.'
-        
+            return e        
 
 @token_login_bp.route('/token/gettoken', methods=['POST'])
 def get_token():

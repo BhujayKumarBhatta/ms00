@@ -11,26 +11,34 @@ database:
    db_pwd_key_map: db_pwd
    #engine_connect_string: 'mssql+pymysql:///{0}'
    
-
-internal_org:
-   auth_backend: ldap   
-   ldap_Server: localhost
-   Port: 389
-   Version:
+domains:
+   default:
+      auth_backend: localsqldb
+   internal_org:
+      auth_backend: ldap   
+      ldap_Server: localhost
+      Port: 389
+      Version      
+   #internal_org:
+   #   auth_backend: localsqldb      
       
-#internal_org:
-#   auth_backend: localdb
-      
-      
-external_org:
-   auth_backend: ldap   
-   ldap_Server: localhost1111
-   Port: 389
-   Version:
-      
-#external_org:
-#   auth_backend: ldap 
-      3
+   external_org:
+      auth_backend: ldap   
+      ldap_Server: localhost1111
+      Port: 389
+      Version:  
+      DC:
+      DC:
+      OU:
+      O:
+             
+   #external_org:
+   #   auth_backend: ldap 
+   abc:
+    auth_
+   
+   
+         3
 otpmailservice:
    Server: 10.174.112.79
    Port: 5000
