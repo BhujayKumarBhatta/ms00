@@ -12,8 +12,10 @@ SERVER_SETTINGS_FILE = os.path.join(TEST_DATA_PATH, 'test_tokenleader_configs.ym
 CLIENT_CONF_FILE = os.path.join(TEST_DATA_PATH, 'test_client_configs.yml')
 must_have_keys_in_yml = {'flask_default',
                          'database',
-                         'ldap',
+                         'domains',
+                         'typeoftsp',
                          'otpmailservice',
+                         'tokenexpiration',
                          'otpvalidfortsp',
                          'token',
                          'secrets'
@@ -37,10 +39,7 @@ must_have_in_db_section = {'Server',
                            'db_pwd_key_map'
                           }
 
-must_have_in_ldap_default_section = {'Server',
-                                     'Port',
-                                     'Version'
-                                    }
+must_have_in_domain_default_section = {'auth_backend'}
 
 must_have_in_mail_default_section = {'Server',
                                      'Port'
@@ -50,8 +49,10 @@ try:
     conf = Configs('tokenleader', SERVER_SETTINGS_FILE, must_have_keys_in_yml=must_have_keys_in_yml)
     ymldict = conf.yml
     flask_default_setiings_map = ymldict.get('flask_default')
-    ldap_default_settings_map = ymldict.get('ldap')
+    domains_default_settings_map = ymldict.get('domains')
     mailservice_default_settings_map = ymldict.get('otpmailservice')
+    typeoftsp_default_settings_map = ymldict.get('typeoftsp')
+    tokenexpiration_default_settings_map = ymldict.get('default_settings_map')
     token_settings_map = ymldict.get('token')
     dbs = ymldict.get('database')
     #print(dbs)
@@ -66,10 +67,11 @@ if not flask_default_setiings_map.keys() >= must_have_in_flask_default_section:
        conf.config_file, must_have_in_flask_default_section ))
     sys.exit()
 
-if not ldap_default_settings_map.keys() >= must_have_in_ldap_default_section:
-    print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.config_file, must_have_in_ldap_default_section ))
-    sys.exit()
+#TODO:mandate domain content is valid
+# if not domains_default_settings_map.keys() >= must_have_in_domain_default_section:
+#     print("{} must have  the following parameters {}  under the flask_default section".format(
+#        conf.config_file, must_have_in_domain_default_section ))
+#     sys.exit()
 
 if not mailservice_default_settings_map.keys() >= must_have_in_mail_default_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
@@ -110,10 +112,9 @@ key_attr = {'private_key': private_key, 'public_key': public_key}
 token_settings_map.update(key_attr)
 
 connection_string = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}'.format(quote_plus(dbs.get('UID')), quote_plus(conf.decrypt_password(dbs.get('db_pwd_key_map'))), dbs.get('Server'), dbs.get('Port'), dbs.get('Database'))
-ldap_conn_string = 'ldap://{0}:{1}'.format(ldap_default_settings_map.get('Server'),ldap_default_settings_map.get('Port'))
 mail_service_for_otp = 'http://{0}:{1}/mail'.format(mailservice_default_settings_map.get('Server'), mailservice_default_settings_map.get('Port'))
 #converted_safe_uri #use quote_plus to construct the uri
-test_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'LDAP_PROVIDER_URL': ldap_conn_string, 'LDAP_PROTOCOL_VERSION': ldap_default_settings_map.get('Version'), 'MAIL_SERVICE_URI': mail_service_for_otp}
+test_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'MAIL_SERVICE_URI': mail_service_for_otp}
 # pick up values from yml and construct other confs here
-test_configs_from_file = {**flask_default_setiings_map, **token_settings_map, **test_db_conf}
 test_conf_list = [test_configs_from_file ,   ymldict ]
+test_configs_from_file = {**flask_default_setiings_map, dict([d for d in domains_default_settings_map]), **token_settings_map, **typeoftsp_default_settings_map, **tokenexpiration_default_settings_map, **test_db_conf}

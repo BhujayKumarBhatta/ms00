@@ -4,34 +4,65 @@ flask_default:
   ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
   ssl_settings: adhoc
 database:
-     Server: localhost
-     Port: 3306
-     Database: test_auth
-     UID: root
-     db_pwd_key_map: db_pwd
-     #engine_connect_string: 'mssql+pymysql:///{0}'
-ldap:
-   Server: 10.174.112.100
-   Port: 389
-   Version: 3
+   Server: tldbserver130
+   Port: 3306
+   Database: auth
+   UID: root
+   db_pwd_key_map: db_pwd
+   #engine_connect_string: 'mssql+pymysql:///{0}'
+   
+domains:
+   - default:
+      auth_backend: sqldb
+   - itc:
+      auth_backend: ldap   
+      ldap_host: remote   # configure later with AD
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      O: itc   # configure later with AD
+      
+   - tsp:
+      auth_backend: ldap   
+      ldap_host: localhost
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+
+typeoftsp:
+   - TATA
+   - RELIANCE
+   - BHARTI
+   - SIFY
+   - VODAFONE
 otpmailservice:
-   Server: '10.174.112.79'
+   Server: 10.174.112.79
    Port: 5000
 tokenexpiration: 3600
 otpvalidfortsp:
    org2: 10
+   # TATA: 10
+   # RELIANCE: 20
+   # BHARTI: 30
+   # SIFY: 20
+   # VODAFONE: 20
 token:
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient
-     private_key_file_location: /home/bbhatta/tspb/tokenleader/tokenleader/tests/testdata/test_id_rsa
-     public_key_file_location: /home/bbhatta/tspb/tokenleader/tokenleader/tests/testdata/test_id_rsa.pub
-     tokenexpiration: 2  # in sec
+     private_key_file_location: default
+     public_key_file_location: default
      #use full path when deployed with apache
-     private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
-     public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
+     #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
+     #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
 secrets:
-     user_auth_info_file_location: testlocation # where you have write access , for testing tokenleader client 1.5.1 is required  to detect 'testlocation'
-     fernet_key_file: testlocation # do
+     user_auth_info_file_location: tokenleader/tests/testdata/secrets.yml # where you have write access
+     fernet_key_file: tokenleader/tests/testdata/fernet_key_file.yml # where you have write access and preferebly separated from secrets_file_location
      db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
      tokenleader_pwd_key_map: tl_pwd

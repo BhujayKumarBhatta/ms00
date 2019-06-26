@@ -60,6 +60,7 @@ class Authenticator():
         ''' doc string '''
         auth_backend = 'default'
         domain_list = current_app.config.get('domains')
+        print(current_app.config)
         if self.ORG in current_app.config.get('typeoftsp'):
             self.ORG = 'tsp'
         if self.ORG  in domain_list:
@@ -212,16 +213,16 @@ class Authenticator():
                        port=ldap_config['ldap_port'],
                        #system user , password , dc etc will be required
                        get_info=ALL)
-        uinfo = "'cn={0},ou="+ldap_config['OU']+",dc="+ldap_config['DC1']+
-                ",dc="+ldap_config['DC2']+",dc="+ldap_config['DC2']+"'"
+        uinfo = "ou="+ldap_config['OU']+","+"dc="+ldap_config['DC1']+\
+                ","+"dc="+ldap_config['DC2']+","+"dc="+ldap_config['DC2']
+        print(uinfo)
         if self.ldap_auth(conn, uinfo) is True:
             return self.get_user_info_from_default_db(user=self.USERNAME)
         else:
-            else:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'Password did not match',}
-                return jsonify(responseObject)
+            responseObject = {
+                'status': 'failed',
+                'message': 'Password did not match',}
+            return jsonify(responseObject)
                   
 
     def ldap_auth(self, conn, uinfo):
@@ -286,15 +287,15 @@ class TokenManager():
                 return jsonify(responseObject )
         user_from_db = auth.get_user_info_from_default_db(user=auth.USERNAME)
         if auth.chk_external_user(user_from_db) is True:
-            if not get_usr_info_fm_ldap()['status'] == 'failed':
-                if 'id' in get_usr_info_fm_ldap():
-                    otp = auth.generate_one_time_password(get_usr_info_fm_ldap()['id'])
+            if not auth.get_usr_info_fm_ldap()['status'] == 'failed':
+                if 'id' in auth.get_usr_info_fm_ldap():
+                    otp = auth.generate_one_time_password(auth.get_usr_info_fm_ldap()['id'])
                     return make_response(otp)
                 else:
                     return 'something went wrong'
             else:
                 # Password did not
-                return get_usr_info_fm_ldap()
+                return auth.get_usr_info_fm_ldap()
         else:
             if validuser.check_password(auth.PASSWORD):
                 payload = {
