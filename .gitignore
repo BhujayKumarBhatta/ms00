@@ -5,6 +5,7 @@
 venv
 migrations
 .vscode
+.settings
 dist
 *.egg-info
 .jsdtscope

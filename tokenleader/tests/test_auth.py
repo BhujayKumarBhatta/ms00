@@ -626,8 +626,3 @@ class TestToken(TestUserModel):
 #             self.assertTrue(data['status'] == 'Wrong Password')
 #             self.assertFalse('auth_token' in data)
 #             
-
-           
-        
-        
-
