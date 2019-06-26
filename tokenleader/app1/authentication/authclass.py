@@ -60,18 +60,22 @@ class Authenticator():
         ''' doc string '''
         auth_backend = 'default'
         domain_list = current_app.config.get('domains')
+        if self.ORG in current_app.config.get('typeoftsp'):
+            self.ORG = 'tsp'
         if self.ORG  in domain_list:
             for domain_name in domain_list:
                 if domain_name.get('auth_backend') == 'default':
-                    auth_backend = 'defualt'
+                    auth_backend = 'default'
                 elif domain_name.get('auth_backend') == 'ldap':
-                    backend_configs =  {'ldap_host': 1,
-                                   'ldap_port': 2,
-                                   'ldap_version': 3, 
-                                   'OU': 4,
-                                   'O': 5, 
-                                   'DC': 6}
-                    auth_backend = 'ldap;2a'
+                    backend_configs =  {'ldap_host': domain_name.get('ldap_host'),
+                                   'ldap_port': domain_name.get('ldap_port'),
+                                   'ldap_version': domain_name.get('ldap_version'), 
+                                   'OU': domain_name.get('OU'),
+                                   'O': domain_name.get('O'),
+                                   'DC1': domain_name.get('DC1'),
+                                   'DC2': domain_name.get('DC2'),
+                                   'DC3': domain_name.get('DC3')}
+                    auth_backend = 'ldap'
                     
                 elif domain_name.get('auth_backend') == 'active_directory':
                     pass
@@ -93,9 +97,9 @@ class Authenticator():
         result = self._get_auth_backend_from_yml()
         if result.get('auth_backend') == 'default':
             if self.USERNAME:
-                user_fm_backend = self.get_user_info_from_default_db(self.USERNAME)
+                user_fm_backend = self.get_user_info_from_default_db(user=self.USERNAME)
             elif self.USERNAME:
-                user_fm_backend = self.get_user_info_from_default_db(self.EMAIL)
+                user_fm_backend = self.get_user_info_from_default_db(email=self.EMAIL)
             else:
                 pass
         elif result.get('auth_backend') == 'ldap':
@@ -192,32 +196,40 @@ class Authenticator():
         # config for sms
 
     def get_usr_info_fm_ldap(self):
+        '''        
+         #     user_fm_ldap = "ldap searach "
+            # else:
+            #     user_fm_ldap = ("no user is found in ldap ")                
+            # if ('role', 'department .... wfc realted ') not in user_fm_ldap:
+            #     pass
+            #     "call the local db to get those info "            
+            # return user_fm_ldap 
+        '''
+        #TODO: research on open ldap to find user details
         result = self._get_auth_backend_from_yml()
-        ldap_config = result.get('backend_configs')        
-        if self.ldap_auth():
-            conn = Server(ldap_config['hostname'], 
-                       port=ldap_config['port'],
+        ldap_config = result.get('backend_configs') 
+        conn = Server(ldap_config['ldap_host'], 
+                       port=ldap_config['ldap_port'],
                        #system user , password , dc etc will be required
                        get_info=ALL)
-            user_fm_ldap = "ldap searach "
+        uinfo = "'cn={0},ou="+ldap_config['OU']+",dc="+ldap_config['DC1']+
+                ",dc="+ldap_config['DC2']+",dc="+ldap_config['DC2']+"'"
+        if self.ldap_auth(conn, uinfo) is True:
+            return self.get_user_info_from_default_db(user=self.USERNAME)
         else:
-            user_fm_ldap = ("no user is found in ldap ") 
-            
-        if ('role', 'department .... wfc realted ') not in user_fm_ldap:
-            pass
-            "call the local db to get those info "
-           
-        return user_fm_ldap        
+            else:
+                responseObject = {
+                    'status': 'failed',
+                    'message': 'Password did not match',}
+                return jsonify(responseObject)
+                  
 
-    def ldap_auth(self):
-        s = Server(current_app.config['ldap']['Server'], 
-                   port=current_app.config['ldap']['Port'], 
-                   get_info=ALL)
-        username = 'cn={0},ou=Users,dc=test,dc=tspbillldap,dc=itc'.format(self.USERNAME)
-        c = Connection(s, 
-                       user=self.USERNAME, 
+    def ldap_auth(self, conn, uinfo):
+        uinfo = 'cn={0},{1}'.format(self.USERNAME, uinfo)
+        c = Connection(conn, 
+                       user=uinfo, 
                        password=self.PASSWORD)
-        if not c.bind():#            
+        if not c.bind():            
             return True
         else:
             return False
@@ -272,16 +284,17 @@ class TokenManager():
                     'status': 'failed',
                     'message': 'User not registered',}
                 return jsonify(responseObject )
-        user_from_db = auth.get_user_info_from_db_byusername()
+        user_from_db = auth.get_user_info_from_default_db(user=auth.USERNAME)
         if auth.chk_external_user(user_from_db) is True:
-            if auth.ldap_auth() is True:
-                otp = auth.generate_one_time_password(user_from_db['id'])
-                return make_response(otp)
+            if not get_usr_info_fm_ldap()['status'] == 'failed':
+                if 'id' in get_usr_info_fm_ldap():
+                    otp = auth.generate_one_time_password(get_usr_info_fm_ldap()['id'])
+                    return make_response(otp)
+                else:
+                    return 'something went wrong'
             else:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'Password did not match',}
-                return jsonify(responseObject)
+                # Password did not
+                return get_usr_info_fm_ldap()
         else:
             if validuser.check_password(auth.PASSWORD):
                 payload = {
@@ -311,7 +324,7 @@ class TokenManager():
                     'status': 'failed',
                     'message': 'User not registered',}
                 return jsonify(responseObject )
-            user_from_db = auth.get_user_info_from_db_byusername()
+            user_from_db = auth.get_user_info_from_default_db(user=auth.USERNAME)
         else:
             responseObject = {
                 'status': 'missing authentication info ',
@@ -363,7 +376,7 @@ class TokenManager():
     def gettoken_by_email_otp(self, request):
         auth = Authenticator(request)
         if auth.EMAIL is not None or auth.OTP is not None:
-            user_from_db = auth.get_user_info_from_db_byemail()
+            user_from_db = auth.get_user_info_from_default_db(email=auth.EMAIL)
             if user_from_db['allowemaillogin'] == 'Y':
                 otpwd = Otp.query.filter_by(otp=auth.OTP).first()
                 if otpwd:

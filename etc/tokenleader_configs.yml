@@ -12,33 +12,35 @@ database:
    #engine_connect_string: 'mssql+pymysql:///{0}'
    
 domains:
-   default:
-      auth_backend: localsqldb
-   internal_org:
+   - default:
+      auth_backend: sqldb
+   - itc:
       auth_backend: ldap   
-      ldap_Server: localhost
-      Port: 389
-      Version      
-   #internal_org:
-   #   auth_backend: localsqldb      
+      ldap_host: remote   # configure later with AD
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      O: itc   # configure later with AD
       
-   external_org:
+   - tsp:
       auth_backend: ldap   
-      ldap_Server: localhost1111
-      Port: 389
-      Version:  
-      DC:
-      DC:
-      OU:
-      O:
-             
-   #external_org:
-   #   auth_backend: ldap 
-   abc:
-    auth_
-   
-   
-         3
+      ldap_host: localhost
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+
+typeoftsp:
+   - TATA
+   - RELIANCE
+   - BHARTI
+   - SIFY
+   - VODAFONE
 otpmailservice:
    Server: 10.174.112.79
    Port: 5000
