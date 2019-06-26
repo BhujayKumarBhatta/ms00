@@ -56,22 +56,26 @@ class Authenticator():
             if 'email' in request.json:
                 self.EMAIL=request.json['email']  
 
-    def get_auth_backend_from_yml(self):
+    def _get_auth_backend_from_yml(self):
+        ''' doc string '''
+        auth_backend = 'default'
         domain_list = current_app.config.get('domains')
         if self.ORG  in domain_list:
-            for d in domain_list:
-                if d.get('auth_backend') == 'default':
-                    pass
-                elif d.get('auth_backend') == 'ldap':
-                    ldap_attribs =  {'ldap_host': 1,
+            for domain_name in domain_list:
+                if domain_name.get('auth_backend') == 'default':
+                    auth_backend = 'defualt'
+                elif domain_name.get('auth_backend') == 'ldap':
+                    backend_configs =  {'ldap_host': 1,
                                    'ldap_port': 2,
                                    'ldap_version': 3, 
                                    'OU': 4,
                                    'O': 5, 
                                    'DC': 6}
-                elif d.get('auth_backend') == 'active_directory':
+                    auth_backend = 'ldap;2a'
+                    
+                elif domain_name.get('auth_backend') == 'active_directory':
                     pass
-                elif d.get('auth_backend') == 'sqldb':
+                elif domain_name.get('auth_backend') == 'sqldb':
                     pass
                 else:
                     msg = " unconfigured auth_backend"
@@ -80,24 +84,44 @@ class Authenticator():
             msg = ("% domain has not been configured in  tokenleader_configs"
                    " by administrator" %self.ORG)
             status = False
-        return_value = {'status': status, 'msg': msg}
+        return_value = {'status': status, 'msg': msg, 'auth_backend': auth_backend,
+                        'backend_configs': backend_configs}
         return return_value
 
+    def get_user_fm_auth_backend(self):
+        ''' doc string'''
+        result = self._get_auth_backend_from_yml()
+        if result.get('auth_backend') == 'default':
+            if self.USERNAME:
+                user_fm_backend = self.get_user_info_from_default_db(self.USERNAME)
+            elif self.USERNAME:
+                user_fm_backend = self.get_user_info_from_default_db(self.EMAIL)
+            else:
+                pass
+        elif result.get('auth_backend') == 'ldap':
+            user_fm_backend = self.get_usr_info_fm_ldap()
+        else:
+            pass
+        return user_fm_backend
 
-    def get_user_info_from_db_byusername(self):
+    def get_user_info_from_default_db(self, user=None, email=None):
         '''use memcahe '''
-        validuser  = User.query.filter_by(username=self.USERNAME).first()
-        return self._fetch_usrinfo_fm_db(validuser)
+        if user and not email:  
+            user_from_db  = User.query.filter_by(username=user).first()
+        elif email and not user:
+            user_from_db = User.query.filter_by(email=email).first()
+        elif user and email:
+            user_from_db  = User.query.filter_by(username=user).first()
+        else:
+            result = ("either user or email is required for login")
+        result = self._convert_user_to_dict(user_from_db)
+        return result
 
-    def get_user_info_from_db_byemail(self):
-        validuser  = User.query.filter_by(email=self.EMAIL).first()
-        return self._fetch_usrinfo_fm_db(validuser)
-
-    def _fetch_usrinfo_fm_db(self, validuser):
-        if validuser is not None:
-            user_from_db = validuser.to_dict()
+    def _convert_user_to_dict(self, qry_result):
+        if qry_result:
+            user_to_dict = qry_result.to_dict()
             # print(user_from_db)
-            return user_from_db
+            return user_to_dict
         else:
             responseObject = {
                 'status': 'failed',
@@ -167,6 +191,24 @@ class Authenticator():
         return phno
         # config for sms
 
+    def get_usr_info_fm_ldap(self):
+        result = self._get_auth_backend_from_yml()
+        ldap_config = result.get('backend_configs')        
+        if self.ldap_auth():
+            conn = Server(ldap_config['hostname'], 
+                       port=ldap_config['port'],
+                       #system user , password , dc etc will be required
+                       get_info=ALL)
+            user_fm_ldap = "ldap searach "
+        else:
+            user_fm_ldap = ("no user is found in ldap ") 
+            
+        if ('role', 'department .... wfc realted ') not in user_fm_ldap:
+            pass
+            "call the local db to get those info "
+           
+        return user_fm_ldap        
+
     def ldap_auth(self):
         s = Server(current_app.config['ldap']['Server'], 
                    port=current_app.config['ldap']['Port'], 
@@ -206,6 +248,7 @@ class Authenticator():
                 return 'No mail id or phone no. is available'
         except Exception as e:
             return e
+    
     def service_catalog(self):
         svcs = ServiceCatalog.query.all()
         service_catalog = {}
