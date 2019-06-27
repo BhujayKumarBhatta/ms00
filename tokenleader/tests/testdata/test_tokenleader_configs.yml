@@ -14,6 +14,7 @@ database:
 domains:
    - default:
       auth_backend: sqldb
+      otp_required: False
    - itc:
       auth_backend: ldap   
       ldap_host: remote   # configure later with AD
@@ -24,6 +25,7 @@ domains:
       DC3: itc
       OU: Users
       O: itc   # configure later with AD
+      otp_required: False
       
    - tsp:
       auth_backend: ldap   
@@ -34,6 +36,7 @@ domains:
       DC2: tspbillldap
       DC3: itc
       OU: Users
+      otp_required: True
 
 listoftsp:
    - TATA
@@ -61,7 +64,7 @@ mailservice:
    Port: 5000
 
 token:
-     tokenexpiration: 3600
+     tokenexpiration: 1
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient
@@ -71,7 +74,7 @@ token:
      #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
      #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
 secrets:
-     user_auth_info_file_location: tokenleader/tests/testdata/secrets.yml # where you have write access
-     fernet_key_file: tokenleader/tests/testdata/fernet_key_file.yml # where you have write access and preferebly separated from secrets_file_location
+     user_auth_info_file_location: testlocation # where you have write access
+     fernet_key_file: testlocation # where you have write access and preferebly separated from secrets_file_location
      db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
      tokenleader_pwd_key_map: tl_pwd

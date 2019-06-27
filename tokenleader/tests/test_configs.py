@@ -27,7 +27,7 @@ class  TestConf(TestCase):
         c = testconf.yml
         self.assertTrue(c.get('flask_default').get('host_name') == '0.0.0.0')
         print(c.get('celery'))        
-        print(current_app.configs)
+        #print(current_app.configs)
         
     def test_encrypt_conf(self):
         #conf = Configs('tokenleader', conf_file=SERVER_SETTINGS_FILE)

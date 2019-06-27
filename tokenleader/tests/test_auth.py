@@ -144,7 +144,7 @@ class TestToken(TestUserModel):
         data=json.dumps(dict(
                     username='u3',
                     password='secret' ,
-                    domain='org2'
+                    domain='tsp'
                 ))
         with self.client:
             response = self.client.post(
@@ -174,7 +174,7 @@ class TestToken(TestUserModel):
         data=json.dumps(dict(
                     username='u3',
                     password='secret' ,
-                    domain='org2'
+                    domain='tsp'
                 ))
         with self.client:
             response = self.client.post(

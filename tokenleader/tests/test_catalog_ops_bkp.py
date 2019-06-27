@@ -31,16 +31,14 @@ class TestCatalog(BaseTestCase):
         r = cf.delete_service(service_name)
         return r        
     
-#     def test_add_service(self):
-#         msg = self.add_service()        
-#         self.assertTrue(msg == "testservice has been registered.")
-#         
-#     def test_service_catalog_format(self):
-#         msg = self.add_service()
-#         record_list = ServiceCatalog.query.all()
-#         print(record_list)  
-
-    
+    def test_add_service(self):
+        msg = self.add_service()        
+        self.assertTrue(msg == "testservice has been registered.")
+        
+    def test_service_catalog_format(self):
+        msg = self.add_service()
+        record_list = ServiceCatalog.query.all()
+        print(record_list)      
 #         svcs = self.list_services()
 # #         svcs = ServiceCatalog.query.all()
 # #         service_catalog_created= {}

@@ -33,6 +33,7 @@ class Authenticator():
     OTP_MODE=None
     tokenexpiration=30
     privkey=None
+    OTP_REQUIRED = False
 
     def __init__(self, request):
         self._extract_n_validate_data_from_request(request)
@@ -58,16 +59,15 @@ class Authenticator():
 
     def _get_auth_backend_from_yml(self):
         ''' doc string '''
-        auth_backend = 'default'
+        auth_backend = 'default'        
         # backend_configs = 'default'
         domain_list = current_app.config.get('domains')
-        # print(current_app.config)
-        # if self.ORG in current_app.config.get('listoftsp'):
-        #     self.ORG = 'tsp'
         if self.ORG  in domain_list:
-            for domain_name in domain_list:
+            for domain_name in domain_list:                
                 if domain_name.get('auth_backend') == 'default':
-                    auth_backend = 'default'
+                    auth_backend = 'default'                    
+                    backend_configs = 'default'
+                    self.OTP_REQUIRED = domain_name.get('otp_required')
                 elif domain_name.get('auth_backend') == 'ldap':
                     backend_configs =  {'ldap_host': domain_name.get('ldap_host'),
                                    'ldap_port': domain_name.get('ldap_port'),
@@ -78,13 +78,16 @@ class Authenticator():
                                    'DC2': domain_name.get('DC2'),
                                    'DC3': domain_name.get('DC3')}
                     auth_backend = 'ldap'
+                    self.OTP_REQUIRED = domain_name.get('otp_required')
                     
                 elif domain_name.get('auth_backend') == 'active_directory':
                     pass
+                    self.OTP_REQUIRED = domain_name.get('otp_required')
                 elif domain_name.get('auth_backend') == 'sqldb':
                     pass
+                    self.OTP_REQUIRED = domain_name.get('otp_required')
                 else:
-                    msg = " unconfigured auth_backend"
+                    msg = " unconfigured auth_backend"                    
                     status = False
         else:
             msg = ("%s domain has not been configured in  tokenleader_configs"
@@ -139,18 +142,18 @@ class Authenticator():
         validuser  = User.query.filter_by(username=self.USERNAME).first()
         return validuser
 
-    def chk_external_user(self, user_from_db):
-        if not user_from_db['wfc']['org'] == self.ORG:
-            responseObject = {
-                'status': 'failed',
-                'message': 'Incorrect domain name',}
-            return jsonify(responseObject )
-        org = Organization.query.filter_by(name=self.ORG).first()
-        if org.to_dict()['orgtype'] == 'external':
-            return True
-        else:
-            return False
-
+#     def chk_external_user(self, user_from_db):
+#         if not user_from_db['wfc']['org'] == self.ORG:
+#             responseObject = {
+#                 'status': 'failed',
+#                 'message': 'Incorrect domain name',}
+#             return jsonify(responseObject )
+#         org = Organization.query.filter_by(name=self.ORG).first()
+#         if org.to_dict()['orgtype'] == 'external':
+#             return True
+#         else:
+#             return False
+        
     def _create_random(self):
         rand = str(random.random())
         num = rand[-4:]
@@ -287,7 +290,7 @@ class TokenManager():
                     'message': 'User not registered',}
                 return jsonify(responseObject )
         user_from_db = auth.get_user_info_from_default_db(user=auth.USERNAME)
-        if auth.chk_external_user(user_from_db) is True:
+        if auth.OTP_REQUIRED :
             if not auth.get_usr_info_fm_ldap()['status'] == 'failed':
                 if 'id' in auth.get_usr_info_fm_ldap():
                     otp = auth.generate_one_time_password(auth.get_usr_info_fm_ldap()['id'])
