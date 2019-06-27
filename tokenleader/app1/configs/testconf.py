@@ -13,11 +13,10 @@ CLIENT_CONF_FILE = os.path.join(TEST_DATA_PATH, 'test_client_configs.yml')
 must_have_keys_in_yml = {'flask_default',
                          'database',
                          'domains',
-                         'typeoftsp',
-                         'otpmailservice',
-                         'tokenexpiration',
-                         'otpvalidfortsp',
+                         'listoftsp',
+                         'mailservice',
                          'token',
+                         'otp',                         
                          'secrets'
                          }
 must_have_in_flask_default_section = {'host_name',
@@ -30,7 +29,7 @@ must_have_in_token_section = {'private_key_file_location',
                               'public_key_file_location',
                              }
 
-must_have_in_otpval_section = {'org2'}
+# must_have_in_otpval_section = {'org2'}
 
 must_have_in_db_section = {'Server',
                            'Port',
@@ -49,14 +48,13 @@ try:
     conf = Configs('tokenleader', SERVER_SETTINGS_FILE, must_have_keys_in_yml=must_have_keys_in_yml)
     ymldict = conf.yml
     flask_default_setiings_map = ymldict.get('flask_default')
-    domains_default_settings_map = ymldict.get('domains')
-    mailservice_default_settings_map = ymldict.get('otpmailservice')
-    typeoftsp_default_settings_map = ymldict.get('typeoftsp')
-    tokenexpiration_default_settings_map = ymldict.get('default_settings_map')
+    domains_default_settings_map = {'domains': ymldict.get('domains')}
+    mailservice_default_settings_map = ymldict.get('mailservice')
+    tsplist_settings_map = {'listoftsp': ymldict.get('listoftsp')}    
     token_settings_map = ymldict.get('token')
     dbs = ymldict.get('database')
     #print(dbs)
-    otpvaltime = ymldict.get('otpvalidfortsp')
+    otp_settings_map = ymldict.get('otp')
 except:   
     print("did you configured the file {} correctly ? \n"
           "see readme for a sample settings \n".format(conf.config_file))
@@ -89,10 +87,10 @@ if not dbs.keys() >= must_have_in_db_section:
        conf.config_file, must_have_in_db_section ))
     sys.exit()
 
-if not otpvaltime.keys() >= must_have_in_otpval_section:
-    print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.config_file, must_have_in_otpval_section ))
-    sys.exit()
+# if not otpvaltime.keys() >= must_have_in_otpval_section:
+#     print("{} must have  the following parameters {}  under the flask_default section".format(
+#        conf.config_file, must_have_in_otpval_section ))
+#     sys.exit()
 
 if token_settings_map.get('private_key_file_location') == 'default':
     private_key_filename = os.path.expanduser('~/.ssh/id_rsa')
@@ -116,5 +114,8 @@ mail_service_for_otp = 'http://{0}:{1}/mail'.format(mailservice_default_settings
 #converted_safe_uri #use quote_plus to construct the uri
 test_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'MAIL_SERVICE_URI': mail_service_for_otp}
 # pick up values from yml and construct other confs here
+
+test_configs_from_file = {**flask_default_setiings_map, **domains_default_settings_map, 
+                          **token_settings_map, **tsplist_settings_map, 
+                          **otp_settings_map, **test_db_conf}
 test_conf_list = [test_configs_from_file ,   ymldict ]
-test_configs_from_file = {**flask_default_setiings_map, dict([d for d in domains_default_settings_map]), **token_settings_map, **typeoftsp_default_settings_map, **tokenexpiration_default_settings_map, **test_db_conf}
