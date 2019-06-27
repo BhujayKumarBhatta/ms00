@@ -38,7 +38,7 @@ class TestToken(TestUserModel):
                                 'name': 'wfc1',
                                 'orgunit': 'ou1',
                                 'id': 1, 
-                                'org': 'org1'},
+                                'org': 'default'},
                         'created_by': 1
                         }
 
@@ -57,7 +57,7 @@ class TestToken(TestUserModel):
         np = tm.decrypt_n_verify_token(auth_token, __publickey)
         self.assertTrue(isinstance(np, dict))
         #print(np.get('sub'))
-        self.assertTrue((np.get('sub').get('wfc').get('org')) == 'org1')
+        self.assertTrue((np.get('sub').get('wfc').get('org')) == 'default')
         return auth_token   # the return is required for later usage by the test_admin_restapi
         #self.assertEqual(np.get('sub'), payload.get('sub'))
 #         print('end of  jwt token function.....................')
@@ -75,7 +75,7 @@ class TestToken(TestUserModel):
         data=json.dumps(dict(
                     username='u1',
                     password='secret' ,
-                    domain='org1'
+                    domain='default'
                 ))
         #print(data)
         print(self.client)
@@ -249,7 +249,21 @@ class TestToken(TestUserModel):
         return auth_token
 
     #this method is used again in the token verification test
-    def test_token_gen_failed_for_unregistered_user(self):
+    def test_token_gen_failed_for_unregistered_user(self):   #working
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken',
+                data=json.dumps(dict(
+                    username='susan',
+                    password='mysecret',
+                    domain='default' )),
+                content_type='application/json')
+            #print('response is {}'.format(response))
+            data = json.loads(response.data.decode())
+            print(data)
+            self.assertTrue(data['message'] == 'User not registered')
+            
+    def test_token_gen_failed_for_unregistered_domain(self):   #working
         with self.client:
             response = self.client.post(
                 '/token/gettoken',
@@ -261,8 +275,7 @@ class TestToken(TestUserModel):
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
 #             print(data)
-            self.assertTrue(data['message'] == 'User not registered')
-            self.assertFalse('auth_token' in data)
+            self.assertTrue(data['message'] == 'torg domain has not been configured in  tokenleader_configs by administrator')
     
     def test_token_gen_n_verify_success_for_registered_user_with_role(self):
         mytoken = self.test_get_token()
@@ -367,7 +380,7 @@ class TestToken(TestUserModel):
             self.assertTrue(isinstance('payload', str))
 
 
-    def test_token_gen_fail_with_wrong_password(self):
+    def test_token_gen_fail_with_wrong_password(self):   #working
         u1 = self.user_creation_for_test()
         with self.client:
             response = self.client.post(
@@ -375,10 +388,12 @@ class TestToken(TestUserModel):
                 data=json.dumps(dict(
                     username='u1',
                     password='wrong_password',
-                    domain='org1' )),
+                    domain='default'
+                     )),
                 content_type='application/json')
 #             print('response is {}'.format(response))
             data = json.loads(response.data.decode())
+#             print(data)
             print(data['message'])
-            self.assertTrue(data['message'] == 'Password did not match')
+            self.assertTrue(data['message'] == 'Authentication Failure')
             self.assertFalse('auth_token' in data)

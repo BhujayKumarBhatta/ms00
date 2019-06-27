@@ -12,17 +12,19 @@ from flask import jsonify, make_response, current_app
 
 class Authenticator():
 
-    ''' 1. move this class to a different module( auth_class.py )file
-    2.  get_token and verify token to be  api routes to be in auth_routes.py 
-    3.  dont use ldap only for authentication and dont consider all user info shd be in local db.
+    '''    
+    1. user to supply domin name (or treat it as defualt in absense)
+    2. read the yml and retrieve  the auth_backend and OTP_REQUIRED 
+    3. retrieve user info from auth_backend 
+    4. authenticate with the backend
+    
+    4.  dont use ldap only for authentication and dont consider all user info shd be in local db.
         user to provide org name ( if not provided it is taken as 'default' )
         based on user provided orgtype , search config yml what is its auth_backend 
         retrieve the user from that auth_backend (currenty it always  retrieves it from
         local db is a  design problem
         for org type default -  user is retrived from local
-    4. rectify   the error as suggested by pylint hints  underlined as blue or red , 
-       remove leading and trailing white space , too long lines , uppercase cinstant names etc'''
-
+    '''
 
     STATUS = None
     USERNAME = None
@@ -34,86 +36,68 @@ class Authenticator():
     tokenexpiration=30
     privkey=None
     OTP_REQUIRED = False
+    BACKEND_CONFIGS = None
+    AUTH_BACKEND = None
+    AUTHENTICATION_STATUS = False
 
     def __init__(self, request):
         self._extract_n_validate_data_from_request(request)
+        self._get_auth_backend_from_yml()
         print(current_app.config['tokenexpiration'])
         if 'tokenexpiration' in current_app.config:
             self.tokenexpiration = current_app.config['tokenexpiration']
         self.privkey = current_app.config.get('private_key')
 
-    def _extract_n_validate_data_from_request(self, request):
-        ''' each input also to be validated for its type and length and special character'''
-        if request.method == 'POST':
-            if 'username' in request.json and \
-              len(request.json['username']) <= 50 :
-                self.USERNAME = request.json['username']
-            if 'password' in request.json:
-                self.PASSWORD = request.json['password']
-            if 'domain' in request.json:
-                self.ORG = request.json['domain']   # change domain key as org
-            if 'otp' in request.json:
-                self.OTP = request.json['otp']
-            if 'email' in request.json:
-                self.EMAIL=request.json['email']  
-
-    def _get_auth_backend_from_yml(self):
-        ''' doc string '''
-        auth_backend = 'default'        
-        # backend_configs = 'default'
-        domain_list = current_app.config.get('domains')
-        if self.ORG  in domain_list:
-            for domain_name in domain_list:                
-                if domain_name.get('auth_backend') == 'default':
-                    auth_backend = 'default'                    
-                    backend_configs = 'default'
-                    self.OTP_REQUIRED = domain_name.get('otp_required')
-                elif domain_name.get('auth_backend') == 'ldap':
-                    backend_configs =  {'ldap_host': domain_name.get('ldap_host'),
-                                   'ldap_port': domain_name.get('ldap_port'),
-                                   'ldap_version': domain_name.get('ldap_version'), 
-                                   'OU': domain_name.get('OU'),
-                                   'O': domain_name.get('O'),
-                                   'DC1': domain_name.get('DC1'),
-                                   'DC2': domain_name.get('DC2'),
-                                   'DC3': domain_name.get('DC3')}
-                    auth_backend = 'ldap'
-                    self.OTP_REQUIRED = domain_name.get('otp_required')
-                    
-                elif domain_name.get('auth_backend') == 'active_directory':
-                    pass
-                    self.OTP_REQUIRED = domain_name.get('otp_required')
-                elif domain_name.get('auth_backend') == 'sqldb':
-                    pass
-                    self.OTP_REQUIRED = domain_name.get('otp_required')
-                else:
-                    msg = " unconfigured auth_backend"                    
-                    status = False
-        else:
-            msg = ("%s domain has not been configured in  tokenleader_configs"
-                   " by administrator" %self.ORG)
-            status = False
-        return_value = {'status': status, 'msg': msg, 'auth_backend': auth_backend,
-                        'backend_configs': backend_configs}
-        return return_value
-
-    def get_user_fm_auth_backend(self):
+    def get_user_fm_auth_backend_after_authentication(self):
         ''' doc string'''
-        result = self._get_auth_backend_from_yml()
-        if result.get('auth_backend') == 'default':
+        if self.AUTH_BACKEND == 'default':
             if self.USERNAME:
-                user_fm_backend = self.get_user_info_from_default_db(user=self.USERNAME)
-            elif self.USERNAME:
-                user_fm_backend = self.get_user_info_from_default_db(email=self.EMAIL)
+                user_fm_backend = self._get_user_info_from_default_db(user=self.USERNAME)
+            elif self.EMAIL:
+                user_fm_backend = self._get_user_info_from_default_db(email=self.EMAIL)
             else:
                 pass
-        elif result.get('auth_backend') == 'ldap':
-            user_fm_backend = self.get_usr_info_fm_ldap()
+        elif self.AUTH_BACKEND == 'ldap':
+            user_fm_backend = self._get_usr_info_fm_ldap()
         else:
             pass
         return user_fm_backend
-
-    def get_user_info_from_default_db(self, user=None, email=None):
+     
+    def generate_one_time_password(self,userid):
+        try:
+            print('generating otp')
+            num = self._create_random()
+            self._save_otp_in_db(num, userid)
+            user = User.query.filter_by(id=userid).first()
+            user_from_db = user.to_dict()
+            org = user_from_db['wfc']['org']
+            if org in current_app.config['otpvalidfortsp']:
+                otpvalidtime = current_app.config['otpvalidfortsp'][org]
+            else:
+                otpvalidtime = 10
+            mail_to = user_from_db['email']
+#             phno = '5656565653'
+            if self.OTP_MODE == 'mail':
+#                 print('mode mail')
+                return self.send_otp_thru_mail(mail_to, num, otpvalidtime)
+#             elif self.OTP_MODE == 'sms':
+#                 self.send_otp_thru_sms(phno, num, otpvalidtime)
+#             elif self.OTP_MODE == 'both':
+#                 self.send_otp_thru_mail(mail_to, num, otpvalidtime)
+#                 self.send_otp_thru_sms(phno)
+            else:
+                return 'No mail id or phone no. is available'
+        except Exception as e:
+            return e 
+     
+    def service_catalog(self):
+        svcs = ServiceCatalog.query.all()
+        service_catalog = {}
+        for s in svcs:
+            service_catalog[s.name]=s.to_dict()
+        return service_catalog
+            
+    def _get_user_info_from_default_db(self, user=None, email=None):
         '''use memcahe '''
         if user and not email:  
             user_from_db  = User.query.filter_by(username=user).first()
@@ -123,20 +107,28 @@ class Authenticator():
             user_from_db  = User.query.filter_by(username=user).first()
         else:
             result = ("either user or email is required for login")
-        result = self._convert_user_to_dict(user_from_db)
+        
+        if user_from_db:
+            
+            if user_from_db.check_password(self.PASSWORD):
+                result = self._convert_user_to_dict(user_from_db)
+                self.AUTHENTICATION_STATUS = True
+            else:
+                result = {
+                    'status': 'failed',
+                    'message': 'Authentication Failure',}
+        #             print(result)
+        else:
+            result = {
+                'status': 'failed',
+                'message': 'User not registered',}
         return result
 
     def _convert_user_to_dict(self, qry_result):
-        if qry_result:
             user_to_dict = qry_result.to_dict()
             # print(user_from_db)
             return user_to_dict
-        else:
-            responseObject = {
-                'status': 'failed',
-                'message': 'User not registered',}
-            return jsonify(responseObject )
-
+        
     def get_validuserobject(self): 
         '''use memcahe '''
         validuser  = User.query.filter_by(username=self.USERNAME).first()
@@ -200,7 +192,7 @@ class Authenticator():
         return phno
         # config for sms
 
-    def get_usr_info_fm_ldap(self):
+    def _get_usr_info_fm_ldap(self):
         '''        
          #     user_fm_ldap = "ldap searach "
             # else:
@@ -211,8 +203,7 @@ class Authenticator():
             # return user_fm_ldap 
         '''
         #TODO: research on open ldap to find user details
-        result = self._get_auth_backend_from_yml()
-        ldap_config = result.get('backend_configs') 
+        ldap_config = self.BACKEND_CONFIGS 
         conn = Server(ldap_config['ldap_host'], 
                        port=ldap_config['ldap_port'],
                        #system user , password , dc etc will be required
@@ -220,93 +211,106 @@ class Authenticator():
         uinfo = "ou="+ldap_config['OU']+","+"dc="+ldap_config['DC1']+\
                 ","+"dc="+ldap_config['DC2']+","+"dc="+ldap_config['DC2']
         print(uinfo)
-        if self.ldap_auth(conn, uinfo) is True:
-            return self.get_user_info_from_default_db(user=self.USERNAME)
+        if self._bind_to_ldap(conn, uinfo) is True:
+            return self._get_user_info_from_default_db(user=self.USERNAME)
+            #Todo: the user detials to come from ldap
         else:
             responseObject = {
                 'status': 'failed',
-                'message': 'Password did not match',}
+                'message': 'Authentication Failure',}
             return jsonify(responseObject)
-                  
-
-    def ldap_auth(self, conn, uinfo):
+ 
+    def _bind_to_ldap(self, conn, uinfo):
         uinfo = 'cn={0},{1}'.format(self.USERNAME, uinfo)
         c = Connection(conn, 
                        user=uinfo, 
                        password=self.PASSWORD)
-        if not c.bind():            
-            return True
+        if  c.bind():
+            self.AUTHENTICATION_STATUS = True
+            return True            
         else:
             return False
+        
+    def _extract_n_validate_data_from_request(self, request):
+        ''' each input also to be validated for its type and length and special character'''
+        if request.method == 'POST':
+            if 'username' in request.json and \
+              len(request.json['username']) <= 50 :
+                self.USERNAME = request.json['username']
+            if 'password' in request.json:
+                self.PASSWORD = request.json['password']
+            if 'domain' in request.json:
+                self.ORG = request.json['domain']   # change domain key as org
+            if 'otp' in request.json:
+                self.OTP = request.json['otp']
+            if 'email' in request.json:
+                self.EMAIL=request.json['email']  
 
-    def generate_one_time_password(self,userid):
-        try:
-            print('generating otp')
-            num = self._create_random()
-            self._save_otp_in_db(num, userid)
-            user = User.query.filter_by(id=userid).first()
-            user_from_db = user.to_dict()
-            org = user_from_db['wfc']['org']
-            if org in current_app.config['otpvalidfortsp']:
-                otpvalidtime = current_app.config['otpvalidfortsp'][org]
+    def _get_auth_backend_from_yml(self):
+        ''' doc string '''        
+        # backend_configs = 'default'
+        domain_list = current_app.config.get('domains')
+        for domain_dict in domain_list:            
+            if self.ORG  in domain_dict:
+                domain_name = domain_dict.get(self.ORG)
+                if domain_name.get('auth_backend') == 'default':
+                    self.AUTH_BACKEND = 'default'                    
+                    self.BACKEND_CONFIGS = 'default'
+                    self.OTP_REQUIRED = domain_name.get('otp_required')
+                elif domain_name.get('auth_backend') == 'ldap':
+                    self.AUTH_BACKEND = 'ldap'
+                    self.BACKEND_CONFIGS =  {'ldap_host': domain_name.get('ldap_host'),
+                                   'ldap_port': domain_name.get('ldap_port'),
+                                   'ldap_version': domain_name.get('ldap_version'), 
+                                   'OU': domain_name.get('OU'),
+                                   'O': domain_name.get('O'),
+                                   'DC1': domain_name.get('DC1'),
+                                   'DC2': domain_name.get('DC2'),
+                                   'DC3': domain_name.get('DC3')}
+                    self.OTP_REQUIRED = domain_name.get('otp_required')
+                elif domain_name.get('auth_backend') == 'active_directory':
+                    pass
+                elif domain_name.get('auth_backend') == 'sqldb':
+                    pass
+                else:
+                    msg = " unconfigured auth_backend"                    
+                    status = False
             else:
-                otpvalidtime = 10
-            mail_to = user_from_db['email']
-#             phno = '5656565653'
-            if self.OTP_MODE == 'mail':
-#                 print('mode mail')
-                return self.send_otp_thru_mail(mail_to, num, otpvalidtime)
-#             elif self.OTP_MODE == 'sms':
-#                 self.send_otp_thru_sms(phno, num, otpvalidtime)
-#             elif self.OTP_MODE == 'both':
-#                 self.send_otp_thru_mail(mail_to, num, otpvalidtime)
-#                 self.send_otp_thru_sms(phno)
-            else:
-                return 'No mail id or phone no. is available'
-        except Exception as e:
-            return e
-    
-    def service_catalog(self):
-        svcs = ServiceCatalog.query.all()
-        service_catalog = {}
-        for s in svcs:
-            service_catalog[s.name]=s.to_dict()
-        return service_catalog
+                msg = ("%s domain has not been configured in  tokenleader_configs"
+                       " by administrator" %self.ORG)
+                status = False
+        return_value = {'status': status, 'msg': msg}
+        return return_value
 
 
 
 class TokenManager():
-    def gettoken_by_usr_pwd(self, request):
-        auth = Authenticator(request)
+    '''    
+    1. user to supply domin name (or treat it as defualt in absense)
+    2. read the yml and retrieve  the auth_backend and OTP_REQUIRED 
+    3. retrieve user info from auth_backend 
+    4. 
+    '''
+    def get_token_or_otp(self, request):
+        auth = Authenticator(request)    
         if auth.USERNAME is None or auth.PASSWORD is None:
             responseObject = {
                 'status': 'missing authentication info ',
                 'message': 'no authentication information provided',}
             return jsonify(responseObject)
-        validuser = auth.get_validuserobject()
-        if validuser is None:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'User not registered',}
-                return jsonify(responseObject )
-        user_from_db = auth.get_user_info_from_default_db(user=auth.USERNAME)
-        if auth.OTP_REQUIRED :
-            if not auth.get_usr_info_fm_ldap()['status'] == 'failed':
-                if 'id' in auth.get_usr_info_fm_ldap():
-                    otp = auth.generate_one_time_password(auth.get_usr_info_fm_ldap()['id'])
-                    return make_response(otp)
-                else:
-                    return 'something went wrong'
-            else:
-                # Password did not
-                return auth.get_usr_info_fm_ldap()
-        else:
-            if validuser.check_password(auth.PASSWORD):
-                payload = {
+        user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
+        payload = {
                             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
                             'iat': datetime.datetime.utcnow(),
-                            'sub': user_from_db
-                        }
+                            'sub': user_from_auth_backend
+                        }       
+        if auth.OTP_REQUIRED :
+            otp = auth.generate_one_time_password(user_from_auth_backend['id'])
+            responseObject = {
+                    'status': 'success',
+                    'message': otp}
+        else:
+            if not user_from_auth_backend.get('status') == 'failed':
                 auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
                 responseObject = {
                     'status': 'success',
@@ -314,13 +318,10 @@ class TokenManager():
                     'auth_token': auth_token.decode(),
                     'service_catalog': auth.service_catalog()}
                 return make_response(jsonify(responseObject)), 201
-            else:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'Password did not match',}
-                return jsonify(responseObject)
+            else:                
+                return jsonify(user_from_auth_backend)
 
-    def gettoken_byusr_otp(self, request):
+    def get_token_by_otp(self, request):
         auth = Authenticator(request)  
         if auth.USERNAME is not None:
             validuser = auth.get_validuserobject()

@@ -13,7 +13,7 @@ database:
    
 domains:
    - default:
-      auth_backend: sqldb
+      auth_backend: default
       otp_required: False
    - itc:
       auth_backend: ldap   
@@ -29,7 +29,7 @@ domains:
       
    - tsp:
       auth_backend: ldap   
-      ldap_host: localhost
+      ldap_host: 10.174.112.100
       ldap_port: 389
       ldap_version: 3 
       DC1: test
@@ -64,7 +64,7 @@ mailservice:
    Port: 5000
 
 token:
-     tokenexpiration: 1
+     tokenexpiration: 2
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient

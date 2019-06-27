@@ -31,15 +31,15 @@ def get_token():
     '''
      
     #gettoken_by_usr_pwd(request)
-    #gettoken_by_usr_otp(request)
+    #gettoken_by_usr_otp(request)gettoken_by_usr_pwd
     #gettoken_by_email_otp(request)
     
     # CASE 1: Username & Otp      
     if 'username' in request.json and 'otp' in request.json:  
-        return objTokenMgr.gettoken_byusr_otp(request)
-    # Case 2: Username & Password
+        return objTokenMgr.get_token_by_otp(request)
+    # Case 2: Username & Passwordgettoken_by_usr_pwd
     elif 'username' in request.json and 'password' in request.json and 'domain' in request.json:
-        return objTokenMgr.gettoken_by_usr_pwd(request)
+        return objTokenMgr.get_token_or_otp(request)
     # Case 3: Email & Otp
     elif 'email' in request.json and 'otp' in request.json:
         return objTokenMgr.gettoken_by_email_otp(request)
