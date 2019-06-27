@@ -4,7 +4,7 @@ flask_default:
   ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
   ssl_settings: adhoc
 database:
-   Server: tldbserver130
+   Server: localhost
    Port: 3306
    Database: auth
    UID: root

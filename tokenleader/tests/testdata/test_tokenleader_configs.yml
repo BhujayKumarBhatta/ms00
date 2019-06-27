@@ -4,9 +4,9 @@ flask_default:
   ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
   ssl_settings: adhoc
 database:
-   Server: tldbserver130
+   Server: localhost
    Port: 3306
-   Database: auth
+   Database: test_auth
    UID: root
    db_pwd_key_map: db_pwd
    #engine_connect_string: 'mssql+pymysql:///{0}'

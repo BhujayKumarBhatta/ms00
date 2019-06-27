@@ -59,10 +59,11 @@ class Authenticator():
     def _get_auth_backend_from_yml(self):
         ''' doc string '''
         auth_backend = 'default'
+        # backend_configs = 'default'
         domain_list = current_app.config.get('domains')
-        print(current_app.config)
-        if self.ORG in current_app.config.get('typeoftsp'):
-            self.ORG = 'tsp'
+        # print(current_app.config)
+        # if self.ORG in current_app.config.get('listoftsp'):
+        #     self.ORG = 'tsp'
         if self.ORG  in domain_list:
             for domain_name in domain_list:
                 if domain_name.get('auth_backend') == 'default':
@@ -86,7 +87,7 @@ class Authenticator():
                     msg = " unconfigured auth_backend"
                     status = False
         else:
-            msg = ("% domain has not been configured in  tokenleader_configs"
+            msg = ("%s domain has not been configured in  tokenleader_configs"
                    " by administrator" %self.ORG)
             status = False
         return_value = {'status': status, 'msg': msg, 'auth_backend': auth_backend,
@@ -168,7 +169,7 @@ class Authenticator():
         else:
             print('no records where there in otp table')
         record = Otp(otp=num,userid=userid,delivery_method=self.OTP_MODE)
-#         print(record)
+        print(record)
         db.session.add(record)
         db.session.commit()
 
@@ -237,7 +238,7 @@ class Authenticator():
 
     def generate_one_time_password(self,userid):
         try:
-            # print('generating otp')
+            print('generating otp')
             num = self._create_random()
             self._save_otp_in_db(num, userid)
             user = User.query.filter_by(id=userid).first()
