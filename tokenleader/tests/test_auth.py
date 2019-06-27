@@ -64,7 +64,7 @@ class TestToken(TestUserModel):
 #     
 #   
 
-    def test_get_token(self):        
+    def test_get_token(self):   #working
         '''
         user_creation_for_test method comes from parent class TestUserModel from test_admin_ops module
         this method registers an user with name as u1 
@@ -97,7 +97,7 @@ class TestToken(TestUserModel):
             mytoken = data['auth_token']
             return mytoken
         
-    def test_user_authenticate_external(self):
+    def test_user_authenticate_external(self):    #working
         # Valid user create and Validate
         self.external_user_creation_for_test()
         data=json.dumps(dict(
@@ -139,7 +139,7 @@ class TestToken(TestUserModel):
 #         print(data)
         self.assertTrue(data['status'], 'failed')
         
-    def test_get_token_uname_otp(self):
+    def test_get_token_uname_otp(self):   #working
         self.external_user_creation_for_test()
         data=json.dumps(dict(
                     username='u3',
@@ -169,7 +169,7 @@ class TestToken(TestUserModel):
         self.assertTrue(data['status'] == 'success')
         self.assertTrue('auth_token' in data)
         
-    def test_get_token_email_otp(self):
+    def test_get_token_email_otp(self):   #working
         self.external_user_creation_for_test()
         data=json.dumps(dict(
                     username='u3',

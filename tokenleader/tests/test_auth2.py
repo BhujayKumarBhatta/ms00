@@ -22,44 +22,16 @@ class TestToken(TestUserModel):
     '''
     EMAIL_TEST='Srijib.Bhattacharyya@itc.in'
 
-    def test_user_authenticate_external(self):
-        # Valid user create and Validate
-        self.external_user_creation_for_test()
-        data=json.dumps(dict(
-                    username='u3',
-                    password='secret' ,
-                    domain='tsp'
-                ))
-        #print(data)
-#         print(self.client)
+    def test_token_gen_failed_for_unregistered_domain(self):   #working
         with self.client:
             response = self.client.post(
-                '/token/gettoken', 
-                data=data,
+                '/token/gettoken',
+                data=json.dumps(dict(
+                    username='susan',
+                    password='mysecret',
+                    domain='torg' )),
                 content_type='application/json')
-        data = json.loads(response.data.decode())
-        # print(data)
-        userdet = User.query.filter_by(username='u3').first()
-        userid = userdet.to_dict()['id']
-        print(userid)
-        otpdet = Otp.query.filter_by(userid=userid).first()
-        otp = otpdet.to_dict()['otp']
-        self.assertTrue(otp,not None)
-        self.assertTrue(len(otp), 4)
-        self.assertTrue(type(otp), "<class 'int'>")
-        
-        # Calling with invalid Data
-        data=json.dumps(dict(
-                    username='u3',
-                    password='secret1' ,
-                ))
-        #print(data)
-#         print(self.client)
-        with self.client:
-            response = self.client.post(
-                '/token/gettoken', 
-                data=data,
-                content_type='application/json')
-        data = json.loads(response.data.decode())
-#         print(data)
-        self.assertTrue(data['status'], 'failed')
+            #print('response is {}'.format(response))
+            data = json.loads(response.data.decode())
+#             print(data)
+            self.assertTrue(data['message'] == 'torg domain has not been configured in  tokenleader_configs by administrator')

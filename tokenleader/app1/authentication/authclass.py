@@ -43,9 +43,9 @@ class Authenticator():
     def __init__(self, request):
         self._extract_n_validate_data_from_request(request)
         self._get_auth_backend_from_yml()
-        print(current_app.config['tokenexpiration'])
-        if 'tokenexpiration' in current_app.config:
-            self.tokenexpiration = current_app.config['tokenexpiration']
+#         print(current_app.config.get('token').get('tokenexpiration'))
+        if 'tokenexpiration' in current_app.config.get('token'):
+            self.tokenexpiration = current_app.config.get('token').get('tokenexpiration')
         self.privkey = current_app.config.get('private_key')
 
     def get_user_fm_auth_backend_after_authentication(self):
@@ -60,25 +60,26 @@ class Authenticator():
         elif self.AUTH_BACKEND == 'ldap':
             user_fm_backend = self._get_usr_info_fm_ldap()
         else:
-            pass
+            user_fm_backend = {'status': 'failed', 'message':'{0} domain has not been configured in  tokenleader_configs by administrator'.format(self.ORG)}
         return user_fm_backend
      
     def generate_one_time_password(self,userid):
         try:
             print('generating otp')
             num = self._create_random()
+            print(userid)
             self._save_otp_in_db(num, userid)
             user = User.query.filter_by(id=userid).first()
             user_from_db = user.to_dict()
             org = user_from_db['wfc']['org']
-            if org in current_app.config['otpvalidfortsp']:
-                otpvalidtime = current_app.config['otpvalidfortsp'][org]
+            if org in current_app.config['otp']:
+                otpvalidtime = current_app.config['otp'][org]
             else:
                 otpvalidtime = 10
             mail_to = user_from_db['email']
 #             phno = '5656565653'
             if self.OTP_MODE == 'mail':
-#                 print('mode mail')
+                print('mode mail')
                 return self.send_otp_thru_mail(mail_to, num, otpvalidtime)
 #             elif self.OTP_MODE == 'sms':
 #                 self.send_otp_thru_sms(phno, num, otpvalidtime)
@@ -107,21 +108,27 @@ class Authenticator():
             user_from_db  = User.query.filter_by(username=user).first()
         else:
             result = ("either user or email is required for login")
-        
-        if user_from_db:
-            
-            if user_from_db.check_password(self.PASSWORD):
-                result = self._convert_user_to_dict(user_from_db)
-                self.AUTHENTICATION_STATUS = True
+        #Once user object is available
+        #We check if OTP is available and return user
+        #else We check passowrd return user   
+        if self.OTP:
+            result = self._convert_user_to_dict(user_from_db)
+        else:
+            if user_from_db:
+                
+                if user_from_db.check_password(self.PASSWORD):
+                    result = self._convert_user_to_dict(user_from_db)
+                    self.AUTHENTICATION_STATUS = True
+                else:
+                    result = {
+                        'status': 'failed',
+                        'message': 'Authentication Failure',}
+            #             print(result)
             else:
                 result = {
                     'status': 'failed',
-                    'message': 'Authentication Failure',}
-        #             print(result)
-        else:
-            result = {
-                'status': 'failed',
-                'message': 'User not registered',}
+                    'message': 'User not registered',}
+                
         return result
 
     def _convert_user_to_dict(self, qry_result):
@@ -152,6 +159,7 @@ class Authenticator():
         return num
 
     def _save_otp_in_db(self,num, userid):
+#         try:
         user = User.query.filter_by(id=userid).first()
         self.OTP_MODE = user.to_dict()['otp_mode']
         found = Otp.query.all()
@@ -167,6 +175,10 @@ class Authenticator():
         print(record)
         db.session.add(record)
         db.session.commit()
+        return True
+#         except Exception as e:
+#             return e
+            
 
     def send_otp_thru_mail(self, email, num, otpvalidtime):
 #         print('check mail')  
@@ -176,6 +188,8 @@ class Authenticator():
                str(otpvalidtime)+" minutes.</body></html>")
         r = requests.post(url=current_app.config['MAIL_SERVICE_URI'], 
                           data=json.dumps({'mail_to':email, 'msg': msg}))
+        print(r)
+        print(r.status_code)
         if r.status_code == 200:
             print('mail success')
             responseObject = {
@@ -209,8 +223,7 @@ class Authenticator():
                        #system user , password , dc etc will be required
                        get_info=ALL)
         uinfo = "ou="+ldap_config['OU']+","+"dc="+ldap_config['DC1']+\
-                ","+"dc="+ldap_config['DC2']+","+"dc="+ldap_config['DC2']
-        print(uinfo)
+                ","+"dc="+ldap_config['DC2']+","+"dc="+ldap_config['DC3']
         if self._bind_to_ldap(conn, uinfo) is True:
             return self._get_user_info_from_default_db(user=self.USERNAME)
             #Todo: the user detials to come from ldap
@@ -306,9 +319,7 @@ class TokenManager():
                         }       
         if auth.OTP_REQUIRED :
             otp = auth.generate_one_time_password(user_from_auth_backend['id'])
-            responseObject = {
-                    'status': 'success',
-                    'message': otp}
+            return otp
         else:
             if not user_from_auth_backend.get('status') == 'failed':
                 auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
@@ -330,7 +341,7 @@ class TokenManager():
                     'status': 'failed',
                     'message': 'User not registered',}
                 return jsonify(responseObject )
-            user_from_db = auth.get_user_info_from_default_db(user=auth.USERNAME)
+            user_from_db = auth.get_user_fm_auth_backend_after_authentication()
         else:
             responseObject = {
                 'status': 'missing authentication info ',
@@ -343,8 +354,8 @@ class TokenManager():
                 creation_date = otpdet['creation_date']
                 otpdet['creation_date'] = str(otpdet['creation_date'])
             org = user_from_db['wfc']['org']
-            if org in current_app.config['otpvalidfortsp']:
-                otpvalidtime = current_app.config['otpvalidfortsp'][org]
+            if org in current_app.config['otp']:
+                otpvalidtime = current_app.config['otp'][org]
             else:
                 otpvalidtime = 10
             if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
@@ -382,7 +393,7 @@ class TokenManager():
     def gettoken_by_email_otp(self, request):
         auth = Authenticator(request)
         if auth.EMAIL is not None or auth.OTP is not None:
-            user_from_db = auth.get_user_info_from_default_db(email=auth.EMAIL)
+            user_from_db = auth.get_user_fm_auth_backend_after_authentication()
             if user_from_db['allowemaillogin'] == 'Y':
                 otpwd = Otp.query.filter_by(otp=auth.OTP).first()
                 if otpwd:
@@ -390,8 +401,8 @@ class TokenManager():
                     creation_date = otpdet['creation_date']
                     otpdet['creation_date'] = str(otpdet['creation_date'])
                     org = user_from_db['wfc']['org']
-                    if org in current_app.config['otpvalidfortsp']:
-                        otpvalidtime = current_app.config['otpvalidfortsp'][org]
+                    if org in current_app.config['otp']:
+                        otpvalidtime = current_app.config['otp'][org]
                     else:
                         otpvalidtime = 10
                 if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
