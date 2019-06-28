@@ -42,12 +42,13 @@ class TestToken(TestUserModel):
                     'iat': datetime.datetime.utcnow(),
                     'sub': user_from_db
                      }
-        __privkey = current_app.config.get('private_key')
-        __publickey = current_app.config.get('public_key')
-        auth_token = tm.generate_encrypted_auth_token(payload, __privkey)
-        # print(type(auth_token))
+        privkey = current_app.config.get('private_key')
+        publickey = current_app.config.get('public_key')
+#         print(current_app.config.get('token'))
+        auth_token = tm.generate_encrypted_auth_token(payload, privkey)
+#         print(type(auth_token))
         self.assertTrue(isinstance(auth_token, bytes))
-        np = tm.decrypt_n_verify_token(auth_token, __publickey)
+        np = tm.decrypt_n_verify_token(auth_token, publickey)
         self.assertTrue(isinstance(np, dict))
         #print(np.get('sub'))
         self.assertTrue((np.get('sub').get('wfc').get('org')) == 'default')
@@ -56,6 +57,7 @@ class TestToken(TestUserModel):
 #         print('end of  jwt token function.....................')
 #     
 #   
+   
 
     def test_get_token(self):   #working
         '''
@@ -361,7 +363,7 @@ class TestToken(TestUserModel):
 
     def test_expired_token(self):
         mytoken = self.test_auth_token_with_actual_rsa_keys_fake_user()
-        time.sleep(3)
+        time.sleep(10)
         with self.client:
             self.headers = {'X-Auth-Token': mytoken}
             response = self.client.get(

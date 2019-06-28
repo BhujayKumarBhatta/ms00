@@ -30,7 +30,7 @@ class  TestConf(TestCase):
         self.assertIsNotNone(app.config['private_key'])
         self.assertIsNotNone(app.config['public_key'])
         self.assertIsNotNone(app.config['token'])
-        self.assertTrue(app.config.get('token').get('tokenexpiration') == 2)
+        self.assertTrue(app.config.get('token').get('tokenexpiration') == 8)
     
     def test_simple_conf(self):        
         #conf = Configs('tokenleader', conf_file=SERVER_SETTINGS_FILE, must_have_keys_in_yml=must_have_keys_in_yml)

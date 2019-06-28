@@ -1,37 +1,65 @@
-import time
-import unittest
-import datetime
 import json
-import jwt
-from flask import current_app
-import random
-from tokenleader.app1.authentication.authclass import TokenManager
 from tokenleader.tests.base_test import  BaseTestCase
-from tokenleader.tests.test_admin_ops import TestUserModel
-from tokenleader.app1 import db
-from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department, Otp
-#from app1.authentication import admin_ops
-from tokenleader.app1.adminops import admin_functions as af
-from tokenleader.tests.test_catalog_ops import TestCatalog , service_catalog 
+from tokenleader.tests.catalog_ops import TestCatalog
+# from tokenleader.app1.catalog import catalog_functions as cf
 
 
+t = TestCatalog()
 
-class TestToken(TestUserModel):
-    '''
-    (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
-    '''
-    EMAIL_TEST='Srijib.Bhattacharyya@itc.in'
-
-    def test_token_gen_failed_for_unregistered_domain(self):   #working
+class TestCatalogRestApi(BaseTestCase):
+ 
+#     def test_list_services_restapi(self):
+#         token_in_byte = self.get_auth_token_with_actual_rsa_keys_fake_user()
+#         t.add_service()
+#         print(self.client)
+#         with self.client:
+#             self.headers = {'X-Auth-Token': token_in_byte}
+#             response = self.client.get(
+#                 '/list/services',                
+#                 headers=self.headers)
+# #             print(response)
+#             # content_type='application/json'
+#             data = json.loads(response.data.decode())
+# #             print(data)
+#             self.assertTrue(isinstance(data['status'], list)) 
+              
+ 
+#     def test_add_service_restapi(self):
+#         token_in_byte = self.get_auth_token_with_actual_rsa_keys_fake_user()
+#         data = json.dumps(dict(
+#             name = 'testservice',
+#             urlint = 'localhost:5005',
+#             urlext= 'localhost:5005',
+#             urladmin = 'localhost:5005',
+#             ))
+#         with self.client:
+#             self.headers = {'X-Auth-Token': token_in_byte}
+#             response = self.client.post(
+#                 '/add/service',
+#                 data=data,
+#                 headers=self.headers,
+#                 content_type='application/json')
+# #             print(response)
+#             data = json.loads(response.data.decode())
+# #             print(data)
+#             self.assertTrue(data['status'] == 'testservice has been registered.')     
+    
+    def test_delete_service_restapi(self):
+        token_in_byte = self.get_auth_token_with_actual_rsa_keys_fake_user()
+        data = json.dumps(dict(
+            name = 'testservice',
+            ))
+        t.add_service()
         with self.client:
-            response = self.client.post(
-                '/token/gettoken',
-                data=json.dumps(dict(
-                    username='susan',
-                    password='mysecret',
-                    domain='torg' )),
+            self.headers = {'X-Auth-Token': token_in_byte}
+            response = self.client.delete(
+                '/delete/service',
+                data=data,
+                headers=self.headers,
                 content_type='application/json')
-            #print('response is {}'.format(response))
+#             print(response)
             data = json.loads(response.data.decode())
 #             print(data)
-            self.assertTrue(data['message'] == 'torg domain has not been configured in  tokenleader_configs by administrator')
+            self.assertTrue(data['status'] == 'testservice has been  deleted successfully')
+     
+ 
