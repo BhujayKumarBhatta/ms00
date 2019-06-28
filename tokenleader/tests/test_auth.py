@@ -1,20 +1,14 @@
 import time
-import unittest
 import datetime
 import json
-import jwt
 from flask import current_app
 import random
 from tokenleader.app1.authentication.authclass import TokenManager
-from tokenleader.tests.base_test import  BaseTestCase
-from tokenleader.tests.test_admin_ops import TestUserModel
-from tokenleader.app1 import db
+from tokenleader.tests.admin_ops import TestUserModel
+# from tokenleader.app1 import db
 from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department, Otp
-#from app1.authentication import admin_ops
 from tokenleader.app1.adminops import admin_functions as af
-from tokenleader.tests.test_catalog_ops import TestCatalog , service_catalog 
-
-#app.app_context().push()
+from tokenleader.tests.test_catalog_ops import TestCatalog , service_catalog
 tm = TokenManager()
 tc = TestCatalog()
 
@@ -23,7 +17,6 @@ class TestToken(TestUserModel):
     (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
     '''
     EMAIL_TEST='Srijib.Bhattacharyya@itc.in'
-
 #       
     def test_auth_token_with_actual_rsa_keys_fake_user(self):         
           
@@ -52,7 +45,7 @@ class TestToken(TestUserModel):
         __privkey = current_app.config.get('private_key')
         __publickey = current_app.config.get('public_key')
         auth_token = tm.generate_encrypted_auth_token(payload, __privkey)
-        print(type(auth_token))
+        # print(type(auth_token))
         self.assertTrue(isinstance(auth_token, bytes))
         np = tm.decrypt_n_verify_token(auth_token, __publickey)
         self.assertTrue(isinstance(np, dict))
@@ -78,7 +71,7 @@ class TestToken(TestUserModel):
                     domain='default'
                 ))
         #print(data)
-        print(self.client)
+        # print(self.client)
         with self.client:
             response = self.client.post(
                 '/token/gettoken', 
@@ -87,7 +80,7 @@ class TestToken(TestUserModel):
                 
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-            print(data)
+            # print(data)
             #print(data['message'])
             self.assertTrue(data['status'] == 'success')
             self.assertTrue('auth_token' in data)
@@ -116,7 +109,6 @@ class TestToken(TestUserModel):
         # print(data)
         userdet = User.query.filter_by(username='u3').first()
         userid = userdet.to_dict()['id']
-        print(userid)
         otpdet = Otp.query.filter_by(userid=userid).first()
         otp = otpdet.to_dict()['otp']
         self.assertTrue(otp,not None)
@@ -241,7 +233,7 @@ class TestToken(TestUserModel):
         __privkey = current_app.config.get('private_key')
         __publickey = current_app.config.get('public_key')
         auth_token = tm.generate_encrypted_auth_token(payload, __privkey)
-        print(type(auth_token))
+        # print(type(auth_token))
         self.assertTrue(isinstance(auth_token, bytes))
         np = tm.decrypt_n_verify_token(auth_token, __publickey)
         self.assertTrue((np.get('sub').get('wfc').get('org')) == 'org2')
@@ -260,7 +252,7 @@ class TestToken(TestUserModel):
                 content_type='application/json')
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-            print(data)
+            # print(data)
             self.assertTrue(data['message'] == 'User not registered')
             
     def test_token_gen_failed_for_unregistered_domain(self):   #working
@@ -286,7 +278,7 @@ class TestToken(TestUserModel):
                 headers=self.headers)
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-            print(data)
+            # print(data)
             self.assertTrue(data['status'] == 'Verification Successful')
             self.assertTrue('payload' in data)
             roles_retrived_from_token = data['payload'].get('sub').get('roles')
@@ -394,6 +386,6 @@ class TestToken(TestUserModel):
 #             print('response is {}'.format(response))
             data = json.loads(response.data.decode())
 #             print(data)
-            print(data['message'])
+            # print(data['message'])
             self.assertTrue(data['message'] == 'Authentication Failure')
             self.assertFalse('auth_token' in data)
