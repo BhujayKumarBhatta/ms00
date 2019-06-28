@@ -33,14 +33,7 @@ class BaseTestCase(TestCase):
         db.session.remove()
         db.drop_all()        
     
-    def test_configs(self):
-        #self.assertTrue(app.config['DEBUG'] is True)
-        #self.assertTrue(app.config['SQLALCHEMY_DATABASE_URI'] == 'sqlite:////tmp/test_auth.db')
-        self.assertTrue(app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] is False)
-        self.assertIsNotNone(app.config['private_key'])
-        self.assertIsNotNone(app.config['public_key'])
-        self.assertIsNotNone(app.config['token'])
-        self.assertTrue(app.config.get('token').get('tokenexpiration') == 2)
+    
         
         
 #     def test_get_token(self):
