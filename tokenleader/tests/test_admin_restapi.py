@@ -1,6 +1,6 @@
 import json
 from tokenleader.tests.base_test import  BaseTestCase
-from tokenleader.tests.test_admin_ops import TestUserModel
+from tokenleader.tests.admin_ops import TestUserModel
 from tokenleader.tests.test_auth import TestToken
 test_token_instance = TestToken()
 t = TestUserModel()
