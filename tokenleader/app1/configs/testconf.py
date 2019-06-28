@@ -93,6 +93,7 @@ if not dbs.keys() >= must_have_in_db_section:
 #     sys.exit()
 
 if token_settings_map.get('private_key_file_location') == 'default':
+    print('private key found')
     private_key_filename = os.path.expanduser('~/.ssh/id_rsa')
 else:
     private_key_filename = token_settings_map.get('private_key_file_location')

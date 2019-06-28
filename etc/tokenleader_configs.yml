@@ -55,7 +55,7 @@ otp:
    org2: 10
 
 token:
-     tokenexpiration: 3600
+     tokenexpiration: 8
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient

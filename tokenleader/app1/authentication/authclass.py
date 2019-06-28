@@ -435,7 +435,8 @@ class TokenManager():
             return jsonify(responseObject)
     
     def generate_encrypted_auth_token(self, payload, priv_key):
-        print(payload)
+#         print(payload)
+#         print(priv_key)
         try:
             auth_token = jwt.encode(
                  payload,
@@ -447,6 +448,7 @@ class TokenManager():
             return e
                         
     def decrypt_n_verify_token(self, auth_token, pub_key):
+#         print(pub_key)
         try:
             payload = jwt.decode(
                 auth_token,
