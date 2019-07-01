@@ -93,7 +93,7 @@ if not dbs.keys() >= must_have_in_db_section:
 #     sys.exit()
 
 if token_settings_map.get('private_key_file_location') == 'default':
-    print('private key found')
+    # print('private key found')
     private_key_filename = os.path.expanduser('~/.ssh/id_rsa')
 else:
     private_key_filename = token_settings_map.get('private_key_file_location')
@@ -109,8 +109,11 @@ with open(public_key_filename, 'r') as f:
         public_key = f.read()      
 key_attr = {'private_key': private_key, 'public_key': public_key}
 token_settings_map.update(key_attr)
-
-connection_string = 'mysql+pymysql://{0}:{1}@{2}:{3}/{4}'.format(quote_plus(dbs.get('UID')), quote_plus(conf.decrypt_password(dbs.get('db_pwd_key_map'))), dbs.get('Server'), dbs.get('Port'), dbs.get('Database'))
+connection_string = ('mysql+pymysql://{0}:{1}@{2}:{3}/{4}'
+                     '?charset=utf8mb4'.format(dbs.get('UID'), 
+                                               conf.decrypt_password(dbs.get('db_pwd_key_map')), 
+                                               dbs.get('Server'), dbs.get('Port'), 
+                                               dbs.get('Database')))
 mail_service_for_otp = 'http://{0}:{1}/mail'.format(mailservice_default_settings_map.get('Server'), mailservice_default_settings_map.get('Port'))
 #converted_safe_uri #use quote_plus to construct the uri
 test_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'MAIL_SERVICE_URI': mail_service_for_otp}

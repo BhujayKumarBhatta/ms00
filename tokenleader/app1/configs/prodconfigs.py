@@ -1,15 +1,16 @@
 import os
+import sys
 from urllib.parse import quote_plus
 from tokenleader.app1.configs.config_handler import Configs
 must_have_keys_in_yml = {'flask_default',
                          'database',
-                         'ldap',
-                         'otpmailservice',
-                         'otpvalidfortsp',
+                         'domains',
+                         'listoftsp',
+                         'mailservice',
                          'token',
+                         'otp',                         
                          'secrets'
                          }
-
 must_have_in_flask_default_section = {'host_name',
                              'host_port',
                              'ssl',
@@ -20,13 +21,6 @@ must_have_in_token_section = {'private_key_file_location',
                               'public_key_file_location',
                              }
 
-must_have_in_otpval_section = {'TATA',
-                               'RELIANCE',
-                               'BHARTI',
-                               'SIFY',
-                               'VODAFONE'
-                              }
-
 must_have_in_db_section = {'Server',
                            'Port',
                            'Database',
@@ -34,10 +28,7 @@ must_have_in_db_section = {'Server',
                            'db_pwd_key_map'
                           }
 
-must_have_in_ldap_default_section = {'Server',
-                                     'Port',
-                                     'Version'
-                                    }
+must_have_in_domain_default_section = {'auth_backend'}
 
 must_have_in_mail_default_section = {'Server',
                                      'Port'
@@ -46,11 +37,13 @@ try:
     conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
     ymldict = conf.yml
     flask_default_setiings_map = ymldict.get('flask_default')
-    ldap_default_settings_map = ymldict.get('ldap')
-    mailservice_default_settings_map = ymldict.get('otpmailservice')
+    domains_default_settings_map = {'domains': ymldict.get('domains')}
+    mailservice_default_settings_map = ymldict.get('mailservice')
+    tsplist_settings_map = {'listoftsp': ymldict.get('listoftsp')}    
     token_settings_map = ymldict.get('token')
     dbs = ymldict.get('database')
-    otpvaltime = ymldict.get('otpvalidfortsp')
+    #print(dbs)
+    otp_settings_map = ymldict.get('otp')
 except:   
     print("did you configured the file {} correctly ? \n"
           "see readme for a sample settings \n".format(conf.config_file))
@@ -60,34 +53,36 @@ if not flask_default_setiings_map.keys() >= must_have_in_flask_default_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
        conf.config_file, must_have_in_flask_default_section ))
     sys.exit()
-    
-if not ldap_default_settings_map.keys() >= must_have_in_ldap_default_section:
-    print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.config_file, must_have_in_ldap_default_section ))
-    sys.exit()
+
+#TODO:mandate domain content is valid
+# if not domains_default_settings_map.keys() >= must_have_in_domain_default_section:
+#     print("{} must have  the following parameters {}  under the flask_default section".format(
+#        conf.config_file, must_have_in_domain_default_section ))
+#     sys.exit()
 
 if not mailservice_default_settings_map.keys() >= must_have_in_mail_default_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
        conf.config_file, must_have_in_mail_default_section ))
     sys.exit()
-
+    
 if not token_settings_map.keys() >= must_have_in_token_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
        conf.config_file, must_have_in_token_section ))
     sys.exit()
+    
     
 if not dbs.keys() >= must_have_in_db_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
        conf.config_file, must_have_in_db_section ))
     sys.exit()
 
-if not otpvaltime.keys() >= must_have_in_otpval_section:
-    print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.config_file, must_have_in_otpval_section ))
-    sys.exit()
-
+# if not otpvaltime.keys() >= must_have_in_otpval_section:
+#     print("{} must have  the following parameters {}  under the flask_default section".format(
+#        conf.config_file, must_have_in_otpval_section ))
+#     sys.exit()
 
 if token_settings_map.get('private_key_file_location') == 'default':
+    # print('private key found')
     private_key_filename = os.path.expanduser('~/.ssh/id_rsa')
 else:
     private_key_filename = token_settings_map.get('private_key_file_location')
@@ -108,11 +103,11 @@ connection_string = ('mysql+pymysql://{0}:{1}@{2}:{3}/{4}'
                                                conf.decrypt_password(dbs.get('db_pwd_key_map')), 
                                                dbs.get('Server'), dbs.get('Port'), 
                                                dbs.get('Database')))
-ldap_conn_string = 'ldap://{0}:{1}'.format(ldap_default_settings_map.get('Server'),ldap_default_settings_map.get('Port'))
 mail_service_for_otp = 'http://{0}:{1}/mail'.format(mailservice_default_settings_map.get('Server'), mailservice_default_settings_map.get('Port'))
-# print(connection_string)
 # converted_safe_uri #use quote_plus to construct the uri
-prod_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'LDAP_PROVIDER_URL': ldap_conn_string, 'LDAP_PROTOCOL_VERSION': ldap_default_settings_map.get('Version'), 'MAIL_SERVICE_URI': mail_service_for_otp}
+prod_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'MAIL_SERVICE_URI': mail_service_for_otp}
 # pick up values from yml and construct other confs here
-prod_configs_from_file = {**flask_default_setiings_map, **token_settings_map, **prod_db_conf}
+prod_configs_from_file = {**flask_default_setiings_map, **domains_default_settings_map, 
+                          **token_settings_map, **tsplist_settings_map, 
+                          **otp_settings_map, **prod_db_conf}
 prod_conf_list = [prod_configs_from_file ,   ymldict ]
