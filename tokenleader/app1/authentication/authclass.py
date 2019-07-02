@@ -65,9 +65,9 @@ class Authenticator():
      
     def generate_one_time_password(self,userid):
         try:
-            print('generating otp')
+            # print('generating otp')
             num = self._create_random()
-            print(userid)
+            # print(userid)
             self._save_otp_in_db(num, userid)
             user = User.query.filter_by(id=userid).first()
             user_from_db = user.to_dict()
@@ -79,7 +79,7 @@ class Authenticator():
             mail_to = user_from_db['email']
 #             phno = '5656565653'
             if self.OTP_MODE == 'mail':
-                print('mode mail')
+                # print('mode mail')
                 return self.send_otp_thru_mail(mail_to, num, otpvalidtime)
 #             elif self.OTP_MODE == 'sms':
 #                 self.send_otp_thru_sms(phno, num, otpvalidtime)
@@ -159,25 +159,25 @@ class Authenticator():
         return num
 
     def _save_otp_in_db(self,num, userid):
-#         try:
-        user = User.query.filter_by(id=userid).first()
-        self.OTP_MODE = user.to_dict()['otp_mode']
-        found = Otp.query.all()
-        if found:
-            lastotp = Otp.query.filter_by(is_active='Y').first()
-            if lastotp:
-                # print('old active otp found')
-                lastotp.is_active = 'N'
-                db.session.commit()
-        else:
-            print('no records where there in otp table')
-        record = Otp(otp=num,userid=userid,delivery_method=self.OTP_MODE)
-        print(record)
-        db.session.add(record)
-        db.session.commit()
-        return True
-#         except Exception as e:
-#             return e
+        try:
+            user = User.query.filter_by(id=userid).first()
+            self.OTP_MODE = user.to_dict()['otp_mode']
+            found = Otp.query.all()
+            if found:
+                lastotp = Otp.query.filter_by(is_active='Y').first()
+                if lastotp:
+                    # print('old active otp found')
+                    lastotp.is_active = 'N'
+                    db.session.commit()
+            else:
+                print('no records where there in otp table')
+            record = Otp(otp=num,userid=userid,delivery_method=self.OTP_MODE)
+            # print(record)
+            db.session.add(record)
+            db.session.commit()
+            return True
+        except Exception as e:
+            return e
             
 
     def send_otp_thru_mail(self, email, num, otpvalidtime):
@@ -188,8 +188,8 @@ class Authenticator():
                str(otpvalidtime)+" minutes.</body></html>")
         r = requests.post(url=current_app.config['MAIL_SERVICE_URI'], 
                           data=json.dumps({'mail_to':email, 'msg': msg}))
-        print(r)
-        print(r.status_code)
+        # print(r)
+        # print(r.status_code)
         if r.status_code == 200:
             print('mail success')
             responseObject = {
@@ -245,7 +245,9 @@ class Authenticator():
             return False
         
     def _extract_n_validate_data_from_request(self, request):
-        ''' each input also to be validated for its type and length and special character'''
+        '''
+        #TODO: each input also to be validated for its type and length and special character
+        '''
         if request.method == 'POST':
             if 'username' in request.json and \
               len(request.json['username']) <= 50 :
@@ -311,6 +313,7 @@ class TokenManager():
                 'status': 'missing authentication info ',
                 'message': 'no authentication information provided',}
             return jsonify(responseObject)
+        print('correct request format')
         user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
         payload = {
                             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
