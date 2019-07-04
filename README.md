@@ -776,7 +776,12 @@ this necessitates all the config files under /etc/tokenleader as well
 
 
 
-
+ver 1.9
+--------
+introducing domain and otp 
+domain to  auth_backend database or ldap map made configurable in yml
+authentication and token generation class separated 
+api routes module separated
 
 
 ver 1.5

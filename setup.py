@@ -7,7 +7,7 @@ def readme():
 
 
 setup(name='tokenleader',
-      version='1.8',
+      version='1.9',
       description='tokenleader server can be used by other microservices for token based  authentication and authorization',
       long_description=readme(),
       url='https://github.com/microservice-tsp-billing/tokenleader',
