@@ -4,7 +4,7 @@ flask_default:
   ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
   ssl_settings: adhoc
 database:
-   Server: localhost
+   Server: 10.174.112.130
    Port: 3306
    Database: auth
    UID: root
@@ -13,7 +13,8 @@ database:
    
 domains:
    - default:
-      auth_backend: sqldb
+      auth_backend: default
+      otp_required: False
    - itc:
       auth_backend: ldap   
       ldap_host: remote   # configure later with AD
@@ -24,16 +25,18 @@ domains:
       DC3: itc
       OU: Users
       O: itc   # configure later with AD
+      otp_required: False
       
    - tsp:
       auth_backend: ldap   
-      ldap_host: localhost
+      ldap_host: localhost     #10.174.112.100 if localhost doesnt work
       ldap_port: 389
       ldap_version: 3 
       DC1: test
       DC2: tspbillldap
       DC3: itc
       OU: Users
+      otp_required: True
 
 listoftsp:
    - TATA

@@ -36,12 +36,15 @@ def get_token():
     
     # CASE 1: Username & Otp      
     if 'username' in request.json and 'otp' in request.json:  
+        # print('request has username and otp')
         return objTokenMgr.get_token_by_otp(request)
     # Case 2: Username & Passwordgettoken_by_usr_pwd
     elif 'username' in request.json and 'password' in request.json and 'domain' in request.json:
+        # print('request has username, password and domain')
         return objTokenMgr.get_token_or_otp(request)
     # Case 3: Email & Otp
     elif 'email' in request.json and 'otp' in request.json:
+        # print('request email and otp')
         return objTokenMgr.gettoken_by_email_otp(request)
     else:
         responseObject = {
