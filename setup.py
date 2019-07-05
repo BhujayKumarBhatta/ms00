@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import tokenleader
 
 
 def readme():
@@ -34,13 +35,17 @@ setup(name='tokenleader',
           'Flask-Migrate==2.3.1',
           'Flask-SQLAlchemy==2.3.2',
           'konfig==1.1',
-          'tokenleaderclient==0.9',
+          'tokenleaderclient==1.6',
           'pyOpenSSL==19.0.0',
+          'PyMySQL==0.9.3',
+          'ldap3==2.6'
+          
           
       ],
       entry_points = {
         'console_scripts': ['adminops=tokenleader.app1.adminops.admin_cli_parser:main',
-                            'tokenleader-start=tokenleader.app_run:main'],
+                            'tokenleader-start=tokenleader.app_run:main',
+                            'encrypt-pwd=tokenleader.app1.configs.configs:main'],
         },
       test_suite='nose.collector',
       tests_require=['nose'],

@@ -56,6 +56,7 @@ create  the following  directories and files under /etc folder.
 5. tokenleader-auth  -p <password of  tokeneader user>
 
 
+
 sample configuration of each files
 =============================================================================
 configure the /etc/tokenleader/tokenleader_configs.yml
@@ -106,7 +107,9 @@ configure the /etc/tokenleader/tokenleader_configs.yml
 generate an encrypted password for the db(one time)
 ===========================================================================================
 when running from source (git clone) encrypt-pwd command  is avilable from shell as python encrypt-pwd.sh or ./encrypt-pwd.sh 
-encrypt-pwd -k db_pwd -p <your password here>
+
+
+when installed through pip :  encrypt-pwd -k db_pwd -p <your password here>
 	
 /etc/tokenleader/role_to_acl_map.yml
 ============================================================================================
