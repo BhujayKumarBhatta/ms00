@@ -1,7 +1,9 @@
 include README.md
 include requirement.txt
 include jenkins.sh
-include tokenleader/migrations/versions
-include tokenleader/migrations/alembic.ini
-include tokenleader/migrations/script.py.mako
+include .gitlab-ci.yml
+include migrations
+include migrations/versions
+include migrations/alembic.ini
+include migrations/script.py.mako
 include tokenleader/app1/configs/settings.ini
