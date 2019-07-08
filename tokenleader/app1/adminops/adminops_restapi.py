@@ -85,12 +85,23 @@ def add_user(wfc):
     ##created_by = af.list_users(created_by).get('id')
     if 'allowemaillogin' in request.json and request.json['allowemaillogin'] is not None:
         allowemaillogin = request.json['allowemaillogin']
-        record = af.register_user(uname, email, pwd, wfc_name, roles=roles, 
-                                  allowemaillogin=allowemaillogin,
-                                  created_by=created_by)
+        if 'otpmode' in request.json and request.json['otpmode'] is not None:
+            otpmode = request.json['otpmode']
+            record = af.register_user(uname, email, pwd, wfc_name, roles=roles,
+                                      otp_mode=otpmode, 
+                                      allowemaillogin=allowemaillogin,
+                                      created_by=created_by)
+        else:
+            record = af.register_user(uname, email, pwd, wfc_name, roles=roles,                                      
+                                      allowemaillogin=allowemaillogin,
+                                      created_by=created_by)
         print('i got the name {0}, allow email login {1}, created_by {2} from http argument'.format(uname, allowemaillogin, created_by))
     else:
-        record = af.register_user(uname, email, pwd, wfc_name, roles=roles, created_by=created_by)
+        if 'otpmode' in request.json and request.json['otpmode'] is not None:
+            otpmode = request.json['otpmode']
+            record = af.register_user(uname, email, pwd, wfc_name, roles=roles, otp_mode=otpmode, created_by=created_by)
+        else:
+            record = af.register_user(uname, email, pwd, wfc_name, roles=roles, created_by=created_by)
         print('i got the name {0}, created_by {1} from http argument'.format(uname, created_by))
     response_obj = {"status": record}
     print(record)
