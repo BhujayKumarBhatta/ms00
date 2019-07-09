@@ -45,7 +45,7 @@ def add_service(wfc):
     urlext = request.json['urlext']
     urladmin = request.json['urladmin']
     #print('i got the name from http argument {}'.format(username))
-    record = cf.add_service(name, urlint, urlext, urladmin)
+    record = cf.add_service(name, urlint=urlint, urlext=urlext, urladmin=urladmin)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
