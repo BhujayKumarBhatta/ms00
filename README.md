@@ -779,6 +779,10 @@ this necessitates all the config files under /etc/tokenleader as well
 
 version2.1
 -----------------
+catalogbp was moved to restapi and hence error in import
+
+version2.1
+-----------------
 catalog_bp was not included in the app_run resulitng 404 for catalog ops
 
 ver 1.9
