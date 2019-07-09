@@ -3,7 +3,7 @@ from tokenleader import app1
 
 from tokenleader.app1.authentication.auth_routes import token_login_bp
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
-from app1.catalog.catalog_functions import catalog_bp
+from tokenleader.app1.catalog.catalog_restapi import catalog_bp
 from tokenleader.app1.catalog import models_catalog 
 from tokenleader.app1.configs import prodconfigs
 # from prodcon import the prod_conf_ist  and  pass it here , 
