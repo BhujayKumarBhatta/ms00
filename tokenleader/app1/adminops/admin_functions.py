@@ -10,12 +10,12 @@ from tokenleader.app1.adminops import base_ops as bops
 def create_otp(num, userid):
    return bops.create_otp(num, userid)
    
-def register_user(uname, email, pwd, wfc_name, roles=None, allowemaillogin=None, created_by=None ):
+def register_user(uname, email, pwd, wfc_name, roles=None, otp_mode=None, allowemaillogin=None, created_by=None ):
    # print(allowemaillogin)
-   if not allowemaillogin=='':
-      return bops.register_ops1('User', uname, email=email, allowemaillogin=allowemaillogin, pwd=pwd, wfc_name=wfc_name, roles=roles, created_by=created_by)
+   if not allowemaillogin =='':
+      return bops.register_ops1('User', uname, email=email, otp_mode=otp_mode, allowemaillogin=allowemaillogin, pwd=pwd, wfc_name=wfc_name, roles=roles, created_by=created_by)
    else:
-      return bops.register_ops1('User', uname, email=email, pwd=pwd, wfc_name=wfc_name, roles=roles, created_by=created_by)   
+      return bops.register_ops1('User', uname, email=email, otp_mode=otp_mode, pwd=pwd, wfc_name=wfc_name, roles=roles, created_by=created_by)   
 
 def register_org(oname, orgtype=None, created_by=None):
    if not orgtype==None:   

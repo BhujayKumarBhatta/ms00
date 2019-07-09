@@ -4,27 +4,61 @@ flask_default:
   ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
   ssl_settings: adhoc
 database:
-   Server: tldbserver130
+   Server: 10.174.112.130
    Port: 3306
    Database: auth
    UID: root
    db_pwd_key_map: db_pwd
    #engine_connect_string: 'mssql+pymysql:///{0}'
-ldap:
-   Server: localhost
-   Port: 389
-   Version: 3
-otpmailservice:
+   
+domains:
+   - default:
+      auth_backend: default
+      otp_required: False
+   - itc:
+      auth_backend: ldap   
+      ldap_host: remote   # configure later with AD
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      O: itc   # configure later with AD
+      otp_required: False
+      
+   - tsp:
+      auth_backend: ldap   
+      ldap_host: localhost     #10.174.112.100 if localhost doesnt work
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      otp_required: True
+
+listoftsp:
+   - TATA
+   - RELIANCE
+   - BHARTI
+   - SIFY
+   - VODAFONE
+
+mailservice:
    Server: 10.174.112.79
    Port: 5000
-tokenexpiration: 3600
-otpvalidfortsp:
+
+otp:
    TATA: 10
    RELIANCE: 20
    BHARTI: 30
    SIFY: 20
    VODAFONE: 20
+   org2: 10
+
 token:
+     tokenexpiration: 8
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient

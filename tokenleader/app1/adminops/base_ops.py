@@ -35,7 +35,7 @@ def create_otp(num, userid):
         return generated.to_dict()
 
 def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou_name=None, dept_name=None, wfc_name=None, roles=None,
-                   email=None, pwd=None, created_by=None, **kwargs):    
+                   email=None, pwd=None, otp_mode=None, created_by=None, **kwargs):    
     record = None    
     if obj == 'Organization' :        
         orgtype = 'internal'
@@ -74,7 +74,7 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
             valid_role_objects = get_validated_roles(roles)
             if  isinstance(valid_role_objects, list):
                 if not allowemaillogin == '':          
-                    record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, allowemaillogin=allowemaillogin, created_by=created_by)
+                    record = User(username=cname, email=email, otp_mode=otp_mode, roles=valid_role_objects, wfc=wfc, allowemaillogin=allowemaillogin, created_by=created_by)
                 else:
                     record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, created_by=created_by)
                 record.set_password(pwd)
@@ -82,7 +82,7 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
                 msg = "user registration aborted"  
         else:
             if not allowemaillogin == '':            
-                record = User(username=cname, email=email, allowemaillogin=allowemaillogin, created_by=created_by)
+                record = User(username=cname, email=email,otp_mode=otp_mode, allowemaillogin=allowemaillogin, created_by=created_by)
             else:
                 record = User(username=cname, email=email, created_by=created_by)
             record.set_password(pwd)   
@@ -218,7 +218,7 @@ def list_ops(obj, cname=None, *args, **kwargs):
             record_list_of_dict.append(record_to_dict)
 #                 print('i am on the loop  result {}'.format(record_list_of_dict))
             result = record_list_of_dict
-#            print(result)
+            print(result)
            # else:            
             #    result = {'id': record.id, 'name': record.name , 'record': record}
              #   print(result)                

@@ -22,7 +22,7 @@ def list_users(wfc):
 
 @adminops_bp.route('/list/user/<username>', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_user_byname')
-def list_user_byname(username):
+def list_user_byname(username, wfc):
     #print('i got the name from http argument {}'.format(username))
     record = af.list_users(username)
     response_obj = {"status": record}
@@ -32,7 +32,6 @@ def list_user_byname(username):
 @enforcer.enforce_access_rule_with_token('tokenleader.list_org')
 def list_org(wfc):
     org_dict = af.list_org()
-#    obj_json = {"name": org_dict.get('name')}
     response_obj = {"status": org_dict}
     return jsonify(response_obj)
 
@@ -83,14 +82,29 @@ def add_user(wfc):
     wfc_name  = request.json['wfc']
     roles = request.json['roles']
     created_by = request.json['created_by']
-    created_by = af.list_users(created_by).get('id')
-    if 'allowemaillogin' in request and request.json['allowemaillogin'] is not None:
-        record = af.register_user(uname, email, pwd, wfc_name, roles=roles, allowemaillogin=allowemaillogin, created_by=created_by)    
+    ##created_by = af.list_users(created_by).get('id')
+    if 'allowemaillogin' in request.json and request.json['allowemaillogin'] is not None:
+        allowemaillogin = request.json['allowemaillogin']
+        if 'otpmode' in request.json and request.json['otpmode'] is not None:
+            otpmode = request.json['otpmode']
+            record = af.register_user(uname, email, pwd, wfc_name, roles=roles,
+                                      otp_mode=otpmode, 
+                                      allowemaillogin=allowemaillogin,
+                                      created_by=created_by)
+        else:
+            record = af.register_user(uname, email, pwd, wfc_name, roles=roles,                                      
+                                      allowemaillogin=allowemaillogin,
+                                      created_by=created_by)
         print('i got the name {0}, allow email login {1}, created_by {2} from http argument'.format(uname, allowemaillogin, created_by))
     else:
-        record = af.register_user(uname, email, pwd, wfc_name, roles=roles, created_by=created_by)
+        if 'otpmode' in request.json and request.json['otpmode'] is not None:
+            otpmode = request.json['otpmode']
+            record = af.register_user(uname, email, pwd, wfc_name, roles=roles, otp_mode=otpmode, created_by=created_by)
+        else:
+            record = af.register_user(uname, email, pwd, wfc_name, roles=roles, created_by=created_by)
         print('i got the name {0}, created_by {1} from http argument'.format(uname, created_by))
     response_obj = {"status": record}
+    print(record)
     return jsonify(response_obj)
 
 @adminops_bp.route('/add/wfc', methods=['POST'])
@@ -106,7 +120,7 @@ def add_wfc(wfc):
     ou_name = request.json['ou_name']
     dept_name  = request.json['dept_name']
     created_by = request.json['created_by']
-    created_by = af.list_users(created_by).get('id')
+    ##created_by = af.list_users(created_by).get('id')
     record = af.register_work_func_context(fname, orgname, ou_name, dept_name, created_by)
     response_obj = {"status": record}
     return jsonify(response_obj)
@@ -121,7 +135,7 @@ def add_orgunit(wfc):
             information {}".format(json.dumps(data_must_contain))})
     ouname = request.json['ouname']
     created_by = request.json['created_by']
-    created_by = af.list_users(created_by).get('id')
+    ##created_by = af.list_users(created_by).get('id')
     print('i got the name {0}, created_by {1} from http argument'.format(ouname, created_by))
     record = af.register_ou(ouname, created_by)
     response_obj = {"status": record}
@@ -137,7 +151,7 @@ def add_dept(wfc):
             information {}".format(json.dumps(data_must_contain))})
     deptname = request.json['deptname']
     created_by = request.json['created_by']
-    created_by = af.list_users(created_by).get('id')
+    ##created_by = af.list_users(created_by).get('id')
     print('i got the name {0}, created_by {1} from http argument'.format(deptname, created_by))
     record = af.register_dept(deptname, created_by)
     response_obj = {"status": record}
@@ -154,7 +168,7 @@ def add_org(wfc):
             information {}".format(json.dumps(data_must_contain))})
     oname = request.json['oname']
     created_by = request.json['created_by']
-    created_by = af.list_users(created_by).get('id')
+    ##created_by = af.list_users(created_by).get('id')
     print('i got the name from http argument {}'.format(oname))
     if 'otype' in request.json and request.json['otype'] is not None:
         otype = request.json['otype']
@@ -177,7 +191,7 @@ def add_role(wfc):
             information {}".format(json.dumps(data_must_contain))})
     rolename = request.json['rolename']
     created_by = request.json['created_by']
-    created_by = af.list_users(created_by).get('id')
+    #created_by = af.list_users(created_by).get('id')
     print('i got the name {0}, created_by {1} from http argument'.format(rolename, created_by))
     record = af.register_role(rolename, created_by)
     response_obj = {"status": record}

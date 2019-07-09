@@ -2,6 +2,8 @@
 import os
 from unittest import TestCase
 from tokenleader.app1.configs.testconf import conf as testconf
+from flask import current_app
+from tokenleader.tests.base_test import app
 
 test_data_path = os.path.join(os.path.dirname(__file__), 'testdata')
 test_secret_file= os.path.join(test_data_path,'secrets.yml')
@@ -21,11 +23,21 @@ must_have_keys_in_yml = {}
 
 class  TestConf(TestCase):
     
+    def test_configs(self):
+        #self.assertTrue(app.config['DEBUG'] is True)
+        #self.assertTrue(app.config['SQLALCHEMY_DATABASE_URI'] == 'sqlite:////tmp/test_auth.db')
+        self.assertTrue(app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] is False)
+        self.assertIsNotNone(app.config['private_key'])
+        self.assertIsNotNone(app.config['public_key'])
+        self.assertIsNotNone(app.config['token'])
+        self.assertTrue(app.config.get('token').get('tokenexpiration') == 8)
+    
     def test_simple_conf(self):        
         #conf = Configs('tokenleader', conf_file=SERVER_SETTINGS_FILE, must_have_keys_in_yml=must_have_keys_in_yml)
         c = testconf.yml
         self.assertTrue(c.get('flask_default').get('host_name') == '0.0.0.0')
-        print(c.get('celery'))
+        print(c.get('celery'))        
+        #print(current_app.configs)
         
     def test_encrypt_conf(self):
         #conf = Configs('tokenleader', conf_file=SERVER_SETTINGS_FILE)

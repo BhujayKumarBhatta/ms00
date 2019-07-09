@@ -1,5 +1,3 @@
-from tokenleader.app1 import db
-from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 from tokenleader.tests.base_test import BaseTestCase
 from tokenleader.app1.catalog import catalog_functions as cf
 
@@ -29,25 +27,4 @@ class TestCatalog(BaseTestCase):
     def delete_service(self):
         self.add_service()
         r = cf.delete_service(service_name)
-        return r        
-    
-    def test_add_service(self):
-        msg = self.add_service()        
-        self.assertTrue(msg == "testservice has been registered.")
-        
-    def test_service_catalog_format(self):
-        msg = self.add_service()
-        record_list = ServiceCatalog.query.all()
-        print(record_list)      
-#         svcs = self.list_services()
-# #         svcs = ServiceCatalog.query.all()
-# #         service_catalog_created= {}
-#         print(svcs)
-#         for s in svcs:
-#             service_catalog_created[s.name]=s.to_dict()
-# #         print(service_catalog)
-# #         print(service_catalog_created)  
-#         self.assertTrue(service_catalog_created == service_catalog)
-#         
-        
-        
+        return r

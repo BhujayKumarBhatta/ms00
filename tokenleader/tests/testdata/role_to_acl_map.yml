@@ -19,13 +19,15 @@
   - tokenleader.delete_dept
   - tokenleader.delete_role
   - tokenleader.delete_wfc
+  - tokenleader.list_services
+  - tokenleader.list_services_byname
+  - tokenleader.add_service
+  - tokenleader.delete_service_byname
+  - tokenleader.delete_service
 
-  - name: role2
+- name: role2
   allow:
-  - tokenleader.list_users
-  - tokenleader.add_org
-  - service1.third_api.rulename3
-  - service1.fourthapi_api.rulename4
-  
-  
-  
+   - tokenleader.list_users
+   - tokenleader.add_org
+   - service1.third_api.rulename3
+   - service1.fourthapi_api.rulename44

@@ -1,3 +1,4 @@
+import datetime
 import unittest
 from flask_testing import TestCase
 from flask import Flask
@@ -5,11 +6,13 @@ from tokenleader import app1
 from tokenleader.app1 import db
 from tokenleader.app1.configs import testconf
 #from flask_testing import LiveServerTestCase
-from tokenleader.app1.authentication.token_after_login import token_login_bp
+from tokenleader.app1.authentication.auth_routes import token_login_bp
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
-# from tokenleader.app1.catalog.catalog_restapi import catalog_bp
+from tokenleader.app1.catalog.catalog_restapi import catalog_bp
+from tokenleader.app1.authentication.authclass import TokenManager
+tm = TokenManager()
 #from app_run import bp_list
-bp_list = [token_login_bp, adminops_bp]
+bp_list = [token_login_bp, adminops_bp, catalog_bp ]
 
 
 # from app_run import app
@@ -31,14 +34,39 @@ class BaseTestCase(TestCase):
     
     def tearDown(self):
         db.session.remove()
-        db.drop_all()        
+        db.drop_all()
     
-    def test_configs(self):
-        #self.assertTrue(app.config['DEBUG'] is True)
-        #self.assertTrue(app.config['SQLALCHEMY_DATABASE_URI'] == 'sqlite:////tmp/test_auth.db')
-        self.assertTrue(app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] is False)
-        self.assertIsNotNone(app.config['private_key'])
-        self.assertIsNotNone(app.config['public_key'])
+    def get_auth_token_with_actual_rsa_keys_fake_user(self):         
+          
+        user_from_db = {'id': 1,
+                        'username': 'u1', 
+                        'email': 'u1@abc.com', 
+                        'roles': ['role1'],
+                        'creation_date': str(datetime.datetime.utcnow()),
+                        'allowemaillogin': 'N',
+                        'is_active': 'Y',
+                        'wfc': {'department': 'dept1',
+                                'name': 'wfc1',
+                                'orgunit': 'ou1',
+                                'id': 1, 
+                                'org': 'default'},
+                        'created_by': 1
+                        }
+
+        payload = {
+                    'exp': (datetime.datetime.utcnow() + \
+                            datetime.timedelta(days=0,
+                                               seconds=app.config.get('tokenexpiration'))),
+                    'iat': datetime.datetime.utcnow(),
+                    'sub': user_from_db
+                     }
+        privkey = app.config.get('private_key')
+        publickey = app.config.get('public_key')
+#         print(current_app.config.get('token'))
+        auth_token = tm.generate_encrypted_auth_token(payload, privkey)#        
+        return auth_token       
+    
+    
         
         
 #     def test_get_token(self):
