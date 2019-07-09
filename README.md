@@ -777,7 +777,12 @@ from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 this necessitates all the config files under /etc/tokenleader as well 
 
 
-version2.1
+version 2.3
+-----
+
+add service had a bug for admin url not gettinng added
+
+version2.2
 -----------------
 catalogbp was moved to restapi and hence error in import
 
