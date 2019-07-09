@@ -387,7 +387,7 @@ class TestToken(TestUserModel):
                 content_type='application/json')
 #             print('response is {}'.format(response))
             data = json.loads(response.data.decode())
-#             print(data)
+            print(data)
             # print(data['message'])
             self.assertTrue(data['message'] == 'Authentication Failure')
             self.assertFalse('auth_token' in data)
