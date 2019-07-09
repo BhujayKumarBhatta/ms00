@@ -779,7 +779,7 @@ this necessitates all the config files under /etc/tokenleader as well
 
 version2.1
 -----------------
-by mistake - no changes , work with 2 untill new change is published
+catalog_bp was not included in the app_run resulitng 404 for catalog ops
 
 ver 1.9
 --------
