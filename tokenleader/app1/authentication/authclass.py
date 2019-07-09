@@ -59,15 +59,18 @@ class Authenticator():
                 pass
         elif self.AUTH_BACKEND == 'ldap':
             user_fm_backend = self._get_usr_info_fm_ldap()
+#            print('ldap:'+str(user_fm_backend))
         else:
             user_fm_backend = {'status': 'failed', 'message':'{0} domain has not been configured in  tokenleader_configs by administrator'.format(self.ORG)}
+#            print('default:'+str(user_fm_backend))
+        print(user_fm_backend)
         return user_fm_backend
      
     def generate_one_time_password(self,userid):
         try:
             # print('generating otp')
             num = self._create_random()
-            # print(userid)
+#            print(userid)
             self._save_otp_in_db(num, userid)
             user = User.query.filter_by(id=userid).first()
             user_from_db = user.to_dict()
@@ -79,7 +82,7 @@ class Authenticator():
             mail_to = user_from_db['email']
 #             phno = '5656565653'
             if self.OTP_MODE == 'mail':
-                # print('mode mail')
+#                print('mode mail')
                 return self.send_otp_thru_mail(mail_to, num, otpvalidtime)
 #             elif self.OTP_MODE == 'sms':
 #                 self.send_otp_thru_sms(phno, num, otpvalidtime)
@@ -123,7 +126,7 @@ class Authenticator():
                     result = {
                         'status': 'failed',
                         'message': 'Authentication Failure',}
-            #             print(result)
+                    print(result)
             else:
                 result = {
                     'status': 'failed',
@@ -172,7 +175,7 @@ class Authenticator():
             else:
                 print('no records where there in otp table')
             record = Otp(otp=num,userid=userid,delivery_method=self.OTP_MODE)
-            # print(record)
+#            print(record)
             db.session.add(record)
             db.session.commit()
             return True
@@ -228,6 +231,7 @@ class Authenticator():
             return self._get_user_info_from_default_db(user=self.USERNAME)
             #Todo: the user detials to come from ldap
         else:
+            print('Fail')
             responseObject = {
                 'status': 'failed',
                 'message': 'Authentication Failure',}
@@ -242,6 +246,7 @@ class Authenticator():
             self.AUTHENTICATION_STATUS = True
             return True            
         else:
+            print(False)
             return False
         
     def _extract_n_validate_data_from_request(self, request):
@@ -313,27 +318,28 @@ class TokenManager():
                 'status': 'missing authentication info ',
                 'message': 'no authentication information provided',}
             return jsonify(responseObject)
-        print('correct request format')
+#        print('correct request format')
         user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
         payload = {
                             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
                             'iat': datetime.datetime.utcnow(),
                             'sub': user_from_auth_backend
-                        }       
-        if auth.OTP_REQUIRED :
+                        }
+        print(auth.OTP_REQUIRED)
+        if 'status' in user_from_auth_backend and user_from_auth_backend.get('status') == 'failed':
+             return jsonify(user_from_auth_backend)
+        elif auth.OTP_REQUIRED :
+#            print(user_from_auth_backend['id'])
             otp = auth.generate_one_time_password(user_from_auth_backend['id'])
             return otp
         else:
-            if not user_from_auth_backend.get('status') == 'failed':
-                auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
-                responseObject = {
-                    'status': 'success',
-                    'message': 'success',
-                    'auth_token': auth_token.decode(),
-                    'service_catalog': auth.service_catalog()}
-                return make_response(jsonify(responseObject)), 201
-            else:                
-                return jsonify(user_from_auth_backend)
+            auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
+            responseObject = {
+                 'status': 'success',
+                 'message': 'success',
+                 'auth_token': auth_token.decode(),
+                 'service_catalog': auth.service_catalog()}
+            return make_response(jsonify(responseObject)), 201
 
     def get_token_by_otp(self, request):
         auth = Authenticator(request)  
