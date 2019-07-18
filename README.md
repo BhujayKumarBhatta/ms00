@@ -66,43 +66,80 @@ configure the /etc/tokenleader/tokenleader_configs.yml
 	sudo vi /etc/tokenleader/tokenleader_configs.yml
 	
 	flask_default:
-	  host_name: '0.0.0.0' # for docker this should 0.0.0.0
-	  host_port: 5001
-	  ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
-	  ssl_settings: adhoc
-	database:
-	  Server: tldbserver130
-	  Port: 3306
-	  Database: auth
-	  UID: root
-	  db_pwd_key_map: db_pwd
-	ldap:
-    Server: testldapserver100
-    Port: 389
-    Version: 3
-  testotpmailservice:
-    Server: '10.174.112.79'
-    Port: 5000
-	otpvalidfortsp:
-		TATA: 10
-		RELIANCE: 20
-		BHARTI: 30
-		SIFY: 20
-		VODAFONE: 20	
-	token:
-		#default will take the id_rsa keys from the  users home directory and .ssh directiry
-		#put the file name here if  the file name is different
-		#also the public ley need to be copied in the client settings file under /etc/tlclient
-		private_key_file_location: default
-		public_key_file_location: default
-		#use full path when deployed with apache
-		#private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
-		#public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
-	secrets:
-		secrets_file_location: tokenleader/tests/test_data/secrets.yml # where you have write access
-		fernet_key_location: tokenleader/tests/test_data/fernetkeys # where you have write access and preferebly separated from secrets_file_location
-		db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
-		tokenleader_pwd_key_map: tl_pwd
+  host_name: '0.0.0.0' # for docker this should 0.0.0.0
+  host_port: 5001
+  ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
+  ssl_settings: adhoc
+database:
+   Server: 10.174.112.130
+   Port: 3306
+   Database: auth
+   UID: root
+   db_pwd_key_map: db_pwd
+   #engine_connect_string: 'mssql+pymysql:///{0}'
+   
+domains:
+   - default:
+      auth_backend: default
+      otp_required: False
+   - itc:
+      auth_backend: ldap   
+      ldap_host: remote   # configure later with AD
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      O: itc   # configure later with AD
+      otp_required: False
+      
+   - tsp:
+      auth_backend: ldap   
+      ldap_host: localhost     #10.174.112.100 if localhost doesnt work
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      otp_required: True
+
+listoftsp:
+   - TATA
+   - RELIANCE
+   - BHARTI
+   - SIFY
+   - VODAFONE
+
+mailservice:
+   Server: 10.174.112.79
+   Port: 5000
+
+otp:
+   TATA: 10
+   RELIANCE: 20
+   BHARTI: 30
+   SIFY: 20
+   VODAFONE: 20
+   org2: 10
+
+token:
+     tokenexpiration: 30
+     #default will take the id_rsa keys from the  users home directory and .ssh directiry
+     #put the file name here if  the file name is different
+     #also the public ley need to be copied in the client settings file under /etc/tlclient
+     private_key_file_location: default
+     public_key_file_location: default
+     #use full path when deployed with apache
+     #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
+     #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
+secrets:
+     user_auth_info_file_location: tokenleader/tests/testdata/secrets.yml # where you have write access
+     fernet_key_file: tokenleader/tests/testdata/fernet_key_file.yml # where you have write access and preferebly separated from secrets_file_location
+     db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
+     tokenleader_pwd_key_map: tl_pwd
+
 
 generate an encrypted password for the db(one time)
 ===========================================================================================
