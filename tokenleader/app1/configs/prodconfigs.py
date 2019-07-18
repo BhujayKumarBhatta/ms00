@@ -103,6 +103,7 @@ connection_string = ('mysql+pymysql://{0}:{1}@{2}:{3}/{4}'
                                                conf.decrypt_password(dbs.get('db_pwd_key_map')), 
                                                dbs.get('Server'), dbs.get('Port'), 
                                                dbs.get('Database')))
+#print(connection_string)
 mail_service_for_otp = 'http://{0}:{1}/mail'.format(mailservice_default_settings_map.get('Server'), mailservice_default_settings_map.get('Port'))
 # converted_safe_uri #use quote_plus to construct the uri
 prod_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'MAIL_SERVICE_URI': mail_service_for_otp}

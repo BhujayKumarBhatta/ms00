@@ -4,7 +4,7 @@ flask_default:
   ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
   ssl_settings: adhoc
 database:
-   Server: localhost
+   Server: 10.174.112.108
    Port: 3306
    Database: test_auth
    UID: root
@@ -62,8 +62,8 @@ token:
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient
-     private_key_file_location: /home/sbhattacharyya/git/tokenleader/tokenleader/tests/testdata/test_id_rsa
-     public_key_file_location: /home/sbhattacharyya/git/tokenleader/tokenleader/tests/testdata/test_id_rsa.pub
+     private_key_file_location: tokenleader/tests/testdata/test_id_rsa
+     public_key_file_location: tokenleader/tests/testdata/test_id_rsa.pub
      #use full path when deployed with apache
      #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
      #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub

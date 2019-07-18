@@ -1,0 +1,596 @@
+ * Serving Flask app "tokenleader.app1" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+127.0.0.1 - - [02/Jul/2019 14:59:00] "POST /token/gettoken HTTP/1.1" 200 -
+127.0.0.1 - - [02/Jul/2019 14:59:54] "POST /token/gettoken HTTP/1.1" 200 -
+ * Serving Flask app "tokenleader.app1" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+ * Serving Flask app "tokenleader.app1" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+[2019-07-02 15:01:33,110] ERROR in app: Exception on /token/gettoken [POST]
+Traceback (most recent call last):
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2158, in _wrap_pool_connect
+    return fn()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 400, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 788, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 529, in checkout
+    rec = pool._do_get()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1193, in _do_get
+    self._dec_overflow()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 249, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1190, in _do_get
+    return self._create_connection()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 347, in _create_connection
+    return _ConnectionRecord(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 474, in __init__
+    self.__connect(first_connect_check=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 671, in __connect
+    connection = pool._invoke_creator(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/strategies.py", line 106, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 412, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 325, in __init__
+    self.connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 599, in connect
+    self._request_authentication()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 861, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1045, "Access denied for user 'root'@'10.174.112.159' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/opt/tokenleader/tokenleader/app1/authentication/auth_routes.py", line 44, in get_token
+    return objTokenMgr.get_token_or_otp(request)
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 317, in get_token_or_otp
+    user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 55, in get_user_fm_auth_backend_after_authentication
+    user_fm_backend = self._get_user_info_from_default_db(user=self.USERNAME)
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 104, in _get_user_info_from_default_db
+    user_from_db  = User.query.filter_by(username=user).first()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2895, in first
+    ret = list(self[0:1])
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2687, in __getitem__
+    return list(res)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2995, in __iter__
+    return self._execute_and_instances(context)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3016, in _execute_and_instances
+    close_with_result=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3025, in _get_bind_args
+    **kw
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3007, in _connection_from_session
+    conn = self.session.connection(**kw)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 1035, in connection
+    execution_options=execution_options)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 1040, in _connection_for_bind
+    engine, execution_options)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 409, in _connection_for_bind
+    conn = bind.contextual_connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2123, in contextual_connect
+    self._wrap_pool_connect(self.pool.connect, None),
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2162, in _wrap_pool_connect
+    e, dialect, self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1476, in _handle_dbapi_exception_noconnection
+    exc_info
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 265, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 248, in reraise
+    raise value.with_traceback(tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2158, in _wrap_pool_connect
+    return fn()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 400, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 788, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 529, in checkout
+    rec = pool._do_get()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1193, in _do_get
+    self._dec_overflow()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 249, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1190, in _do_get
+    return self._create_connection()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 347, in _create_connection
+    return _ConnectionRecord(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 474, in __init__
+    self.__connect(first_connect_check=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 671, in __connect
+    connection = pool._invoke_creator(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/strategies.py", line 106, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 412, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 325, in __init__
+    self.connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 599, in connect
+    self._request_authentication()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 861, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1045, "Access denied for user 'root'@'10.174.112.159' (using password: YES)") (Background on this error at: http://sqlalche.me/e/e3q8)
+127.0.0.1 - - [02/Jul/2019 15:01:33] "POST /token/gettoken HTTP/1.1" 500 -
+127.0.0.1 - - [02/Jul/2019 15:01:45] "POST /token/gettoken HTTP/1.1" 200 -
+ * Serving Flask app "tokenleader.app1" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+[2019-07-02 15:06:27,014] ERROR in app: Exception on /token/gettoken [POST]
+Traceback (most recent call last):
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2158, in _wrap_pool_connect
+    return fn()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 400, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 788, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 529, in checkout
+    rec = pool._do_get()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1193, in _do_get
+    self._dec_overflow()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 249, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1190, in _do_get
+    return self._create_connection()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 347, in _create_connection
+    return _ConnectionRecord(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 474, in __init__
+    self.__connect(first_connect_check=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 671, in __connect
+    connection = pool._invoke_creator(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/strategies.py", line 106, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 412, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 325, in __init__
+    self.connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 599, in connect
+    self._request_authentication()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 861, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1045, "Access denied for user 'root'@'10.174.112.159' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/opt/tokenleader/tokenleader/app1/authentication/auth_routes.py", line 44, in get_token
+    return objTokenMgr.get_token_or_otp(request)
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 317, in get_token_or_otp
+    user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 55, in get_user_fm_auth_backend_after_authentication
+    user_fm_backend = self._get_user_info_from_default_db(user=self.USERNAME)
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 104, in _get_user_info_from_default_db
+    user_from_db  = User.query.filter_by(username=user).first()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2895, in first
+    ret = list(self[0:1])
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2687, in __getitem__
+    return list(res)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2995, in __iter__
+    return self._execute_and_instances(context)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3016, in _execute_and_instances
+    close_with_result=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3025, in _get_bind_args
+    **kw
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3007, in _connection_from_session
+    conn = self.session.connection(**kw)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 1035, in connection
+    execution_options=execution_options)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 1040, in _connection_for_bind
+    engine, execution_options)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 409, in _connection_for_bind
+    conn = bind.contextual_connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2123, in contextual_connect
+    self._wrap_pool_connect(self.pool.connect, None),
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2162, in _wrap_pool_connect
+    e, dialect, self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1476, in _handle_dbapi_exception_noconnection
+    exc_info
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 265, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 248, in reraise
+    raise value.with_traceback(tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2158, in _wrap_pool_connect
+    return fn()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 400, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 788, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 529, in checkout
+    rec = pool._do_get()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1193, in _do_get
+    self._dec_overflow()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 249, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1190, in _do_get
+    return self._create_connection()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 347, in _create_connection
+    return _ConnectionRecord(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 474, in __init__
+    self.__connect(first_connect_check=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 671, in __connect
+    connection = pool._invoke_creator(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/strategies.py", line 106, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 412, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 325, in __init__
+    self.connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 599, in connect
+    self._request_authentication()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 861, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1045, "Access denied for user 'root'@'10.174.112.159' (using password: YES)") (Background on this error at: http://sqlalche.me/e/e3q8)
+127.0.0.1 - - [02/Jul/2019 15:06:27] "POST /token/gettoken HTTP/1.1" 500 -
+ * Serving Flask app "tokenleader.app1" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+[2019-07-02 15:08:57,623] ERROR in app: Exception on /token/gettoken [POST]
+Traceback (most recent call last):
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2158, in _wrap_pool_connect
+    return fn()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 400, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 788, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 529, in checkout
+    rec = pool._do_get()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1193, in _do_get
+    self._dec_overflow()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 249, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1190, in _do_get
+    return self._create_connection()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 347, in _create_connection
+    return _ConnectionRecord(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 474, in __init__
+    self.__connect(first_connect_check=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 671, in __connect
+    connection = pool._invoke_creator(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/strategies.py", line 106, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 412, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 325, in __init__
+    self.connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 599, in connect
+    self._request_authentication()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 861, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1045, "Access denied for user 'root'@'10.174.112.159' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/opt/tokenleader/tokenleader/app1/authentication/auth_routes.py", line 44, in get_token
+    return objTokenMgr.get_token_or_otp(request)
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 317, in get_token_or_otp
+    user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 55, in get_user_fm_auth_backend_after_authentication
+    user_fm_backend = self._get_user_info_from_default_db(user=self.USERNAME)
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 104, in _get_user_info_from_default_db
+    user_from_db  = User.query.filter_by(username=user).first()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2895, in first
+    ret = list(self[0:1])
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2687, in __getitem__
+    return list(res)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2995, in __iter__
+    return self._execute_and_instances(context)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3016, in _execute_and_instances
+    close_with_result=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3025, in _get_bind_args
+    **kw
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3007, in _connection_from_session
+    conn = self.session.connection(**kw)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 1035, in connection
+    execution_options=execution_options)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 1040, in _connection_for_bind
+    engine, execution_options)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 409, in _connection_for_bind
+    conn = bind.contextual_connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2123, in contextual_connect
+    self._wrap_pool_connect(self.pool.connect, None),
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2162, in _wrap_pool_connect
+    e, dialect, self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1476, in _handle_dbapi_exception_noconnection
+    exc_info
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 265, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 248, in reraise
+    raise value.with_traceback(tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2158, in _wrap_pool_connect
+    return fn()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 400, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 788, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 529, in checkout
+    rec = pool._do_get()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1193, in _do_get
+    self._dec_overflow()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 249, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1190, in _do_get
+    return self._create_connection()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 347, in _create_connection
+    return _ConnectionRecord(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 474, in __init__
+    self.__connect(first_connect_check=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 671, in __connect
+    connection = pool._invoke_creator(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/strategies.py", line 106, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 412, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 325, in __init__
+    self.connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 599, in connect
+    self._request_authentication()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 861, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1045, "Access denied for user 'root'@'10.174.112.159' (using password: YES)") (Background on this error at: http://sqlalche.me/e/e3q8)
+127.0.0.1 - - [02/Jul/2019 15:08:57] "POST /token/gettoken HTTP/1.1" 500 -
+[{'ssl': 'disabled', 'tokenexpiration': 8, 'MAIL_SERVICE_URI': 'http://10.174.112.79:5000/mail', 'BHARTI': 30, 'TATA': 10, 'host_port': 5001, 'SIFY': 20, 'org2': 10, 'ssl_settings': 'adhoc', 'RELIANCE': 20, 'private_key': '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA1V6ymmlYwHN20g3oPMduEkhkmwkyOj7anDUG/M6hXWDm+KM3\nm7353k8z6OFAMUY9LJclv3yjPWbT+x1dS4XyMdzSaf+ohWeSqwBaizYkpGFjgltM\n1WQ70cdeb14/CmTswEGBJN/aXn2Abfj5OZrQdz9v3skbc85Ow/pvyV+nj4JtsDLo\nbUnGj3eVWq4IvWmOwVNQ6NW6xSmkfqEPJGP882GJSxZEGXn7JB5tB+2vapazgUk7\n+oleIdAsXlD77dbLLlpUqWvW9DvtisGfZF6YScypAzSnduFuqRa6C7vZ08kIVg9l\nFzyvl2lqknZ7YXjlSXpICf4BBz0R1pZvnX+TpwIDAQABAoIBABEyWq67Qt3v8Gmp\nmUgcwrBSiVk9eoDbQ/9G/tMtTDAceUEc1oSE4TibpZFlZikSgiev3uj6AKYYPYmF\nqllF6GlAZO0KH+jwmg+SLbn+mSFuf/inpx+jvnZ/3QqYy/fofnRYUzJHoG/xKYKz\niFKuOZMC199a0g2ZWRvOeWf/f5+/O6+LhHKPap4EwQE8rFidfCnx8PdkFOIpieWJ\nNUd9MRzLETBRlK/qdoDiGlbN8WGJvKBmhdUmmNMvKqHB6+Fpq29931Fcii2kIsjn\nsoiKw3YJzPllZG99g1Xgfcl4eemvWH2AbScUa6OjQEVUNc0jVZM5VyYxaVtvB9bt\nIC5Q5GECgYEA6e9sBfsArnXUa2wqMaM8ELr9xW+pYC6uaufWRDqyn8jA5lb/uBiT\nlVWMZY9Yis3tyZmzLAlykm8nmNDxmSwNqfsc0df6NiEQyqXfSGJVTscAe6FafEPO\n8mB3RcKDO9Otu2+heUyAeN/vID1bQPUbxOOPEEviR/8MJ/j/coNAQc8CgYEA6X61\nDJvHiNxPK5R62H5qInNg8FDlMRa0Bls4xaUKnCx149TWnorHpkyNzURrQkxxK1Pm\ny9BODHWwJWQ/Bxc0llX50AOQq0jtRb1P5r96NsOVpuDRELGrTwupESAb26RY2CbY\nay+Q8mBKs2EzHapxWdoxq4DRyONWdjoEX1KcPqkCgYEAivm3vR3O29YYafEKaA7H\nolDUbjTV9NQGvnAYtNQCRjankq/gn2fKVY9LJxKv0VZhi8EJ1oGOVTw/0+NdhFfN\njkwmZOvgM8QVC67bJU91yqUivk+vR9+o1AlHEmRqPmKU9aNt1HgEYsr2brrEuaRj\n6OYfmdjbB1aXzC964nbi97UCgYA9KLEngk47bOlX0uZyeno2V95WU/oUZ4vz9kTi\nkB49Ve/zIzasBFHTH04tK/SkQv2Jicp0LDWlUdY3lRBlPRDLJ+3tLGHiW5G6qKGb\nISBT49r5AP4Bz2e9pqI8GBrz5xJWW6ZoPOdMdShb3+PRq2lRTbOg5ncMlW96PCwV\nA8BlMQKBgBRvQvF9dFbU4fSzrc+6C+/UOqUEP2dMGFtx6hLvHNy1QYpDEgq8wJRT\nHR1inwTwJxOgcLEHgV3RHKWFIFYKzJhL5rMexoDaEwrN0UJkqsJ+Tl92pZIvC1MQ\nDSm5PqSZKiIyfLMbWkhNO8DcZQmKX8seX84o349aCEpoVQZXXogU\n-----END RSA PRIVATE KEY-----\n', 'VODAFONE': 20, 'listoftsp': ['TATA', 'RELIANCE', 'BHARTI', 'SIFY', 'VODAFONE'], 'domains': [{'default': {'auth_backend': 'default'}}, {'itc': {'ldap_version': 3, 'ldap_port': 389, 'ldap_host': 'remote', 'OU': 'Users', 'O': 'itc', 'auth_backend': 'ldap', 'DC3': 'itc', 'DC2': 'tspbillldap', 'DC1': 'test'}}, {'tsp': {'ldap_version': 3, 'ldap_port': 389, 'ldap_host': '10.174.112.100', 'OU': 'Users', 'auth_backend': 'ldap', 'DC3': 'itc', 'DC2': 'tspbillldap', 'DC1': 'test'}}], 'public_key_file_location': '/tmp/test_id_rsa.pub', 'private_key_file_location': '/tmp/test_id_rsa', 'host_name': '0.0.0.0', 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'SQLALCHEMY_DATABASE_URI': 'mysql+pymysql://root:welcome123@10.174.112.108:3306/auth?charset=utf8mb4', 'public_key': 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVXrKaaVjAc3bSDeg8x24SSGSbCTI6PtqcNQb8zqFdYOb4ozebvfneTzPo4UAxRj0slyW/fKM9ZtP7HV1LhfIx3NJp/6iFZ5KrAFqLNiSkYWOCW0zVZDvRx15vXj8KZOzAQYEk39pefYBt+Pk5mtB3P2/eyRtzzk7D+m/JX6ePgm2wMuhtScaPd5Vargi9aY7BU1Do1brFKaR+oQ8kY/zzYYlLFkQZefskHm0H7a9qlrOBSTv6iV4h0CxeUPvt1ssuWlSpa9b0O+2KwZ9kXphJzKkDNKd24W6pFroLu9nTyQhWD2UXPK+XaWqSdntheOVJekgJ/gEHPRHWlm+df5On root@micros2\n'}, {'mailservice': {'Server': '10.174.112.79', 'Port': 5000}, 'flask_default': {'ssl': 'disabled', 'host_name': '0.0.0.0', 'host_port': 5001, 'ssl_settings': 'adhoc'}, 'domains': [{'default': {'auth_backend': 'default'}}, {'itc': {'ldap_version': 3, 'ldap_port': 389, 'ldap_host': 'remote', 'OU': 'Users', 'O': 'itc', 'auth_backend': 'ldap', 'DC3': 'itc', 'DC2': 'tspbillldap', 'DC1': 'test'}}, {'tsp': {'ldap_version': 3, 'ldap_port': 389, 'ldap_host': '10.174.112.100', 'OU': 'Users', 'auth_backend': 'ldap', 'DC3': 'itc', 'DC2': 'tspbillldap', 'DC1': 'test'}}], 'database': {'UID': 'root', 'Database': 'auth', 'Server': '10.174.112.108', 'db_pwd_key_map': 'db_pwd', 'Port': 3306}, 'listoftsp': ['TATA', 'RELIANCE', 'BHARTI', 'SIFY', 'VODAFONE'], 'secrets': {'user_auth_info_file_location': 'tokenleader/tests/testdata/secrets.yml', 'fernet_key_file': 'tokenleader/tests/testdata/fernet_key_file.yml', 'db_pwd_key_map': 'db_pwd', 'tokenleader_pwd_key_map': 'tl_pwd'}, 'token': {'private_key': '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA1V6ymmlYwHN20g3oPMduEkhkmwkyOj7anDUG/M6hXWDm+KM3\nm7353k8z6OFAMUY9LJclv3yjPWbT+x1dS4XyMdzSaf+ohWeSqwBaizYkpGFjgltM\n1WQ70cdeb14/CmTswEGBJN/aXn2Abfj5OZrQdz9v3skbc85Ow/pvyV+nj4JtsDLo\nbUnGj3eVWq4IvWmOwVNQ6NW6xSmkfqEPJGP882GJSxZEGXn7JB5tB+2vapazgUk7\n+oleIdAsXlD77dbLLlpUqWvW9DvtisGfZF6YScypAzSnduFuqRa6C7vZ08kIVg9l\nFzyvl2lqknZ7YXjlSXpICf4BBz0R1pZvnX+TpwIDAQABAoIBABEyWq67Qt3v8Gmp\nmUgcwrBSiVk9eoDbQ/9G/tMtTDAceUEc1oSE4TibpZFlZikSgiev3uj6AKYYPYmF\nqllF6GlAZO0KH+jwmg+SLbn+mSFuf/inpx+jvnZ/3QqYy/fofnRYUzJHoG/xKYKz\niFKuOZMC199a0g2ZWRvOeWf/f5+/O6+LhHKPap4EwQE8rFidfCnx8PdkFOIpieWJ\nNUd9MRzLETBRlK/qdoDiGlbN8WGJvKBmhdUmmNMvKqHB6+Fpq29931Fcii2kIsjn\nsoiKw3YJzPllZG99g1Xgfcl4eemvWH2AbScUa6OjQEVUNc0jVZM5VyYxaVtvB9bt\nIC5Q5GECgYEA6e9sBfsArnXUa2wqMaM8ELr9xW+pYC6uaufWRDqyn8jA5lb/uBiT\nlVWMZY9Yis3tyZmzLAlykm8nmNDxmSwNqfsc0df6NiEQyqXfSGJVTscAe6FafEPO\n8mB3RcKDO9Otu2+heUyAeN/vID1bQPUbxOOPEEviR/8MJ/j/coNAQc8CgYEA6X61\nDJvHiNxPK5R62H5qInNg8FDlMRa0Bls4xaUKnCx149TWnorHpkyNzURrQkxxK1Pm\ny9BODHWwJWQ/Bxc0llX50AOQq0jtRb1P5r96NsOVpuDRELGrTwupESAb26RY2CbY\nay+Q8mBKs2EzHapxWdoxq4DRyONWdjoEX1KcPqkCgYEAivm3vR3O29YYafEKaA7H\nolDUbjTV9NQGvnAYtNQCRjankq/gn2fKVY9LJxKv0VZhi8EJ1oGOVTw/0+NdhFfN\njkwmZOvgM8QVC67bJU91yqUivk+vR9+o1AlHEmRqPmKU9aNt1HgEYsr2brrEuaRj\n6OYfmdjbB1aXzC964nbi97UCgYA9KLEngk47bOlX0uZyeno2V95WU/oUZ4vz9kTi\nkB49Ve/zIzasBFHTH04tK/SkQv2Jicp0LDWlUdY3lRBlPRDLJ+3tLGHiW5G6qKGb\nISBT49r5AP4Bz2e9pqI8GBrz5xJWW6ZoPOdMdShb3+PRq2lRTbOg5ncMlW96PCwV\nA8BlMQKBgBRvQvF9dFbU4fSzrc+6C+/UOqUEP2dMGFtx6hLvHNy1QYpDEgq8wJRT\nHR1inwTwJxOgcLEHgV3RHKWFIFYKzJhL5rMexoDaEwrN0UJkqsJ+Tl92pZIvC1MQ\nDSm5PqSZKiIyfLMbWkhNO8DcZQmKX8seX84o349aCEpoVQZXXogU\n-----END RSA PRIVATE KEY-----\n', 'private_key_file_location': '/tmp/test_id_rsa', 'public_key_file_location': '/tmp/test_id_rsa.pub', 'tokenexpiration': 8, 'public_key': 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVXrKaaVjAc3bSDeg8x24SSGSbCTI6PtqcNQb8zqFdYOb4ozebvfneTzPo4UAxRj0slyW/fKM9ZtP7HV1LhfIx3NJp/6iFZ5KrAFqLNiSkYWOCW0zVZDvRx15vXj8KZOzAQYEk39pefYBt+Pk5mtB3P2/eyRtzzk7D+m/JX6ePgm2wMuhtScaPd5Vargi9aY7BU1Do1brFKaR+oQ8kY/zzYYlLFkQZefskHm0H7a9qlrOBSTv6iV4h0CxeUPvt1ssuWlSpa9b0O+2KwZ9kXphJzKkDNKd24W6pFroLu9nTyQhWD2UXPK+XaWqSdntheOVJekgJ/gEHPRHWlm+df5On root@micros2\n'}, 'otp': {'TATA': 10, 'RELIANCE': 20, 'BHARTI': 30, 'SIFY': 20, 'VODAFONE': 20, 'org2': 10}}]
+ * Serving Flask app "tokenleader.app1" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+[2019-07-02 15:12:32,095] ERROR in app: Exception on /token/gettoken [POST]
+Traceback (most recent call last):
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2158, in _wrap_pool_connect
+    return fn()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 400, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 788, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 529, in checkout
+    rec = pool._do_get()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1193, in _do_get
+    self._dec_overflow()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 249, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1190, in _do_get
+    return self._create_connection()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 347, in _create_connection
+    return _ConnectionRecord(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 474, in __init__
+    self.__connect(first_connect_check=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 671, in __connect
+    connection = pool._invoke_creator(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/strategies.py", line 106, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 412, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 325, in __init__
+    self.connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 599, in connect
+    self._request_authentication()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 861, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1045, "Access denied for user 'root'@'10.174.112.159' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/opt/tokenleader/tokenleader/app1/authentication/auth_routes.py", line 44, in get_token
+    return objTokenMgr.get_token_or_otp(request)
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 317, in get_token_or_otp
+    user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 55, in get_user_fm_auth_backend_after_authentication
+    user_fm_backend = self._get_user_info_from_default_db(user=self.USERNAME)
+  File "/opt/tokenleader/tokenleader/app1/authentication/authclass.py", line 104, in _get_user_info_from_default_db
+    user_from_db  = User.query.filter_by(username=user).first()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2895, in first
+    ret = list(self[0:1])
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2687, in __getitem__
+    return list(res)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 2995, in __iter__
+    return self._execute_and_instances(context)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3016, in _execute_and_instances
+    close_with_result=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3025, in _get_bind_args
+    **kw
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/query.py", line 3007, in _connection_from_session
+    conn = self.session.connection(**kw)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 1035, in connection
+    execution_options=execution_options)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 1040, in _connection_for_bind
+    engine, execution_options)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/orm/session.py", line 409, in _connection_for_bind
+    conn = bind.contextual_connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2123, in contextual_connect
+    self._wrap_pool_connect(self.pool.connect, None),
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2162, in _wrap_pool_connect
+    e, dialect, self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 1476, in _handle_dbapi_exception_noconnection
+    exc_info
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 265, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 248, in reraise
+    raise value.with_traceback(tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/base.py", line 2158, in _wrap_pool_connect
+    return fn()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 400, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 788, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 529, in checkout
+    rec = pool._do_get()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1193, in _do_get
+    self._dec_overflow()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/util/compat.py", line 249, in reraise
+    raise value
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 1190, in _do_get
+    return self._create_connection()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 347, in _create_connection
+    return _ConnectionRecord(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 474, in __init__
+    self.__connect(first_connect_check=True)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/pool.py", line 671, in __connect
+    connection = pool._invoke_creator(self)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/strategies.py", line 106, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/sqlalchemy/engine/default.py", line 412, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 325, in __init__
+    self.connect()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 599, in connect
+    self._request_authentication()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 861, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/connections.py", line 684, in _read_packet
+    packet.check_error()
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/protocol.py", line 220, in check_error
+    err.raise_mysql_exception(self._data)
+  File "/opt/tokenleader/venv/lib/python3.5/site-packages/pymysql/err.py", line 109, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1045, "Access denied for user 'root'@'10.174.112.159' (using password: YES)") (Background on this error at: http://sqlalche.me/e/e3q8)
+127.0.0.1 - - [02/Jul/2019 15:12:32] "POST /token/gettoken HTTP/1.1" 500 -
+mysql+pymysql://root:welcome123@10.174.112.108:3306/auth?charset=utf8mb4
+[{'tokenexpiration': 8, 'VODAFONE': 20, 'org2': 10, 'domains': [{'default': {'auth_backend': 'default'}}, {'itc': {'auth_backend': 'ldap', 'DC2': 'tspbillldap', 'DC3': 'itc', 'ldap_version': 3, 'O': 'itc', 'DC1': 'test', 'ldap_port': 389, 'OU': 'Users', 'ldap_host': 'remote'}}, {'tsp': {'auth_backend': 'ldap', 'DC2': 'tspbillldap', 'DC3': 'itc', 'ldap_version': 3, 'DC1': 'test', 'ldap_port': 389, 'OU': 'Users', 'ldap_host': '10.174.112.100'}}], 'BHARTI': 30, 'SIFY': 20, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'ssl': 'disabled', 'public_key': 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVXrKaaVjAc3bSDeg8x24SSGSbCTI6PtqcNQb8zqFdYOb4ozebvfneTzPo4UAxRj0slyW/fKM9ZtP7HV1LhfIx3NJp/6iFZ5KrAFqLNiSkYWOCW0zVZDvRx15vXj8KZOzAQYEk39pefYBt+Pk5mtB3P2/eyRtzzk7D+m/JX6ePgm2wMuhtScaPd5Vargi9aY7BU1Do1brFKaR+oQ8kY/zzYYlLFkQZefskHm0H7a9qlrOBSTv6iV4h0CxeUPvt1ssuWlSpa9b0O+2KwZ9kXphJzKkDNKd24W6pFroLu9nTyQhWD2UXPK+XaWqSdntheOVJekgJ/gEHPRHWlm+df5On root@micros2\n', 'RELIANCE': 20, 'ssl_settings': 'adhoc', 'MAIL_SERVICE_URI': 'http://10.174.112.79:5000/mail', 'SQLALCHEMY_DATABASE_URI': 'mysql+pymysql://root:welcome123@10.174.112.108:3306/auth?charset=utf8mb4', 'private_key': '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA1V6ymmlYwHN20g3oPMduEkhkmwkyOj7anDUG/M6hXWDm+KM3\nm7353k8z6OFAMUY9LJclv3yjPWbT+x1dS4XyMdzSaf+ohWeSqwBaizYkpGFjgltM\n1WQ70cdeb14/CmTswEGBJN/aXn2Abfj5OZrQdz9v3skbc85Ow/pvyV+nj4JtsDLo\nbUnGj3eVWq4IvWmOwVNQ6NW6xSmkfqEPJGP882GJSxZEGXn7JB5tB+2vapazgUk7\n+oleIdAsXlD77dbLLlpUqWvW9DvtisGfZF6YScypAzSnduFuqRa6C7vZ08kIVg9l\nFzyvl2lqknZ7YXjlSXpICf4BBz0R1pZvnX+TpwIDAQABAoIBABEyWq67Qt3v8Gmp\nmUgcwrBSiVk9eoDbQ/9G/tMtTDAceUEc1oSE4TibpZFlZikSgiev3uj6AKYYPYmF\nqllF6GlAZO0KH+jwmg+SLbn+mSFuf/inpx+jvnZ/3QqYy/fofnRYUzJHoG/xKYKz\niFKuOZMC199a0g2ZWRvOeWf/f5+/O6+LhHKPap4EwQE8rFidfCnx8PdkFOIpieWJ\nNUd9MRzLETBRlK/qdoDiGlbN8WGJvKBmhdUmmNMvKqHB6+Fpq29931Fcii2kIsjn\nsoiKw3YJzPllZG99g1Xgfcl4eemvWH2AbScUa6OjQEVUNc0jVZM5VyYxaVtvB9bt\nIC5Q5GECgYEA6e9sBfsArnXUa2wqMaM8ELr9xW+pYC6uaufWRDqyn8jA5lb/uBiT\nlVWMZY9Yis3tyZmzLAlykm8nmNDxmSwNqfsc0df6NiEQyqXfSGJVTscAe6FafEPO\n8mB3RcKDO9Otu2+heUyAeN/vID1bQPUbxOOPEEviR/8MJ/j/coNAQc8CgYEA6X61\nDJvHiNxPK5R62H5qInNg8FDlMRa0Bls4xaUKnCx149TWnorHpkyNzURrQkxxK1Pm\ny9BODHWwJWQ/Bxc0llX50AOQq0jtRb1P5r96NsOVpuDRELGrTwupESAb26RY2CbY\nay+Q8mBKs2EzHapxWdoxq4DRyONWdjoEX1KcPqkCgYEAivm3vR3O29YYafEKaA7H\nolDUbjTV9NQGvnAYtNQCRjankq/gn2fKVY9LJxKv0VZhi8EJ1oGOVTw/0+NdhFfN\njkwmZOvgM8QVC67bJU91yqUivk+vR9+o1AlHEmRqPmKU9aNt1HgEYsr2brrEuaRj\n6OYfmdjbB1aXzC964nbi97UCgYA9KLEngk47bOlX0uZyeno2V95WU/oUZ4vz9kTi\nkB49Ve/zIzasBFHTH04tK/SkQv2Jicp0LDWlUdY3lRBlPRDLJ+3tLGHiW5G6qKGb\nISBT49r5AP4Bz2e9pqI8GBrz5xJWW6ZoPOdMdShb3+PRq2lRTbOg5ncMlW96PCwV\nA8BlMQKBgBRvQvF9dFbU4fSzrc+6C+/UOqUEP2dMGFtx6hLvHNy1QYpDEgq8wJRT\nHR1inwTwJxOgcLEHgV3RHKWFIFYKzJhL5rMexoDaEwrN0UJkqsJ+Tl92pZIvC1MQ\nDSm5PqSZKiIyfLMbWkhNO8DcZQmKX8seX84o349aCEpoVQZXXogU\n-----END RSA PRIVATE KEY-----\n', 'host_name': '0.0.0.0', 'TATA': 10, 'public_key_file_location': '/tmp/test_id_rsa.pub', 'private_key_file_location': '/tmp/test_id_rsa', 'host_port': 5001, 'listoftsp': ['TATA', 'RELIANCE', 'BHARTI', 'SIFY', 'VODAFONE']}, {'domains': [{'default': {'auth_backend': 'default'}}, {'itc': {'auth_backend': 'ldap', 'DC2': 'tspbillldap', 'DC3': 'itc', 'ldap_version': 3, 'O': 'itc', 'DC1': 'test', 'ldap_port': 389, 'OU': 'Users', 'ldap_host': 'remote'}}, {'tsp': {'auth_backend': 'ldap', 'DC2': 'tspbillldap', 'DC3': 'itc', 'ldap_version': 3, 'DC1': 'test', 'ldap_port': 389, 'OU': 'Users', 'ldap_host': '10.174.112.100'}}], 'token': {'tokenexpiration': 8, 'public_key': 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVXrKaaVjAc3bSDeg8x24SSGSbCTI6PtqcNQb8zqFdYOb4ozebvfneTzPo4UAxRj0slyW/fKM9ZtP7HV1LhfIx3NJp/6iFZ5KrAFqLNiSkYWOCW0zVZDvRx15vXj8KZOzAQYEk39pefYBt+Pk5mtB3P2/eyRtzzk7D+m/JX6ePgm2wMuhtScaPd5Vargi9aY7BU1Do1brFKaR+oQ8kY/zzYYlLFkQZefskHm0H7a9qlrOBSTv6iV4h0CxeUPvt1ssuWlSpa9b0O+2KwZ9kXphJzKkDNKd24W6pFroLu9nTyQhWD2UXPK+XaWqSdntheOVJekgJ/gEHPRHWlm+df5On root@micros2\n', 'private_key': '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA1V6ymmlYwHN20g3oPMduEkhkmwkyOj7anDUG/M6hXWDm+KM3\nm7353k8z6OFAMUY9LJclv3yjPWbT+x1dS4XyMdzSaf+ohWeSqwBaizYkpGFjgltM\n1WQ70cdeb14/CmTswEGBJN/aXn2Abfj5OZrQdz9v3skbc85Ow/pvyV+nj4JtsDLo\nbUnGj3eVWq4IvWmOwVNQ6NW6xSmkfqEPJGP882GJSxZEGXn7JB5tB+2vapazgUk7\n+oleIdAsXlD77dbLLlpUqWvW9DvtisGfZF6YScypAzSnduFuqRa6C7vZ08kIVg9l\nFzyvl2lqknZ7YXjlSXpICf4BBz0R1pZvnX+TpwIDAQABAoIBABEyWq67Qt3v8Gmp\nmUgcwrBSiVk9eoDbQ/9G/tMtTDAceUEc1oSE4TibpZFlZikSgiev3uj6AKYYPYmF\nqllF6GlAZO0KH+jwmg+SLbn+mSFuf/inpx+jvnZ/3QqYy/fofnRYUzJHoG/xKYKz\niFKuOZMC199a0g2ZWRvOeWf/f5+/O6+LhHKPap4EwQE8rFidfCnx8PdkFOIpieWJ\nNUd9MRzLETBRlK/qdoDiGlbN8WGJvKBmhdUmmNMvKqHB6+Fpq29931Fcii2kIsjn\nsoiKw3YJzPllZG99g1Xgfcl4eemvWH2AbScUa6OjQEVUNc0jVZM5VyYxaVtvB9bt\nIC5Q5GECgYEA6e9sBfsArnXUa2wqMaM8ELr9xW+pYC6uaufWRDqyn8jA5lb/uBiT\nlVWMZY9Yis3tyZmzLAlykm8nmNDxmSwNqfsc0df6NiEQyqXfSGJVTscAe6FafEPO\n8mB3RcKDO9Otu2+heUyAeN/vID1bQPUbxOOPEEviR/8MJ/j/coNAQc8CgYEA6X61\nDJvHiNxPK5R62H5qInNg8FDlMRa0Bls4xaUKnCx149TWnorHpkyNzURrQkxxK1Pm\ny9BODHWwJWQ/Bxc0llX50AOQq0jtRb1P5r96NsOVpuDRELGrTwupESAb26RY2CbY\nay+Q8mBKs2EzHapxWdoxq4DRyONWdjoEX1KcPqkCgYEAivm3vR3O29YYafEKaA7H\nolDUbjTV9NQGvnAYtNQCRjankq/gn2fKVY9LJxKv0VZhi8EJ1oGOVTw/0+NdhFfN\njkwmZOvgM8QVC67bJU91yqUivk+vR9+o1AlHEmRqPmKU9aNt1HgEYsr2brrEuaRj\n6OYfmdjbB1aXzC964nbi97UCgYA9KLEngk47bOlX0uZyeno2V95WU/oUZ4vz9kTi\nkB49Ve/zIzasBFHTH04tK/SkQv2Jicp0LDWlUdY3lRBlPRDLJ+3tLGHiW5G6qKGb\nISBT49r5AP4Bz2e9pqI8GBrz5xJWW6ZoPOdMdShb3+PRq2lRTbOg5ncMlW96PCwV\nA8BlMQKBgBRvQvF9dFbU4fSzrc+6C+/UOqUEP2dMGFtx6hLvHNy1QYpDEgq8wJRT\nHR1inwTwJxOgcLEHgV3RHKWFIFYKzJhL5rMexoDaEwrN0UJkqsJ+Tl92pZIvC1MQ\nDSm5PqSZKiIyfLMbWkhNO8DcZQmKX8seX84o349aCEpoVQZXXogU\n-----END RSA PRIVATE KEY-----\n', 'private_key_file_location': '/tmp/test_id_rsa', 'public_key_file_location': '/tmp/test_id_rsa.pub'}, 'secrets': {'user_auth_info_file_location': 'tokenleader/tests/testdata/secrets.yml', 'db_pwd_key_map': 'db_pwd', 'fernet_key_file': 'tokenleader/tests/testdata/fernet_key_file.yml', 'tokenleader_pwd_key_map': 'tl_pwd'}, 'database': {'Port': 3306, 'Database': 'auth', 'db_pwd_key_map': 'db_pwd', 'Server': '10.174.112.108', 'UID': 'root'}, 'otp': {'TATA': 10, 'BHARTI': 30, 'SIFY': 20, 'org2': 10, 'RELIANCE': 20, 'VODAFONE': 20}, 'mailservice': {'Port': 5000, 'Server': '10.174.112.79'}, 'flask_default': {'ssl': 'disabled', 'host_name': '0.0.0.0', 'host_port': 5001, 'ssl_settings': 'adhoc'}, 'listoftsp': ['TATA', 'RELIANCE', 'BHARTI', 'SIFY', 'VODAFONE']}]
+ * Serving Flask app "tokenleader.app1" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
