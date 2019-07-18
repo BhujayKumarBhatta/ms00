@@ -63,7 +63,7 @@ class Authenticator():
         else:
             user_fm_backend = {'status': 'failed', 'message':'{0} domain has not been configured in  tokenleader_configs by administrator'.format(self.ORG)}
 #            print('default:'+str(user_fm_backend))
-        print(user_fm_backend)
+#        print(user_fm_backend)
         return user_fm_backend
      
     def generate_one_time_password(self,userid):
@@ -90,7 +90,9 @@ class Authenticator():
 #                 self.send_otp_thru_mail(mail_to, num, otpvalidtime)
 #                 self.send_otp_thru_sms(phno)
             else:
-                return 'No mail id or phone no. is available'
+                  responseObject = {'status': 'failed',
+                            'message': 'No OTP mode mentioned for this user.'}
+                  return jsonify(responseObject)
         except Exception as e:
             return e 
      
@@ -143,18 +145,6 @@ class Authenticator():
         '''use memcahe '''
         validuser  = User.query.filter_by(username=self.USERNAME).first()
         return validuser
-
-#     def chk_external_user(self, user_from_db):
-#         if not user_from_db['wfc']['org'] == self.ORG:
-#             responseObject = {
-#                 'status': 'failed',
-#                 'message': 'Incorrect domain name',}
-#             return jsonify(responseObject )
-#         org = Organization.query.filter_by(name=self.ORG).first()
-#         if org.to_dict()['orgtype'] == 'external':
-#             return True
-#         else:
-#             return False
         
     def _create_random(self):
         rand = str(random.random())
@@ -231,10 +221,10 @@ class Authenticator():
             return self._get_user_info_from_default_db(user=self.USERNAME)
             #Todo: the user detials to come from ldap
         else:
-            print('Fail')
+#            print('Fail')
             responseObject = {
                 'status': 'failed',
-                'message': 'Authentication Failure',}
+                'message': 'Authentication Failure'}
             return jsonify(responseObject)
  
     def _bind_to_ldap(self, conn, uinfo):
@@ -246,8 +236,8 @@ class Authenticator():
             self.AUTHENTICATION_STATUS = True
             return True            
         else:
-            print(False)
-            return False
+        	self.AUTHENTICATION_STATUS = False
+        	return False
         
     def _extract_n_validate_data_from_request(self, request):
         '''
@@ -326,12 +316,15 @@ class TokenManager():
                             'sub': user_from_auth_backend
                         }
         print(auth.OTP_REQUIRED)
-        if 'status' in user_from_auth_backend and user_from_auth_backend.get('status') == 'failed':
-             return jsonify(user_from_auth_backend)
+        if auth.AUTHENTICATION_STATUS == False:
+            responseObject = {
+                'status': 'failed',
+                'message': 'Authentication Failure'}
+            return jsonify(responseObject)
         elif auth.OTP_REQUIRED :
-#            print(user_from_auth_backend['id'])
+            print(user_from_auth_backend['id'])
             otp = auth.generate_one_time_password(user_from_auth_backend['id'])
-            return otp
+            return make_response(otp)
         else:
             auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
             responseObject = {
