@@ -3,7 +3,7 @@ Please take a note on the change log in the bottom of the document in case you  
 Quick Start
 =============================
 for installation and configuration of docker with environment behind proxy , see the sectiom at the bottom of the 
-page labelled as docker installation
+page labeled as docker installation
 	
 	echo '10.174.112.106   lcldockerreg'  >> /etc/hosts
 	echo '10.174.112.100   testldapserver100' >> /etc/hosts
@@ -57,7 +57,7 @@ create  the following  directories and files under /etc folder.
 2. /etc/tokenleader/tokenleader_configs.yml
 3. /etc/tokenleader/role_to_acl_map.yml
 4. /etc/tokenleader/client_configs.yml
-5. tokenleader-auth  -p <password of  tokeneader user>
+5. tokenleader-auth  -p <password of  tokenleader user>
 
 
 
@@ -72,7 +72,7 @@ configure the /etc/tokenleader/tokenleader_configs.yml
 	flask_default:
        host_name: '0.0.0.0' # for docker this should 0.0.0.0
        host_port: 5001
-       ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
+       ssl: disabled # not required other than testing the flask own ssl. ssl should be handled by apache
        ssl_settings: adhoc
 
     database:
@@ -142,14 +142,14 @@ configure the /etc/tokenleader/tokenleader_configs.yml
         
     secrets:
         user_auth_info_file_location: tokenleader/tests/testdata/secrets.yml # where you have write access
-        fernet_key_file: tokenleader/tests/testdata/fernet_key_file.yml # where you have write access and preferebly separated from secrets_file_location
-        db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
+        fernet_key_file: tokenleader/tests/testdata/fernet_key_file.yml # where you have write access and preferably separated from secrets_file_location
+        db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --keymap
         tokenleader_pwd_key_map: tl_pwd
 
 
 generate an encrypted password for the db(one time)
 ===========================================================================================
-when running from source (git clone) encrypt-pwd command  is avilable from shell as python encrypt-pwd.sh or ./encrypt-pwd.sh 
+when running from source (git clone) encrypt-pwd command  is available from shell as python encrypt-pwd.sh or ./encrypt-pwd.sh 
 
 when installed through pip:
 ----------------------------------------------------
@@ -206,32 +206,29 @@ note that the  original password has been encrypted before  saving in the file. 
 password is forgotten   the  file has to be deleted and recreated. Accordingly the users password in the 
 tokenleader server also to be changed. 
 
-TO set up the tokenleqder the following entities need to be registered in sequence   ( see the ** section )
+TO set up the tokenleader the following entities need to be registered in sequence   ( see the ** section )
 from the root directory of  tokenleader, change the name of org , ou , dept , wfc , role and user as per your need
 ====================================================================================
 when running from source (git clone) adminops command  is avilable from shell as python adminops.sh or ./adminops.sh 
 
-	 adminops  -h  provides help to understand the various options of admin function os tokenleader
+	 adminops -h  provides help to understand the various options of admin function os tokenleader
 	 adminops initdb 
-	 adminops   add  org   -n org1 (by default orgtype is internal)
-	 adminops   add  org   -n org2 --orgtype external
-	 adminops   add  ou   -n ou1 
-	 adminops   add  dept   -n  dept1  
-	 adminops   addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 	 
-	 adminops   list  wfc  -n wfc1
-	 adminops   add  role  -n role1  	  
+	 adminops add  org   -n org1 (by default orgtype is internal)
+	 adminops add  org   -n org2 --orgtype external
+	 adminops add  ou   -n ou1 
+	 adminops add  dept   -n  dept1  
+	 adminops addwfc -n wfc1 --wfcorg org1 --wfcou ou1 --wfcdept dept1 	 
+	 adminops list  wfc  -n wfc1
+	 adminops add  role  -n role1  	  
 	 adminops adduser -n user1 --password user1 --emailid user1 --rolenames role1  --wfc wfc1
-	 adminops  addservice  -n tokenleader --password tokenleader --urlint localhost:5001
-	 adminops.sh addservice  -n linkInventory --password tokenleader --urlint http://localhost:5004 --urlext https://localhost:5004
-	 adminops.sh addservice  -n micros2 --password tokenleader --urlint http://localhost:5003 --urlext https://localhost:5003
-	 adminops.sh addservice  -n micros1 --password tokenleader --urlint http://localhost:5002 --urlext https://localhost:5002
-
-
-
+	 adminops addservice  -n tokenleader --password tokenleader --urlint localhost:5001
+	 adminops addservice  -n linkInventory --password tokenleader --urlint http://localhost:5004 --urlext https://localhost:5004
+	 adminops addservice  -n micros2 --password tokenleader --urlint http://localhost:5003 --urlext https://localhost:5003
+	 adminops addservice  -n micros1 --password tokenleader --urlint http://localhost:5002 --urlext https://localhost:5002
 
 start the service :
 ==============================================================
-when running from source (git clone) adminops command  is avilable from shell as python tokenleader-start.sh or ./tokenleader-start.sh 
+when running from source (git clone) adminops command  is available from shell as python tokenleader-start.sh or ./tokenleader-start.sh 
 	
 	 tokenleader-start
 
@@ -240,7 +237,7 @@ CLI utilities
 using user name and password from config file
 
 	tokenleader gettoken							for internal user only,
-reads from client_configs and secrets or username and password can be supplied  theough the CLI 
+reads from client_configs and secrets or username and password can be supplied  through the CLI 
 	
 	tokenleader gettoken --authuser user1 --authpwd user1 --domain domainname
 	tokenleader gettoken --authuser user1 --authpwd user1 --domain domainname --otp otpnum
@@ -249,9 +246,9 @@ reads from client_configs and secrets or username and password can be supplied  
 		
 Other CLI operaions 
 
-	tokenleader  verify -t <paste the token here>
-	tokenleader  list -e <entity> -u <username> -p <password>					for internal user
-	tokenleader  list -e <entity> -u <common name of ldap> -o <otp>				for external user,
+	tokenleader verify -t <paste the token here>
+	tokenleader list -e <entity> -u <username> -p <password>					for internal user
+	tokenleader list -e <entity> -u <common name of ldap> -o <otp>				for external user,
 entity can be user, role, dept, org, ou, wfc etc.
 
     tokenleader add org -n <orgname> -u <username> -p <password>                       for internal user
@@ -357,22 +354,22 @@ later section of this docuement.
 
 2) receives a token from user , can validate and unencrypt the users information. 
 
-3) maintains a catalog for all the microservies . The entry for services , it includes service name ,
-   servie account password ( we have to see if this is required at all) , url for the service endpoint.
+3) maintains a catalog for all the microservices . The entry for services , it includes service name ,
+   service account password ( we have to see if this is required at all) , url for the service end-point.
    A client can query tokenleader by service name and will thus get the url for the service.
    
    For each service end point, three url can be registered, one for internal, this is the default url.
    External url, when you want to segregate the users network from service network 
    and another is admin network, which can be further separated from the above two network.
    
-token can be used for authenticating an user wiithout the need for user to enter password  
+token can be used for authenticating an user without the need for user to enter password  
 
 To verify token:
   
- 	curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
+ 	curl -H  "X-Auth-Token:<paste token here>"  localhost:5001/token/verify_token  
  	
  tokenleader has a client which is automatically installed with the server , this provides a python api for 
- making hte call and verifying the token. The client also has the RBAC enforcer for authorization.
+ making the call and verifying the token. The client also has the RBAC enforcer for authorization.
  read more about the client here -
   
    http://10.174.112.140/packages/
@@ -380,10 +377,10 @@ To verify token:
    
 Why token service and how it works
 ======================================================================================
- in situtaions where a service or a client need to make several  http /REST call to an 
+ in situations where a service or a client need to make several  http /REST call to an 
  application/service(microservice)/server or  to multiple applications/services/servers, 
- sending the user name and password repeatedly over the http traffic is not desiarable, neither it is good
- to store the user name and password in servers session for a stateless application. In thses cases token based 
+ sending the user name and password repeatedly over the http traffic is not desirable, neither it is good
+ to store the user name and password in servers session for a stateless application. In these cases token based 
  authentication helps.
  
  Once an user or service obtain a token, subsequent calls to the server or even to different servers can be made
@@ -392,7 +389,7 @@ Why token service and how it works
  
  The information retrieved  from the token leader then can be used by the server for granting proper authorization to the 
  server resources . Therefore authentication is handled  by the tokenleader application whereas the authorization is handled 
- by the applicaion being served to the user. 
+ by the application being served to the user. 
  
  each application uses a local role to acl map. For each api route there is one acl name which either deny or permits the 
  http call to the  api route . further  to control how much data to be given access to the user , the wfc details  will be 
@@ -420,9 +417,9 @@ what you get from tokenleader:
 To verify token:  
 ================================================
 
- 	curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token  
+ 	curl -H  "X-Auth-Token:<paste token here>"  localhost:5001/token/verify_token  
 
-How the verified toekn data looks like :
+How the verified token data looks like :
 ===========================================================================
 
 	{
@@ -461,9 +458,9 @@ for db migration
 if there is a change in db structure, and a migration is done , commit and push the migration directory to the git  
 from the  machine where migration was done.  
 
-For  development machine with sqllite db , there are chalenges in migration due to lil8mitiaton of database
-alter capabilities inherent to sqllite. So sometimes , delelting the migration folder and and  recreating a   
-fresh migartion helped.
+For  development machine with sqlite db , there are challenges in migration due to limitation of database
+alter capabilities inherent to sqlite. So sometimes , deleting the migration folder and and  recreating a   
+fresh migration helped.
 
 
 Testing 
@@ -497,7 +494,7 @@ Deployment
 	 
 	mod_wsgi-express install-module
 
-this will print the folowing lines : 	
+this will print the following lines : 	
 LoadModule wsgi_module "/usr/lib/apache2/modules/mod_wsgi-py35.cpython-35m-x86_64-linux-gnu.so"  - copy this to wsgi.load
 WSGIPythonHome "/mnt/c/mydev/microservice-tsp-billing/tokenleader/venv" copy this to wsgi.conf  
 
