@@ -239,36 +239,44 @@ class Authenticator():
         else:
         	self.AUTHENTICATION_STATUS = False
         	return False
-        
+
     def _extract_n_validate_data_from_request(self, request):
-        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-        if 'username' in request.json and type(request.json['username']) == "<class 'str'>" and \
-            len(request.json['username']) <= 40 and regex.search(request.json['username']) == None:
+        try:
+         regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+         pwdregex = re.compile('[_!$%^&*()<>?/\|}{~:]')
+         if 'username' in request.json and len(request.json['username']) <= 40 and regex.search(request.json['username']) == None \
+         and isinstance(request.json['username'], str):
             self.USERNAME = request.json['username']
-        if 'password' in request.json and type(request.json['password']) == "<class 'str'>" and \
-            len(request.json['password']) <=15 and regex.search(request.json['password']) == None:
+#            print(self.USERNAME)
+         if 'password' in request.json and len(request.json['password']) <=15 and pwdregex.search(request.json['password']) == None \
+         and isinstance(request.json['password'], str):
             self.PASSWORD = request.json['password']
-        if 'domain' in request.json and type(request.json['domain']) == "<class 'str'>" and \
-            len(request.json['domain']) <=5 and regex.search(request.json['domain']) == None:
+#            print(self.PASSWORD)
+         if 'domain' in request.json and len(request.json['domain']) <=5 and regex.search(request.json['domain']) == None \
+         and isinstance(request.json['domain'], str):
             self.ORG = request.json['domain']   # change domain key as org
-        if 'otp' in request.json and type(request.json['otp']) == "<class 'int'>" and \
-            len(request.json['otp']) == 4:
+#            print(self.ORG)
+         if 'otp' in request.json and len(request.json['otp']) == 4 and isinstance(request.json['otp'], int):
             self.OTP = request.json['otp']
-        if 'email' in request.json and type(request.json['email']) == "<class 'str'>" and \
-            len(request.json['email']) <= 40 and regex.search(request.json['email']) == None:
+#            print(self.OTP)
+         if 'email' in request.json and len(request.json['email']) <= 40 and regex.search(request.json['email']) == None \
+         and isinstance(request.json['email'], str):
             self.EMAIL=request.json['email']
-        else:
+#            print(self.EMAIL)
+         else:
             print('Incorrect input')
+        except Exception as e:
+            print(e)
 
     def _get_auth_backend_from_yml(self):
-        ''' doc string '''        
+        ''' doc string '''
         # backend_configs = 'default'
         domain_list = current_app.config.get('domains')
-        for domain_dict in domain_list:            
+        for domain_dict in domain_list:
             if self.ORG  in domain_dict:
                 domain_name = domain_dict.get(self.ORG)
                 if domain_name.get('auth_backend') == 'default':
-                    self.AUTH_BACKEND = 'default'                    
+                    self.AUTH_BACKEND = 'default'
                     self.BACKEND_CONFIGS = 'default'
                     self.OTP_REQUIRED = domain_name.get('otp_required')
                 elif domain_name.get('auth_backend') == 'ldap':
@@ -287,7 +295,7 @@ class Authenticator():
                 elif domain_name.get('auth_backend') == 'sqldb':
                     pass
                 else:
-                    msg = " unconfigured auth_backend"                    
+                    msg = " unconfigured auth_backend"
                     status = False
             else:
                 msg = ("%s domain has not been configured in  tokenleader_configs"
