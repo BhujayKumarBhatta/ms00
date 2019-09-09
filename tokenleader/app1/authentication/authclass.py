@@ -27,7 +27,7 @@ class Authenticator():
         for org type default -  user is retrived from local
     '''
 
-    STATUS = None
+    STATUS = True
     USERNAME = None
     PASSWORD = None
     OTP = None
@@ -129,7 +129,7 @@ class Authenticator():
                     result = {
                         'status': 'failed',
                         'message': 'Authentication Failure',}
-                    print(result)
+                    # print(result)
             else:
                 result = {
                     'status': 'failed',
@@ -173,7 +173,6 @@ class Authenticator():
         except Exception as e:
             return e
             
-
     def send_otp_thru_mail(self, email, num, otpvalidtime):
 #         print('check mail')  
 #         print(email, num, otpvalidtime)      
@@ -182,7 +181,7 @@ class Authenticator():
                str(otpvalidtime)+" minutes.</body></html>")
         r = requests.post(url=current_app.config['MAIL_SERVICE_URI'], 
                           data=json.dumps({'mail_to':email, 'msg': msg}))
-        # print(r)
+        print(r)
         # print(r.status_code)
         if r.status_code == 200:
             print('mail success')
@@ -197,8 +196,7 @@ class Authenticator():
             return jsonify(responseObject)
 
     def send_otp_thru_sms(self, phno):
-        return phno
-        # config for sms
+        return phno       #TODO: config for sms
 
     def _get_usr_info_fm_ldap(self):
         '''        
@@ -241,32 +239,39 @@ class Authenticator():
         	return False
 
     def _extract_n_validate_data_from_request(self, request):
-        try:
          regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
          pwdregex = re.compile('[_!$%^&*()<>?/\|}{~:]')
-         if 'username' in request.json and len(request.json['username']) <= 40 and regex.search(request.json['username']) == None \
+         if 'username' in request.json and len(request.json['username']) <= 40 and regex.search(request.json['username']) is None \
          and isinstance(request.json['username'], str):
             self.USERNAME = request.json['username']
-#            print(self.USERNAME)
-         if 'password' in request.json and len(request.json['password']) <=15 and pwdregex.search(request.json['password']) == None \
+            print(self.USERNAME)
+         else:
+            self.STATUS = False
+         if 'password' in request.json and len(request.json['password']) <=15 and pwdregex.search(request.json['password']) is None \
          and isinstance(request.json['password'], str):
             self.PASSWORD = request.json['password']
-#            print(self.PASSWORD)
-         if 'domain' in request.json and len(request.json['domain']) <=5 and regex.search(request.json['domain']) == None \
-         and isinstance(request.json['domain'], str):
-            self.ORG = request.json['domain']   # change domain key as org
-#            print(self.ORG)
-         if 'otp' in request.json and len(request.json['otp']) == 4 and isinstance(request.json['otp'], int):
-            self.OTP = request.json['otp']
-#            print(self.OTP)
-         if 'email' in request.json and len(request.json['email']) <= 40 and regex.search(request.json['email']) == None \
-         and isinstance(request.json['email'], str):
-            self.EMAIL=request.json['email']
-#            print(self.EMAIL)
+            print(self.PASSWORD)
          else:
-            print('Incorrect input')
-        except Exception as e:
-            print(e)
+            self.STATUS = False
+         if 'domain' in request.json and len(request.json['domain']) <=10 and regex.search(request.json['domain']) is None \
+         and isinstance(request.json['domain'], str):
+            self.ORG = request.json['domain']   #TODO: change domain key as org
+            print(self.ORG)
+         else:
+            self.STATUS = False
+         if 'otp' in request.json:
+            if len(request.json['otp']) == 4 and isinstance(request.json['otp'], int):
+                self.OTP = request.json['otp']
+                print(self.OTP)
+            else:
+                self.STATUS = False
+         if 'email' in request.json:
+            if len(request.json['email']) <= 40 and regex.search(request.json['email']) is None \
+         and isinstance(request.json['email'], str):
+                self.EMAIL=request.json['email']
+                print(self.EMAIL)
+            else:
+                self.STATUS = False
 
     def _get_auth_backend_from_yml(self):
         ''' doc string '''
@@ -314,124 +319,99 @@ class TokenManager():
     4. 
     '''
     def get_token_or_otp(self, request):
-        auth = Authenticator(request)    
-        if auth.USERNAME is None or auth.PASSWORD is None:
-            responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
-            return jsonify(responseObject)
-#        print('correct request format')
-        user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
-        payload = {
-                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
-                            'iat': datetime.datetime.utcnow(),
-                            'sub': user_from_auth_backend
-                        }
-        print(auth.OTP_REQUIRED)
-        if auth.AUTHENTICATION_STATUS == False:
+        auth = Authenticator(request)
+        print(auth.STATUS)
+        if not auth.STATUS:    
             responseObject = {
                 'status': 'failed',
-                'message': 'Authentication Failure'}
+                'message': 'Incorrect data format',}
             return jsonify(responseObject)
-        elif auth.OTP_REQUIRED :
-            print(user_from_auth_backend['id'])
-            otp = auth.generate_one_time_password(user_from_auth_backend['id'])
-            return make_response(otp)
         else:
-            auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
-            responseObject = {
-                 'status': 'success',
-                 'message': 'success',
-                 'auth_token': auth_token.decode(),
-                 'service_catalog': auth.service_catalog()}
-            return make_response(jsonify(responseObject)), 201
+            if auth.USERNAME is None or auth.PASSWORD is None:
+                responseObject = {
+                    'status': 'missing authentication info ',
+                    'message': 'no authentication information provided',}
+                return jsonify(responseObject)
+    #        print('correct request format')
+            user_from_auth_backend = auth.get_user_fm_auth_backend_after_authentication()
+            print(user_from_auth_backend)
+            payload = {
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
+                                'iat': datetime.datetime.utcnow(),
+                                'sub': user_from_auth_backend
+                            }
+    #        print(auth.OTP_REQUIRED)
+            if auth.AUTHENTICATION_STATUS is False:
+                responseObject = {
+                    'status': 'failed',
+                    'message': 'Authentication Failure'}
+                return jsonify(responseObject)
+            elif auth.OTP_REQUIRED :
+    #            print(user_from_auth_backend['id'])
+                otp = auth.generate_one_time_password(user_from_auth_backend['id'])
+                return make_response(otp)
+            else:
+                auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
+                responseObject = {
+                    'status': 'success',
+                    'message': 'success',
+                    'auth_token': auth_token.decode(),
+                    'service_catalog': auth.service_catalog()}
+                return make_response(jsonify(responseObject)), 201            
 
     def get_token_by_otp(self, request):
-        auth = Authenticator(request)  
-        if auth.USERNAME is not None:
-            validuser = auth.get_validuserobject()
-            if validuser is None:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'User not registered',}
-                return jsonify(responseObject )
-            user_from_db = auth.get_user_fm_auth_backend_after_authentication()
-        else:
-            responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
-            return jsonify(responseObject)
-        if auth.OTP is not None:
-            otpwd = Otp.query.filter_by(otp=auth.OTP).first()
-            if otpwd:
-                otpdet = otpwd.to_dict()
-                creation_date = otpdet['creation_date']
-                otpdet['creation_date'] = str(otpdet['creation_date'])
-            org = user_from_db['wfc']['org']
-            if org in current_app.config['otp']:
-                otpvalidtime = current_app.config['otp'][org]
-            else:
-                otpvalidtime = 10
-            if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
-                try:                   
-                    # ------ payload to put in seperate function ------                    
-                    payload = {'exp': (datetime.datetime.utcnow() + \
-                                           datetime.timedelta(days=0,
-                                                              seconds=auth.tokenexpiration)),
-                            'iat': datetime.datetime.utcnow(),
-                            'sub': {**otpdet, **user_from_db}
-                        }
-                    auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
-                    responseObject = {
-                        'status': 'success',
-                        'message': 'success',
-                        'auth_token': auth_token.decode(),  
-                        'service_catalog': auth.service_catalog()}
-                    return make_response(jsonify(responseObject)), 201
-                except Exception as e:
-                    responseObject = {
-                        'status': 'failed',
-                        'message': e,}
-                    return jsonify(responseObject )
-            else:
-                responseObject = {
-                    'status': 'failed',
-                    'message': 'Incorrect OTP',}
-                return jsonify(responseObject )
-        else:
+        auth = Authenticator(request)
+        if not auth.STATUS:
             responseObject = {
                 'status': 'failed',
-                'message': 'OTP is required',}
-            return jsonify(responseObject )
-            
-    def gettoken_by_email_otp(self, request):
-        auth = Authenticator(request)
-        if auth.EMAIL is not None or auth.OTP is not None:
-            user_from_db = auth.get_user_fm_auth_backend_after_authentication()
-            if user_from_db['allowemaillogin'] == 'Y':
+                'message': 'Incorrect data format',}
+            return jsonify(responseObject)
+        else:
+            if auth.USERNAME is not None:
+                validuser = auth.get_validuserobject()
+                if validuser is None:
+                    responseObject = {
+                        'status': 'failed',
+                        'message': 'User not registered',}
+                    return jsonify(responseObject )
+                user_from_db = auth.get_user_fm_auth_backend_after_authentication()
+            else:
+                responseObject = {
+                    'status': 'missing authentication info ',
+                    'message': 'no authentication information provided',}
+                return jsonify(responseObject)
+            if auth.OTP is not None:
                 otpwd = Otp.query.filter_by(otp=auth.OTP).first()
                 if otpwd:
                     otpdet = otpwd.to_dict()
                     creation_date = otpdet['creation_date']
                     otpdet['creation_date'] = str(otpdet['creation_date'])
-                    org = user_from_db['wfc']['org']
-                    if org in current_app.config['otp']:
-                        otpvalidtime = current_app.config['otp'][org]
-                    else:
-                        otpvalidtime = 10
+                org = user_from_db['wfc']['org']
+                if org in current_app.config['otp']:
+                    otpvalidtime = current_app.config['otp'][org]
+                else:
+                    otpvalidtime = 10
                 if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
-                    payload = {
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
+                    try:                   
+                        # ------ payload to put in seperate function ------                    
+                        payload = {'exp': (datetime.datetime.utcnow() + \
+                                            datetime.timedelta(days=0,
+                                                                seconds=auth.tokenexpiration)),
                                 'iat': datetime.datetime.utcnow(),
-                                'sub': {**user_from_db, **otpdet}
+                                'sub': {**otpdet, **user_from_db}
                             }
-                    auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
-                    responseObject = {
-                        'status': 'success',
-                        'message': 'success',
-                        'auth_token': auth_token.decode(),
-                        'service_catalog': auth.service_catalog()}
-                    return make_response(jsonify(responseObject)), 201
+                        auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
+                        responseObject = {
+                            'status': 'success',
+                            'message': 'success',
+                            'auth_token': auth_token.decode(),  
+                            'service_catalog': auth.service_catalog()}
+                        return make_response(jsonify(responseObject)), 201
+                    except Exception as e:
+                        responseObject = {
+                            'status': 'failed',
+                            'message': e,}
+                        return jsonify(responseObject )
                 else:
                     responseObject = {
                         'status': 'failed',
@@ -440,13 +420,58 @@ class TokenManager():
             else:
                 responseObject = {
                     'status': 'failed',
-                    'message': 'Unauthorized',}
-                return make_response(jsonify(responseObject)), 401
-        else:
+                    'message': 'OTP is required',}
+                return jsonify(responseObject )
+            
+    def gettoken_by_email_otp(self, request):
+        auth = Authenticator(request)
+        if not auth.STATUS:
             responseObject = {
-                'status': 'missing authentication info ',
-                'message': 'no authentication information provided',}
+                'status': 'failed',
+                'message': 'Incorrect data format',}
             return jsonify(responseObject)
+        else:
+            if auth.EMAIL is not None or auth.OTP is not None:
+                user_from_db = auth.get_user_fm_auth_backend_after_authentication()
+                if user_from_db['allowemaillogin'] == 'Y':
+                    otpwd = Otp.query.filter_by(otp=auth.OTP).first()
+                    if otpwd:
+                        otpdet = otpwd.to_dict()
+                        creation_date = otpdet['creation_date']
+                        otpdet['creation_date'] = str(otpdet['creation_date'])
+                        org = user_from_db['wfc']['org']
+                        if org in current_app.config['otp']:
+                            otpvalidtime = current_app.config['otp'][org]
+                        else:
+                            otpvalidtime = 10
+                    if otpwd is not None and otpdet['is_active']== 'Y' and otpdet['userid']==user_from_db['id'] and (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0 <= otpvalidtime:
+                        payload = {
+                                    'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=auth.tokenexpiration),
+                                    'iat': datetime.datetime.utcnow(),
+                                    'sub': {**user_from_db, **otpdet}
+                                }
+                        auth_token = self.generate_encrypted_auth_token(payload, auth.privkey)
+                        responseObject = {
+                            'status': 'success',
+                            'message': 'success',
+                            'auth_token': auth_token.decode(),
+                            'service_catalog': auth.service_catalog()}
+                        return make_response(jsonify(responseObject)), 201
+                    else:
+                        responseObject = {
+                            'status': 'failed',
+                            'message': 'Incorrect OTP',}
+                        return jsonify(responseObject )
+                else:
+                    responseObject = {
+                        'status': 'failed',
+                        'message': 'Unauthorized',}
+                    return make_response(jsonify(responseObject)), 401
+            else:
+                responseObject = {
+                    'status': 'missing authentication info ',
+                    'message': 'no authentication information provided',}
+                return jsonify(responseObject)
     
     def generate_encrypted_auth_token(self, payload, priv_key):
 #         print(payload)
