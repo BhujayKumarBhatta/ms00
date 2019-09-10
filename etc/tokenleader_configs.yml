@@ -46,7 +46,7 @@ listoftsp:
    - VODAFONE
 
 mailservice:
-   Server: 10.174.112.79
+   Server: 10.174.112.79         #localhost if CALDOMINO & BLRDOMINO has not got access from 79
    Port: 5000
 
 otp:
