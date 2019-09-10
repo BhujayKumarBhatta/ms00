@@ -28,6 +28,15 @@ it is installed with default user user1, password user1  with role as role1 and 
 once it is running install the client in a venv and test the features . 
 consult the client installation doc  https://gitlab.net.itc/tsp-billing/tokenleaderclient
 
+Mail server and Mail client local setup
+========================================
+
+run smtp server (arbitrary) as: nohup python smtpsinkserver.py > arbsmtpservlog.out 2>&1
+will generate arbsmtpservlog.out in the current directory
+
+run the smtp client for otp as: nohup python smtpclient.py &
+will generate nohup.out in the current directory
+
 Manual installation steps
 =================================
 optional Steps:  
@@ -118,7 +127,7 @@ configure the /etc/tokenleader/tokenleader_configs.yml
        - VODAFONE
 
     mailservice:
-        Server: 10.174.112.79
+        Server: 10.174.112.79     #localhost if CALDOMINO & BLRDOMINO has not got access from 79
         Port: 5000
 
     otp:
