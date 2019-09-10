@@ -240,33 +240,37 @@ class Authenticator():
 
     def _extract_n_validate_data_from_request(self, request):
          regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-         pwdregex = re.compile('[_!$%^&*()<>?/\|}{~:]')
-         if 'username' in request.json and len(request.json['username']) <= 40 and regex.search(request.json['username']) is None \
+         pwdregex = re.compile('[_!#$%^&*()<>?/\|}{~:]')
+         if 'username' in request.json:
+            if len(request.json['username']) <= 40 and regex.search(request.json['username']) is None \
          and isinstance(request.json['username'], str):
-            self.USERNAME = request.json['username']
-            print(self.USERNAME)
-         else:
-            self.STATUS = False
-         if 'password' in request.json and len(request.json['password']) <=15 and pwdregex.search(request.json['password']) is None \
+                self.USERNAME = request.json['username']
+                print(self.USERNAME)
+            else:
+                self.STATUS = False
+         if 'password' in request.json:
+            if len(request.json['password']) <=15 and pwdregex.search(request.json['password']) is None \
          and isinstance(request.json['password'], str):
-            self.PASSWORD = request.json['password']
-            print(self.PASSWORD)
-         else:
-            self.STATUS = False
-         if 'domain' in request.json and len(request.json['domain']) <=10 and regex.search(request.json['domain']) is None \
+                self.PASSWORD = request.json['password']
+                print(self.PASSWORD)
+            else:
+                self.STATUS = False
+         if 'domain' in request.json:
+            if len(request.json['domain']) <=10 and regex.search(request.json['domain']) is None \
          and isinstance(request.json['domain'], str):
-            self.ORG = request.json['domain']   #TODO: change domain key as org
-            print(self.ORG)
-         else:
-            self.STATUS = False
+                self.ORG = request.json['domain']   #TODO: change domain key as org
+                print(self.ORG)
+            else:
+                self.STATUS = False
          if 'otp' in request.json:
-            if len(request.json['otp']) == 4 and isinstance(request.json['otp'], int):
+            if len(request.json['otp']) == 4 and regex.search(request.json['otp']) is None \
+         and isinstance(request.json['otp'], str):
                 self.OTP = request.json['otp']
                 print(self.OTP)
             else:
                 self.STATUS = False
          if 'email' in request.json:
-            if len(request.json['email']) <= 40 and regex.search(request.json['email']) is None \
+            if len(request.json['email']) <= 40 and pwdregex.search(request.json['email']) is None \
          and isinstance(request.json['email'], str):
                 self.EMAIL=request.json['email']
                 print(self.EMAIL)
