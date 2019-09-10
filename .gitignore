@@ -9,4 +9,4 @@ dist
 *.egg-info
 .jsdtscope
 org.eclipse.*
-
+nohup.out
