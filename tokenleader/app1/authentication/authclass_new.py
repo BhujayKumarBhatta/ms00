@@ -9,6 +9,7 @@ from tokenleader.app1.authentication.models import User, Organization, Otp
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 from flask import jsonify, make_response, current_app
 import re
+from builtins import False
 
 
 class Authenticator():
@@ -39,6 +40,26 @@ class Authenticator():
         self.privkey = current_app.config.get('private_key')
 
 
+    def  authenticate(self, request):
+        self._extract_data_from_request(request)
+        self._get_userdict_fm_auth_backend()
+        self._get_domain_configs_from_yml()
+        self._validate_users_domain_name()
+        if self.domain_validtion_status == True
+            self._password_authenticate()
+            if  self.AUTHENTICATION_STATUS:
+                status = True
+                msg = ("authentication  successful ")
+            else:
+                status = False
+                msg = ("authentication  failed ")
+        else:
+            status = False
+            msg = ("Wrong domain name: ", self.ORG)
+        result = {'status': status, 'message': msg,}
+        return result
+    
+    
     def _extract_data_from_request(self, request):
         self.USERNAME = None
         self.PASSWORD = None
@@ -106,50 +127,12 @@ class Authenticator():
                 msg = ("%s domain has not been configured in  tokenleader_configs"
                        " by administrator , ask admin to insert this domain in"
                        " tokenleader_configs" %self.ORG)
-                status = False
-        return_value = {'status': status, 'msg': msg}
-        print(return_value)
-        return return_value
-    
-    def _get_ldap_backend_configs(self, domain_settings):
-        ldap_backend_settings = {'ldap_host': domain_settings.get('ldap_host'),
-           'ldap_port': domain_settings.get('ldap_port'),
-           'ldap_version': domain_settings.get('ldap_version'), 
-           'OU': domain_settings.get('OU'),
-           'O': domain_settings.get('O'),
-           'DC1': domain_settings.get('DC1'),
-           'DC2': domain_settings.get('DC2'),
-           'DC3': domain_settings.get('DC3')}
-        return ldap_backend_settings
+        result = (self.AUTH_BACKEND, self.BACKEND_CONFIGS, self.OTP_REQUIRED)
+        print(result)
+        return result
 
-    
 
-    def validate_users_domain_name(self):
-        pass
-    
-    def _get_user_dict_from_default_db(self, user=None, email=None):
-        '''use memcahe '''
-        try:
-            if user and not email:  
-                user_from_db  = User.query.filter_by(username=user).first()
-            elif email and not user:
-                user_from_db = User.query.filter_by(email=email).first()
-            elif user and email:
-                user_from_db  = User.query.filter_by(username=user).first()
-            else:
-                user_from_db = None
-            if user_from_db:                
-                user_dict = self._convert_user_to_dict(user_from_db)
-            else:
-                user_dict = ("either user or email is required for login")
-                print(user_dict)
-        except Exception as e:
-            print(e)
-            user_dict = None
-        return user_dict
-        
-
-    def get_user_fm_auth_backend(self):
+    def _get_userdict_fm_auth_backend(self):
         ''' doc string'''
         if self.AUTH_BACKEND == 'default':
             if self.USERNAME:
@@ -162,10 +145,85 @@ class Authenticator():
             user_fm_backend = self._get_usr_info_fm_ldap()
 #            print('ldap:'+str(user_fm_backend))
         else:
-            user_fm_backend = {'status': 'failed', 'message':'{0} domain has not been configured in  tokenleader_configs by administrator'.format(self.ORG)}
+            user_fm_backend = {'status': 'failed', 
+                               'message':'{0} domain has not been configured'
+                               ' in  tokenleader_configs by administrator'.format(self.ORG)}
 #            print('default:'+str(user_fm_backend))
 #        print(user_fm_backend)
         return user_fm_backend
+
+
+    def _get_ldap_backend_configs(self, domain_settings):
+        ldap_backend_settings = {'ldap_host': domain_settings.get('ldap_host'),
+           'ldap_port': domain_settings.get('ldap_port'),
+           'ldap_version': domain_settings.get('ldap_version'), 
+           'OU': domain_settings.get('OU'),
+           'O': domain_settings.get('O'),
+           'DC1': domain_settings.get('DC1'),
+           'DC2': domain_settings.get('DC2'),
+           'DC3': domain_settings.get('DC3')}
+        return ldap_backend_settings
+
+
+    def _get_user_dict_from_default_db(self, user=None, email=None):
+        '''use memcahe '''
+        status = False
+        self.user_dict  = {}
+        msg = ""
+        try:
+            if user and not email:  
+                user_from_db  = User.query.filter_by(username=user).first()
+            elif email and not user:
+                user_from_db = User.query.filter_by(email=email).first()
+            elif user and email:
+                user_from_db  = User.query.filter_by(username=user).first()
+            else:
+                user_from_db = None                
+                msg = ("either user or email is required for login")
+            if user_from_db:                
+                user_dict = user_from_db.to_dict()
+                self.user_dict = user_dict
+                self.userObj = user_from_db
+                status = True
+                msg = "found a valid user in database"
+            else:
+                msg = "User not registered"            
+        except Exception as e:            
+            msg = e
+        result = {"status": status, "user_dict": self.user_dict, 
+                  "userObj": user_from_db, "message": msg}
+        
+        print(result)
+        return self.user_dict
+
+
+    def _validate_users_domain_name(self):        
+        users_domain_from_db = self.user_dict.get('wfc').get('org')
+        self.domain_validtion_status = True if self.ORG == users_domain_from_db else False              
+        return self.domain_validtion_status
+    
+    
+    def _password_authenticate(self):
+        self.password_authenticate = False
+        if self.userObj.check_password(self.PASSWORD):
+            self.password_authenticate = True
+        else:
+            print("password authentication with backend failed")
+        return self.password_authenticate
+            
+                
+                
+            
+    
+        
+        
+        
+    
+   
+        
+
+    
+
      
     def generate_one_time_password(self,userid):
         try:
@@ -222,9 +280,7 @@ class Authenticator():
                     result = self._convert_user_to_dict(user_from_db)
                     self.AUTHENTICATION_STATUS = True
                 else:
-                    result = {
-                        'status': 'failed',
-                        'message': 'Authentication Failure',}
+                    
                     # print(result)
             else:
                 result = {
@@ -233,11 +289,7 @@ class Authenticator():
                 
         return result
 
-    def _convert_user_to_dict(self, qry_result):
-            user_to_dict = qry_result.to_dict()
-            # print(user_from_db)
-            return user_to_dict
-        
+            
     def get_validuserobject(self): 
         '''use memcahe '''
         validuser  = User.query.filter_by(username=self.USERNAME).first()
