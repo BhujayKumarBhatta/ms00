@@ -284,27 +284,30 @@ class Authenticator():
         ''' doc string '''
         # backend_configs = 'default'
         domain_list = current_app.config.get('domains')
+#         print("list of domains from yml:", domain_list)
+#         print("self.ORG:", self.ORG)
         for domain_dict in domain_list:
             if self.ORG  in domain_dict:
-                domain_name = domain_dict.get(self.ORG)
-                if domain_name.get('auth_backend') == 'default':
+                print("found settings for domain: ", self.ORG )
+                domain_settings = domain_dict.get(self.ORG)
+                if domain_settings.get('auth_backend') == 'default':
                     self.AUTH_BACKEND = 'default'
                     self.BACKEND_CONFIGS = 'default'
-                    self.OTP_REQUIRED = domain_name.get('otp_required')                    
-                elif domain_name.get('auth_backend') == 'ldap':
+                    self.OTP_REQUIRED = domain_settings.get('otp_required')                    
+                elif domain_settings.get('auth_backend') == 'ldap':
                     self.AUTH_BACKEND = 'ldap'
-                    self.BACKEND_CONFIGS =  {'ldap_host': domain_name.get('ldap_host'),
-                                   'ldap_port': domain_name.get('ldap_port'),
-                                   'ldap_version': domain_name.get('ldap_version'), 
-                                   'OU': domain_name.get('OU'),
-                                   'O': domain_name.get('O'),
-                                   'DC1': domain_name.get('DC1'),
-                                   'DC2': domain_name.get('DC2'),
-                                   'DC3': domain_name.get('DC3')}
-                    self.OTP_REQUIRED = domain_name.get('otp_required')
-                elif domain_name.get('auth_backend') == 'active_directory':
+                    self.BACKEND_CONFIGS =  {'ldap_host': domain_settings.get('ldap_host'),
+                                   'ldap_port': domain_settings.get('ldap_port'),
+                                   'ldap_version': domain_settings.get('ldap_version'), 
+                                   'OU': domain_settings.get('OU'),
+                                   'O': domain_settings.get('O'),
+                                   'DC1': domain_settings.get('DC1'),
+                                   'DC2': domain_settings.get('DC2'),
+                                   'DC3': domain_settings.get('DC3')}
+                    self.OTP_REQUIRED = domain_settings.get('otp_required')
+                elif domain_settings.get('auth_backend') == 'active_directory':
                     pass
-                elif domain_name.get('auth_backend') == 'sqldb':
+                elif domain_settings.get('auth_backend') == 'sqldb':
                     pass
                 else:
                     msg = " unconfigured auth_backend"
@@ -312,6 +315,7 @@ class Authenticator():
                 status = True
                 msg = ("OTP requried status: %s for domain: %s"
                             %(self.OTP_REQUIRED , self.ORG))
+                break
             else:
                 msg = ("%s domain has not been configured in  tokenleader_configs"
                        " by administrator" %self.ORG)
@@ -331,7 +335,8 @@ class TokenManager():
     '''
     def get_token_or_otp(self, request):
         auth = Authenticator(request)
-        #print(auth.STATUS)
+        print("auth.STATUS: ", auth.STATUS)
+        
         if not auth.STATUS:    
             responseObject = {
                 'status': 'failed',
@@ -351,7 +356,8 @@ class TokenManager():
                                 'iat': datetime.datetime.utcnow(),
                                 'sub': user_from_auth_backend
                             }
-    #        print(auth.OTP_REQUIRED)
+            print("OTP required: %s , authentication status: %s"
+                  %(auth.OTP_REQUIRED, auth.AUTHENTICATION_STATUS))
             if auth.AUTHENTICATION_STATUS is False:
                 responseObject = {
                     'status': 'failed',
@@ -359,6 +365,7 @@ class TokenManager():
                 return jsonify(responseObject)
             elif auth.OTP_REQUIRED :
     #            print(user_from_auth_backend['id'])
+                print("trigerring otp")
                 otp = auth.generate_one_time_password(user_from_auth_backend['id'])
                 return make_response(otp)
             else:
