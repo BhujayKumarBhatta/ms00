@@ -295,6 +295,7 @@ class Authenticator():
                        " by administrator" %self.ORG)
                 status = False
         return_value = {'status': status, 'msg': msg}
+        print("OTP requried status: %s for domain: %s" %(self.OTP_REQUIRED , self.ORG))
         return return_value
 
 
