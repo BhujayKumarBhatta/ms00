@@ -31,9 +31,6 @@ class Authenticator():
     def __init__(self, request):        
         self.tokenexpiration=30
         self.privkey=None
-        self.AUTHENTICATION_STATUS = False
-        self._extract_data_from_request(request)
-        self._get_domain_configs_from_yml()
 #         print(current_app.config.get('token').get('tokenexpiration'))
         if 'tokenexpiration' in current_app.config.get('token'):
             self.tokenexpiration = current_app.config.get('token').get('tokenexpiration')
@@ -41,6 +38,7 @@ class Authenticator():
 
 
     def  authenticate(self, request):
+        msg = ""
         self._extract_data_from_request(request)
         self._get_userdict_fm_auth_backend()
         self._get_domain_configs_from_yml()
@@ -48,16 +46,15 @@ class Authenticator():
         if self.domain_validtion_status == True
             self._password_authenticate()
             if  self.AUTHENTICATION_STATUS:
-                status = True
                 msg = ("authentication  successful ")
             else:
-                status = False
                 msg = ("authentication  failed ")
         else:
-            status = False
             msg = ("Wrong domain name: ", self.ORG)
-        result = {'status': status, 'message': msg,}
-        return result
+            self.AUTHENTICATION_STATUS = False
+        result = {'status': self.AUTHENTICATION_STATUS, 'message': msg,}
+        print(result)
+        return self.AUTHENTICATION_STATUS
     
     
     def _extract_data_from_request(self, request):
