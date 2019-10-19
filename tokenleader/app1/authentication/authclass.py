@@ -80,6 +80,7 @@ class Authenticator():
                 otpvalidtime = current_app.config['otp'][org]
             else:
                 otpvalidtime = 10
+            print("OTP: %s with validity: %s" %(str(num), otpvalidtime))
             mail_to = user_from_db['email']
 #             phno = '5656565653'
             if self.OTP_MODE == 'mail':
@@ -93,8 +94,10 @@ class Authenticator():
             else:
                   responseObject = {'status': 'failed',
                             'message': 'No OTP mode mentioned for this user.'}
+                  print(responseObject)
                   return jsonify(responseObject)
         except Exception as e:
+            print(e)
             return e 
      
     def service_catalog(self):
@@ -287,7 +290,7 @@ class Authenticator():
                 if domain_name.get('auth_backend') == 'default':
                     self.AUTH_BACKEND = 'default'
                     self.BACKEND_CONFIGS = 'default'
-                    self.OTP_REQUIRED = domain_name.get('otp_required')
+                    self.OTP_REQUIRED = domain_name.get('otp_required')                    
                 elif domain_name.get('auth_backend') == 'ldap':
                     self.AUTH_BACKEND = 'ldap'
                     self.BACKEND_CONFIGS =  {'ldap_host': domain_name.get('ldap_host'),
@@ -306,12 +309,15 @@ class Authenticator():
                 else:
                     msg = " unconfigured auth_backend"
                     status = False
+                status = True
+                msg = ("OTP requried status: %s for domain: %s"
+                            %(self.OTP_REQUIRED , self.ORG))
             else:
                 msg = ("%s domain has not been configured in  tokenleader_configs"
                        " by administrator" %self.ORG)
                 status = False
         return_value = {'status': status, 'msg': msg}
-        print("OTP requried status: %s for domain: %s" %(self.OTP_REQUIRED , self.ORG))
+        print(return_value)
         return return_value
 
 
