@@ -83,7 +83,5 @@ class Otpmanager():
         except Exception as e:
             record  = e
         return record
-    
-            
-   
+
 
