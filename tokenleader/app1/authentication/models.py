@@ -32,6 +32,7 @@ class Organization(db.Model):
             }
         return data
 
+
 class Orgunit(db.Model):
     '''Dont put capital letter inbetween the word. only the first letter
     should be capital'''
@@ -76,6 +77,7 @@ class Department(db.Model):
             'created by': self.created_by
             }
         return data
+
 
 class Workfunctioncontext(db.Model):
     '''relationship from wfc to  Organization, OrgUnit and Department are 'Many to One' type
@@ -146,10 +148,16 @@ class Role(db.Model):
             }
         return data
 
+
 class Otp(db.Model):
+    '''  
+    1. otp to user is one to one relationsip , same otp can not be
+        assigned to another user.
+    2. otp is backref to user so that we get user.otp'''
     id = db.Column(db.Integer, primary_key=True)
     otp = db.Column(db.String(64), index=True, unique=True, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("Otp", backref="otp", uselist=False)
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     delivery_method = db.Column(db.String(4))
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
@@ -169,6 +177,8 @@ class Otp(db.Model):
         return data
 
 #This mapper table is used for many to many relationship between user and role
+
+
 roles_n_user_map = db.Table('roles_n_user_map',
     db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -209,6 +219,7 @@ class User(db.Model):
     wfc_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
     wfc = db.relationship("Workfunctioncontext", backref="users")
     created_by = db.Column(db.String(24))
+    
 
 #     roles = db.relationship('Role', lazy='dynamic' ,
 #         backref=db.backref('users', lazy='dynamic' ))
