@@ -14,26 +14,9 @@ def get_token():
      
     curl -X POST -d '{"email": "test@xyz.com", "otp": "3376"}'  \
      -H "Content-Type: Application/json"  localhost:5001/token/gettoken
-     
-     1.  get the data from req , uname , pwd , org/domain
-     2.  read and retrive  user info from  db :
-        identify if the user is internal or extrenal 
-        identify its auth source as db or ldap
-        mail, sms. direct,  based on user database flag
-        login by emailid , emailbased login allowed
-     3.  authenticate password - ldap bind 
-     4. otp generation
-     5. otp_deliery -  
-     4. token_generation ( based on internal     
-     4. token_generation (userifo, otp,)
-        based on  internal or external 
-          
+ 
     '''
-     
-    #gettoken_by_usr_pwd(request)
-    #gettoken_by_usr_otp(request)gettoken_by_usr_pwd
-    #gettoken_by_email_otp(request)
-#     print('into request')
+    
     # CASE 1: Username & Otp      
     if 'username' in request.json and 'otp' in request.json:  
 #         print('request has username and otp')

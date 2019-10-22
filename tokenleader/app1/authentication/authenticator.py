@@ -9,7 +9,8 @@ from tokenleader.app1.authentication.models import User, Organization, Otp
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 from flask import jsonify, make_response, current_app
 import re
-
+from tokenleader.app1.authentication.otp import Otpmanager
+from tokenleader.app1.authentication.tokenmanager import TokenManager
 
 
 class Authenticator():
@@ -28,42 +29,39 @@ class Authenticator():
         for org type default -  user is retrived from local
     '''
 
-    def __init__(self, request):
-        self.tokenexpiration=30
-        self.privkey=None
-#         print(current_app.config.get('token').get('tokenexpiration'))
-        if 'tokenexpiration' in current_app.config.get('token'):
-            self.tokenexpiration = current_app.config.get('token').get('tokenexpiration')
-        self.privkey = current_app.config.get('private_key')
+    def __init__(self, request):       
         self.AUTHENTICATION_STATUS = False
-
-
-    def  authenticate(self, request):
-        msg = ""
-        self._extract_data_from_request(request)
-        self._get_userdict_fm_auth_backend()
-        self._get_domain_configs_from_yml()
-        self._validate_users_domain_name()
-        if self.domain_validtion_status == True:
-            self._password_authenticate()
-            if  self.AUTHENTICATION_STATUS:
-                msg = ("authentication  successful ")
-            else:
-                msg = ("authentication  failed ")
-        else:
-            msg = ("Wrong domain name: ", self.ORG)
-        result = {'status': self.AUTHENTICATION_STATUS, 'message': msg,}
-        print(result)
-        return self.AUTHENTICATION_STATUS
-
-
-    def _extract_data_from_request(self, request):
         self.USERNAME = None
         self.PASSWORD = None
         self.OTP = None
         self.EMAIL = None
         self.ORG = 'default'
         self.OTP_MODE=None
+        
+
+
+    def  authenticate(self, request):
+        try:
+            self._extract_data_from_request(request)
+            self._get_userdict_fm_auth_backend()
+            self._get_domain_configs_from_yml()
+            otpmgr = Otpmanager(self.userObj)
+            tokenmgr = TokenManager(self.userObj)
+            if self._validate_users_domain_name() and self._password_authenticate():
+                if self.OTP_REQUIRED == True:
+                    result= otpmgr.despatch_otp()
+                else:
+                    result = tokenmgr.get_token()
+            elif self.OTP and isinstance(self.OTP, int) and otpmgr.validate_otp(self.OTP):
+                result = tokenmgr.get_token()
+
+        except Exception as auth_exception_erro_status:
+            result = auth_exception_erro_status
+            print(result)
+        return result
+
+
+    def _extract_data_from_request(self, request):       
         regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
         pwdregex = re.compile('[_!#$%^&*()<>?/\|}{~:]')
         if ('username' in request.json and 
