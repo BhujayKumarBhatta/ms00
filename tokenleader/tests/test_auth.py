@@ -32,7 +32,7 @@ class TestToken(TestUserModel):
     (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
     '''
     EMAIL_TEST='Srijib.Bhattacharyya@itc.in'
-    
+  
     
 #       
     def test_auth_token_with_actual_rsa_keys_fake_user(self):         
@@ -230,6 +230,7 @@ class TestToken(TestUserModel):
                                 'org': 'org2'},
                         'created_by': 1
                         }
+        tm = TokenManager(user_from_db)
 
         payload = {
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),

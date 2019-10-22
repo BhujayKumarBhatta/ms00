@@ -157,7 +157,7 @@ class Otp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     otp = db.Column(db.String(64), index=True, unique=True, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("Otp", backref="otp", uselist=False)
+    user = db.relationship("User", backref="otp", uselist=False)
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     delivery_method = db.Column(db.String(4))
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))

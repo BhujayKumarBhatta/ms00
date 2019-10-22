@@ -29,7 +29,7 @@ def verify_token():
     publickey = current_app.config.get('public_key')
     if 'X-Auth-Token' in request.headers:
         auth_token = request.headers.get('X-Auth-Token')
-        responseObject = objTokenMgr.decrypt_n_verify_token(auth_token, publickey)
+        responseObject = auth_token.decrypt_n_verify_token(auth_token, publickey)
     else:
         status = "request header  missing 'X-Auth-Token' key or token value"
         message = ("The request header must carry a 'X-Auth-Token'"

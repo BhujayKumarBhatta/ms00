@@ -160,7 +160,9 @@ class Authenticator():
             user_fm_backend = self._get_usr_info_fm_ldap()
 #            print('ldap:'+str(user_fm_backend))
         else:
-            raise exc.AuthBackendConfigError
+            print("got a authbackend: %s  in tokenelader_configs"
+                  " which is not implemented" %self.AUTH_BACKEND)
+#             raise exc.AuthBackendConfigError
         return user_fm_backend
 
 
