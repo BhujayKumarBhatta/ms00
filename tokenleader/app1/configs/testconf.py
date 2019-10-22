@@ -12,6 +12,7 @@ SERVER_SETTINGS_FILE = os.path.join(TEST_DATA_PATH, 'test_tokenleader_configs.ym
 CLIENT_CONF_FILE = os.path.join(TEST_DATA_PATH, 'test_client_configs.yml')
 must_have_keys_in_yml = {'flask_default',
                          'database',
+                         'kafka_servers',
                          'domains',
                          'listoftsp',
                          'mailservice',
@@ -55,9 +56,9 @@ try:
     dbs = ymldict.get('database')
     #print(dbs)
     otp_settings_map = ymldict.get('otp')
-except:   
+except Exception as e:   
     print("did you configured the file {} correctly ? \n"
-          "see readme for a sample settings \n".format(conf.config_file))
+          "see readme for a sample settings \n", e)
     sys.exit()
 
 if not flask_default_setiings_map.keys() >= must_have_in_flask_default_section:
@@ -95,11 +96,15 @@ if not dbs.keys() >= must_have_in_db_section:
 if token_settings_map.get('private_key_file_location') == 'default':
     # print('private key found')
     private_key_filename = os.path.expanduser('~/.ssh/id_rsa')
+elif token_settings_map.get('private_key_file_location') == 'testlocation':
+    private_key_filename = os.path.join(TEST_DATA_PATH, 'test_id_rsa')
 else:
     private_key_filename = token_settings_map.get('private_key_file_location')
     
 if token_settings_map.get('public_key_file_location') == 'default':
     public_key_filename = os.path.expanduser('~/.ssh/id_rsa.pub')
+elif token_settings_map.get('public_key_file_location') == 'testlocation':
+    public_key_filename = os.path.join(TEST_DATA_PATH, 'test_id_rsa.pub')
 else:
     public_key_filename = token_settings_map.get('public_key_file_location')
 

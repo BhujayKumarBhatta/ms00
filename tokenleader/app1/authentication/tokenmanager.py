@@ -2,6 +2,7 @@ import jwt
 import datetime
 from tokenleader.app1.catalog.models_catalog import ServiceCatalog
 from flask import  current_app
+from tokenleader.app1 import exceptions as exc
 
 
 
@@ -12,15 +13,16 @@ class TokenManager():
     def __init__(self, user_dict_fm_db):
         self.user_dict_fm_db = user_dict_fm_db
         self.tokenexpiration=30
-        self.privkey=None
 #         print(current_app.config.get('token').get('tokenexpiration'))
         if 'tokenexpiration' in current_app.config.get('token'):
             self.tokenexpiration = current_app.config.get('token').get('tokenexpiration')
         self.privkey = current_app.config.get('private_key')
+        if not self.privkey:
+            raise exc.TokenleaderPrivateKeyNotFoundError
 
 
     def get_token(self):
-        print(self.user_dict_fm_db)
+        print("generating token for :", self.user_dict_fm_db)
         exp = datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=self.tokenexpiration)
         payload = { 'exp': exp,
                     'iat': datetime.datetime.utcnow(),
@@ -35,10 +37,13 @@ class TokenManager():
 
 
     def _service_catalog(self):
-        svcs = ServiceCatalog.query.all()
-        service_catalog = {}
-        for s in svcs:
-            service_catalog[s.name]=s.to_dict()
+        try:
+            svcs = ServiceCatalog.query.all()
+            service_catalog = {}
+            for s in svcs:
+                service_catalog[s.name]=s.to_dict()
+        except Exception as err:
+            service_catalog = err
         return service_catalog
 
 
@@ -59,18 +64,29 @@ class TokenManager():
 
     def decrypt_n_verify_token(self, auth_token, pub_key):
 #         print(pub_key)
+        payload = {}
         try:
             payload = jwt.decode(
                 auth_token,
                 pub_key,
                 algorithm=['RS512']
             )
-
-            return payload
+            status = "Verification Successful"
+            message = "Token has been successfully decrypted"
+            payload = payload
         except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
+            status = "Signature expired"
+            message = "Signature expired. Please log in and get a fresh token and send it for reverify."
         except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'
+            status = "Invalid token"
+            message = "Invalid token. obtain a valid token and send it for verifiaction"
+        except Exception as err:
+            status = "error"
+            message =  err
+        response = {'status': status,
+                    'message': message,
+                    'payload': payload }
+        return response
 
 
 

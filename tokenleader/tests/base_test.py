@@ -9,8 +9,22 @@ from tokenleader.app1.configs import testconf
 from tokenleader.app1.authentication.auth_routes import token_login_bp
 from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 from tokenleader.app1.catalog.catalog_restapi import catalog_bp
-from tokenleader.app1.authentication.authclass import TokenManager
-tm = TokenManager()
+from tokenleader.app1.authentication.tokenmanager import TokenManager
+user_from_db = {'id': 1,
+                        'username': 'u1', 
+                        'email': 'u1@abc.com', 
+                        'roles': ['role1'],
+                        'creation_date': str(datetime.datetime.utcnow()),
+                        'allowemaillogin': 'N',
+                        'is_active': 'Y',
+                        'wfc': {'department': 'dept1',
+                                'name': 'wfc1',
+                                'orgunit': 'ou1',
+                                'id': 1, 
+                                'org': 'default'},
+                        'created_by': 1
+                        }
+
 #from app_run import bp_list
 bp_list = [token_login_bp, adminops_bp, catalog_bp ]
 
@@ -38,20 +52,7 @@ class BaseTestCase(TestCase):
     
     def get_auth_token_with_actual_rsa_keys_fake_user(self):         
           
-        user_from_db = {'id': 1,
-                        'username': 'u1', 
-                        'email': 'u1@abc.com', 
-                        'roles': ['role1'],
-                        'creation_date': str(datetime.datetime.utcnow()),
-                        'allowemaillogin': 'N',
-                        'is_active': 'Y',
-                        'wfc': {'department': 'dept1',
-                                'name': 'wfc1',
-                                'orgunit': 'ou1',
-                                'id': 1, 
-                                'org': 'default'},
-                        'created_by': 1
-                        }
+        tm = TokenManager(user_from_db)
 
         payload = {
                     'exp': (datetime.datetime.utcnow() + \

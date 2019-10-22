@@ -3,24 +3,15 @@ import datetime
 import json
 from flask import current_app
 import random
-from tokenleader.app1.authentication.authclass import TokenManager
+from tokenleader.app1.authentication.tokenmanager import TokenManager
+from tokenleader.app1.authentication.authenticator import Authenticator
 from tokenleader.tests.admin_ops import TestUserModel
 # from tokenleader.app1 import db
 from tokenleader.app1.authentication.models import User, Role, Workfunctioncontext, Organization, Orgunit, Department, Otp
 from tokenleader.app1.adminops import admin_functions as af
 from tokenleader.tests.test_catalog_ops import TestCatalog , service_catalog
-tm = TokenManager()
 tc = TestCatalog()
-
-class TestToken(TestUserModel):
-    '''
-    (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
-    '''
-    EMAIL_TEST='Srijib.Bhattacharyya@itc.in'
-#       
-    def test_auth_token_with_actual_rsa_keys_fake_user(self):         
-          
-        user_from_db = {'id': 1,
+user_from_db = {'id': 1,
                         'username': 'u1', 
                         'email': 'u1@abc.com', 
                         'roles': ['role1'],
@@ -34,6 +25,19 @@ class TestToken(TestUserModel):
                                 'org': 'default'},
                         'created_by': 1
                         }
+
+
+class TestToken(TestUserModel):
+    '''
+    (venvp3flask) bhujay@DESKTOP-DTA1VEB:/mnt/c/mydev/myflask$ python -m unittest discover tests
+    '''
+    EMAIL_TEST='Srijib.Bhattacharyya@itc.in'
+    
+    
+#       
+    def test_auth_token_with_actual_rsa_keys_fake_user(self):         
+        tm = TokenManager(user_from_db)
+        
 
         payload = {
                     'exp': (datetime.datetime.utcnow() + \
@@ -79,7 +83,7 @@ class TestToken(TestUserModel):
                 '/token/gettoken', 
                 data=data,
                 content_type='application/json')
-                
+
             #print('response is {}'.format(response))
             data = json.loads(response.data.decode())
             # print(data)
