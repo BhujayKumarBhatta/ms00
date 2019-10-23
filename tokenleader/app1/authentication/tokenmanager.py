@@ -22,7 +22,7 @@ class TokenManager():
 
 
     def get_token(self):
-        print("generating token for :", self.user_dict_fm_db)
+        #print("generating token for :", self.user_dict_fm_db)
         exp = datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=self.tokenexpiration)
         payload = { 'exp': exp,
                     'iat': datetime.datetime.utcnow(),

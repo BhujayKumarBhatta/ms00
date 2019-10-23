@@ -19,6 +19,13 @@ domains:
    - default:
       auth_backend: default
       otp_required: False
+   - org1:
+      auth_backend: default
+      otp_required: False
+   - org2:
+      auth_backend: default
+      otp_required: True
+
    - itc:
       auth_backend: ldap   
       ldap_host: remote   # configure later with AD
@@ -31,16 +38,16 @@ domains:
       O: itc   # configure later with AD
       otp_required: False
       
-   - tsp:
-      auth_backend: ldap   
-      ldap_host: 10.174.112.100      #10.174.112.100 if localhost doesnt work
-      ldap_port: 389
-      ldap_version: 3 
-      DC1: test
-      DC2: tspbillldap
-      DC3: itc
-      OU: Users
-      otp_required: True
+#    - tsp:
+#       auth_backend: ldap   
+#       ldap_host: 10.174.112.100      #10.174.112.100 if localhost doesnt work
+#       ldap_port: 389
+#       ldap_version: 3 
+#       DC1: test
+#       DC2: tspbillldap
+#       DC3: itc
+#       OU: Users
+#       otp_required: True
 
 listoftsp:
    - TATA
@@ -55,14 +62,14 @@ otp:
    BHARTI: 30
    SIFY: 20
    VODAFONE: 20
-   org2: 10
+   org2: 3600
 
 mailservice:
    Server: 10.174.112.79
    Port: 5000
 
 token:
-     tokenexpiration: 8
+     tokenexpiration: 60
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient

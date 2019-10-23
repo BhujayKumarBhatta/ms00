@@ -155,9 +155,7 @@ class Otp(db.Model):
         assigned to another user.
     2. otp is backref to user so that we get user.otp'''
     id = db.Column(db.Integer, primary_key=True)
-    otp = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User", backref="otp", uselist=False)
+    otp = db.Column(db.String(64), index=True, unique=True, nullable=False)    
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     delivery_method = db.Column(db.String(4))
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
@@ -188,7 +186,7 @@ class User(db.Model):
     '''
     ######################################################################################
 # the following line is for one to one relationship and was moving the relationship
-# pointer to  one wfc as we create users with same wfc .e.g user1 -->wfc1 , when user2--wfc2
+# pointer to  one wfc as we create users with same wfc .e.g user1 -->wfc1 , when user2--wfc1
 # will be created user1 to wfc1 will be deleted
 #     wfc = db.relationship('Workfunctioncontext', backref = 'user', uselist=False, ) #lazy = True
 
@@ -217,6 +215,8 @@ class User(db.Model):
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     wfc_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
     wfc = db.relationship("Workfunctioncontext", backref="users")
+    otp_id = db.Column(db.Integer, db.ForeignKey('otp.id'))
+    otp = db.relationship("Otp", backref="user", uselist=False)
     created_by = db.Column(db.String(24))
     
 

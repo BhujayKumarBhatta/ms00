@@ -14,7 +14,7 @@ def preparekafkaresponse(wfc, msg_source, msg_body):
 
 def notify_kafka(conf, wfc, topic, kafka_response):
     resp = {}
-    conf = conf.yml
+    #conf = conf.yml
     ''' within the consumer itself this method produce  the processed resutl to kafka'''
     producer = KafkaProducer(bootstrap_servers=conf.get('kafka_servers'),
                       value_serializer=lambda x: 

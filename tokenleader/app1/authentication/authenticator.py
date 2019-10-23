@@ -47,14 +47,18 @@ class Authenticator():
         self.domain_validtion_status = False
         self.password_authenticate = False
         self.user_dict  = {}
+        
+        self.userObj = None
+        self.user_dict
+        
 
 
     def  authenticate(self):
         try:
             self._extract_data_from_request(self.request)
-            self._get_userdict_fm_auth_backend()
             self._get_domain_configs_from_yml()
-            tokenmgr = TokenManager(self.userObj)
+            self._get_userdict_fm_auth_backend()
+            tokenmgr = TokenManager(self.user_dict)
             otpmgr = Otpmanager(self.userObj)
             if self.OTP :
                 otpmgr.validate_otp(self.OTP)
@@ -62,7 +66,7 @@ class Authenticator():
             else:
                 self._validate_users_domain_name()
                 self._password_authenticate()
-                if self.OTP_REQUIRED == True:
+                if self.OTP_REQUIRED is True:
                     result= otpmgr.despatch_otp()
                 else:
                     result = tokenmgr.get_token()
@@ -73,14 +77,17 @@ class Authenticator():
 
 
     def _extract_data_from_request(self, request):       
-        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-        pwdregex = re.compile('[_!#$%^&*()<>?/\|}{~:]')
+        regex = re.compile('[!#$%^&*()<>?/\|}{~:]')
+        #pwdregex = re.compile('[!#$%^&*()<>?/\|}{~:]')
+        pwdregex = re.compile('[()<>~:]')
         
-        if 'username' in request.json:
-            if ( len(request.json['username']) <= 40 and 
+        if ('username' in request.json and 
+            request.json['username'] is not None and 
+            len(request.json['username']) <= 40 and 
                  regex.search(request.json['username']) is None and
                  isinstance(request.json['username'], str)):
-                self.USERNAME = request.json['username']
+            
+            self.USERNAME = request.json['username']
         else:
             raise exc.InvalidInputForNameError
         
@@ -121,10 +128,12 @@ class Authenticator():
 
 
     def _get_domain_configs_from_yml(self):
-        ''' doc string '''        
+        ''' doc string '''
+        #KEEPING THIS LINE FOR  BACKWARD COMPATIBIITY, TO BE REMOVED AFTER DOMAIN ENTERING IS MADE COMPULSARY
+        if self.ORG == None: self.ORG = 'default'
         domain_list = current_app.config.get('domains')
         for domain_dict in domain_list:
-            if self.ORG  in domain_dict:
+            if self.ORG  in domain_dict.keys():
                 print("found settings for domain: ", self.ORG )
                 domain_settings = domain_dict.get(self.ORG)
                 if domain_settings.get('auth_backend') == 'default':
@@ -138,12 +147,10 @@ class Authenticator():
                 else:
                     raise exc.AuthBackendConfigError
                 msg = ("OTP requried status: %s for domain: %s"
-                            %(self.OTP_REQUIRED , self.ORG))
-                break
-            else:
-                raise exc.DomainConfigurationError
-        result = (self.AUTH_BACKEND, self.BACKEND_CONFIGS, self.OTP_REQUIRED)
-        print(result)
+                            %(self.OTP_REQUIRED , self.ORG))            
+        if not self.AUTH_BACKEND:
+            raise exc.DomainConfigurationError
+        result = (self.AUTH_BACKEND, self.BACKEND_CONFIGS, self.OTP_REQUIRED)       
         return result
 
 
@@ -204,7 +211,7 @@ class Authenticator():
                   "userObj": user_from_db, "message": msg}          
         except Exception as e:
             result = e
-        print(result)
+            print(result)
         return result
 
 

@@ -24,7 +24,9 @@ class TestUserModel(BaseTestCase):
         return otp
 
     
-        
+    def create_default_org_for_test(self):
+        return af.register_org('default')
+    
     def create_org_for_test(self):
         return af.register_org('org1')
 
@@ -46,6 +48,12 @@ class TestUserModel(BaseTestCase):
         dept = self.create_dept_for_test()
         return af.register_work_func_context('wfc1' ,'org1' ,'ou1' ,'dept1')
     
+    def register_default_work_function_for_test(self):
+        self.create_default_org_for_test()
+        self.create_orgunit_for_test()
+        self.create_dept_for_test()
+        return af.register_work_func_context('wfc_default' ,'default' ,'ou1' ,'dept1')
+    
     def register_external_user_work_function_for_test(self):
         o= self.create_external_org_for_test()
         ou = self.create_orgunit_for_test()
@@ -55,6 +63,11 @@ class TestUserModel(BaseTestCase):
     def role_creation_for_test(self):       
         wfc = self.register_work_function_for_test()
         r = af.register_role('role1')
+        return r
+    
+    def role_default_user_creation_for_test(self):       
+        self.register_default_work_function_for_test()
+        r = af.register_role('default_role')
         return r
 
     def role_for_external_user_creation_for_test(self):       
@@ -75,4 +88,13 @@ class TestUserModel(BaseTestCase):
                              otp_mode='mail',
                              roles=roles,  
                              wfc_name='wfc2', allowemaillogin='Y')
+        return u
+    
+    def user_default_domain_creation_for_test(self):
+        self.role_default_user_creation_for_test()
+        roles = ['default_role',]        
+        u = af.register_user('user_default_domain', 'user_default_domain@itc.in', 'secret', 
+                             otp_mode='mail',
+                             roles=roles,
+                             wfc_name='wfc_default', allowemaillogin='Y')
         return u

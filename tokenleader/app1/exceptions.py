@@ -21,7 +21,8 @@ class TLException(Exception):
 class InvalidInputForNameError(TLException):
     status = "InvalidInputForNameError"
     message = ("Incorrect Username has been entered, must be"
-               "text within 40 caharacter")
+               "text within 40 caharacter and doesn't use "
+               "these characters '!#$%^&*()<>?\/\|}{~:'")
 
 
 class InvalidInputForEmailError(TLException):

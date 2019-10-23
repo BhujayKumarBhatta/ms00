@@ -32,7 +32,7 @@ class TestCatalog(BaseTestCase):
         return r        
     
     def test_add_service(self):
-        msg = self.add_service()        
+        msg = self.add_service()
         self.assertTrue(msg == "testservice has been registered.")
         
     def test_service_catalog_format(self):
