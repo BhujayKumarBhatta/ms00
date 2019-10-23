@@ -35,109 +35,111 @@ class TestToken(TestUserModel):
   
     
 #       
-#     def test_auth_token_with_actual_rsa_keys_fake_user(self):         
-#         tm = TokenManager(user_from_db)
-#         #current_app.config.get('tokenexpiration')
-#         payload = {
-#                     'exp': (datetime.datetime.utcnow() + \
-#                             datetime.timedelta(days=0,
-#                                                seconds=3600)),
-#                     'iat': datetime.datetime.utcnow(),
-#                     'sub': user_from_db
-#                      }
-#         privkey = current_app.config.get('private_key')
-#         publickey = current_app.config.get('public_key')
-#         auth_token = tm.generate_encrypted_auth_token(payload, privkey)
-#         self.assertTrue(isinstance(auth_token, bytes))
-#         np = tm.decrypt_n_verify_token(auth_token, publickey)
-#         self.assertTrue(isinstance(np, dict))
-#         self.assertTrue((np.get('payload').get('sub').get('wfc').get('org')) == 'default')
-#         return auth_token   # the return is required for later usage by the test_admin_restapi
-#         #self.assertEqual(np.get('sub'), payload.get('sub'))
-# #         print('end of  jwt token function.....................')
-# #     
-# #   
-#    
-
-#     def test_get_token(self):   #working
-#         '''
-#         user_creation_for_test method comes from parent class TestUserModel from test_admin_ops module
-#         this method registers an user with name as u1 
-#         '''
-#         u1 = self.user_creation_for_test()
-#         tc.add_service()#print(u1.to_dict())
-#         data=json.dumps(dict(
-#                     username='u1',
-#                     password='secret' ,
-#                     domain='org1'
-#                 ))
-#         with self.client:
-#             response = self.client.post(
-#                 '/token/gettoken', 
-#                 data=data,
-#                 content_type='application/json')
-#             data = json.loads(response.data.decode())
-#             self.assertTrue(data['status'] == 'success')
-#             self.assertTrue('auth_token' in data)
-#             self.assertTrue(data['service_catalog'] == service_catalog )
-#             mytoken = data['auth_token']
-#             return mytoken
+    def test_auth_token_with_actual_rsa_keys_fake_user(self):         
+        tm = TokenManager(user_from_db)
+        #current_app.config.get('tokenexpiration')
+        payload = {
+                    'exp': (datetime.datetime.utcnow() + \
+                            datetime.timedelta(days=0,
+                                               seconds=3600)),
+                    'iat': datetime.datetime.utcnow(),
+                    'sub': user_from_db
+                     }
+        privkey = current_app.config.get('private_key')
+        publickey = current_app.config.get('public_key')
+        auth_token = tm.generate_encrypted_auth_token(payload, privkey)
+        self.assertTrue(isinstance(auth_token, bytes))
+        np = tm.decrypt_n_verify_token(auth_token, publickey)
+        self.assertTrue(isinstance(np, dict))
+        self.assertTrue((np.get('payload').get('sub').get('wfc').get('org')) == 'default')
+        return auth_token   # the return is required for later usage by the test_admin_restapi
 
 
-	# CALLING WITH NO DOMAIN WHILE USERS HAS BEEN REGISTERED WITH DEFAULT DOMAIN: working
-#     def test_get_token_default_domain(self):   # working
-#         self.user_default_domain_creation_for_test()
-#         data=json.dumps(dict(
-#                     username='user_default_domain',
-#                     password='secret' ,
-#                 ))
-#         with self.client:
-#             response = self.client.post(
-#                 '/token/gettoken', 
-#                 data=data,
-#                 content_type='application/json')
-#         data = json.loads(response.data.decode())
-#         print(data)
+##GET TOKEN WITH NO OTP REQUIREMENT: WORKING
+    def test_get_token(self):   #working
+        '''
+        user_creation_for_test method comes from parent class TestUserModel from test_admin_ops module
+        this method registers an user with name as u1 
+        '''
+        u1 = self.user_creation_for_test()
+        tc.add_service()#print(u1.to_dict())
+        data=json.dumps(dict(
+                     username='u1',
+                     password='secret' ,
+                     domain='org1'
+                 ))
+        with self.client:
+            response = self.client.post(
+                 '/token/gettoken', 
+                 data=data,
+                 content_type='application/json')
+            data = json.loads(response.data.decode())
+            self.assertTrue(data['status'] == 'success')
+            self.assertTrue('auth_token' in data)
+            self.assertTrue(data['service_catalog'] == service_catalog )
+            mytoken = data['auth_token']
+            return mytoken
 
 
-#     #OTP GENERATED  AFTER AUTHENTICATION : working
-#     def test_user_authenticate_otp_required(self):    #working
-#         # Valid user create and Validate
-#         self.external_user_creation_for_test()
-#         data=json.dumps(dict(
-#                     username='u3',
-#                     password='secret' ,
-#                     domain='org2'
-#                 ))
-#         with self.client:
-#             response = self.client.post(
-#                 '/token/gettoken', 
-#                 data=data,
-#                 content_type='application/json')
-#         data = json.loads(response.data.decode())
-#         # print(data)
-#         user = User.query.filter_by(username='u3').first()
-#         userotp = user.otp.otp
-#         self.assertTrue(userotp,not None)
-#         self.assertTrue(len(userotp), 4)
-#         self.assertTrue(type(userotp), "<class 'int'>")
-#         self.assertTrue(data.get('status') == 'OTP_SENT')
-# 
-#         # Calling with no domain while users org is org2, it should try with default domain and fail
-#         data=json.dumps(dict(
-#                     username='u3',
-#                     password='secret' ,
-#                 ))
-#         with self.client:
-#             response = self.client.post(
-#                 '/token/gettoken', 
-#                 data=data,
-#                 content_type='application/json')
-#         data = json.loads(response.data.decode())
-#         self.assertTrue(data['status'] ==  'Domain_Error')
-        
-       
-#     #OTP VALIDATION : working   
+# ##CALLING WITH NO DOMAIN WHILE USERS HAS BEEN REGISTERED WITH DEFAULT DOMAIN SHOULD SUCCESS: working
+    def test_get_token_default_domain(self):   # working
+        self.user_default_domain_creation_for_test()
+        data=json.dumps(dict(
+                    username='user_default_domain',
+                    password='secret' ,
+                ))
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken', 
+                data=data,
+                content_type='application/json')
+        data = json.loads(response.data.decode())
+        print(data)
+
+
+## CALLING WITH NO DOMAIN WHILE USERS ORG IS ORG2, IT SHOULD TRY WITH DEFAULT DOMAIN AND FAIL: WORKING
+    def test_user_authenticate_otp_required(self):
+        # Valid user create and Validate
+        self.external_user_creation_for_test()
+        data=json.dumps(dict(
+                    username='u3',
+                    password='secret' ,
+                ))
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken', 
+                data=data,
+                content_type='application/json')
+        data = json.loads(response.data.decode())
+        self.assertTrue(data['status'] ==  'Domain_Error')
+
+
+### ######    #OTP GENERATED  AFTER AUTHENTICATION : working
+    def test_user_authenticate_otp_required(self):    #working
+        # Valid user create and Validate
+        self.external_user_creation_for_test()
+        data=json.dumps(dict(
+                    username='u3',
+                    password='secret' ,
+                    domain='org2'
+                ))
+        with self.client:
+            response = self.client.post(
+                '/token/gettoken', 
+                data=data,
+                content_type='application/json')
+        data = json.loads(response.data.decode())
+        # print(data)
+        user = User.query.filter_by(username='u3').first()
+        userotp = user.otp.otp
+        self.assertTrue(userotp,not None)
+        self.assertTrue(len(userotp), 4)
+        self.assertTrue(type(userotp), "<class 'int'>")
+        self.assertTrue(data.get('status') == 'OTP_SENT')
+
+
+
+#########OTP VALIDATION : WORKING 
     def test_get_token_uname_otp(self):   #working
         self.external_user_creation_for_test()
         data=json.dumps(dict(
@@ -166,7 +168,10 @@ class TestToken(TestUserModel):
         data = json.loads(response.data.decode())
         self.assertTrue(data['status'] == 'success')
         self.assertTrue('auth_token' in data)
-#         
+
+
+
+#####TBD        
 #     def test_get_token_email_otp(self):   #working
 #         self.external_user_creation_for_test()
 #         data=json.dumps(dict(
