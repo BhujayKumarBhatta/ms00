@@ -81,15 +81,19 @@ class Authenticator():
         #pwdregex = re.compile('[!#$%^&*()<>?/\|}{~:]')
         pwdregex = re.compile('[()<>~:]')
         
-        if ('username' in request.json and 
-            request.json['username'] is not None and 
-            len(request.json['username']) <= 40 and 
-                 regex.search(request.json['username']) is None and
-                 isinstance(request.json['username'], str)):
+        if not ('username' in request.json or 
+                'email' in request.json):
+            raise exc.NoUserIdentifierInputError
+        
+        if 'username' in request.json:
+            if (request.json['username'] is not None and 
+                len(request.json['username']) <= 40 and 
+                regex.search(request.json['username']) is None and
+                isinstance(request.json['username'], str)):
             
-            self.USERNAME = request.json['username']
-        else:
-            raise exc.InvalidInputForNameError
+                self.USERNAME = request.json['username']
+            else:
+                raise exc.InvalidInputForNameError
         
         if 'password' in request.json: 
             if (len(request.json['password']) <=15 and
@@ -188,30 +192,28 @@ class Authenticator():
     def _get_user_dict_from_default_db(self, user=None, email=None):
         '''use memcahe '''
         status = False
+        user_from_db = None
         msg = ""
-        try:
-            if user and not email:  
-                user_from_db  = User.query.filter_by(username=user).first()
-            elif email and not user:
-                user_from_db = User.query.filter_by(email=email).first()
-            elif user and email:
-                user_from_db  = User.query.filter_by(username=user).first()
-            else:
-                user_from_db = None
-                raise exc.MissingAuthInfoError
-            if user_from_db:
-                user_dict = user_from_db.to_dict()
-                self.user_dict = user_dict
-                self.userObj = user_from_db
-                status = True
-                msg = "found a valid user in database"
-            else:
-                raise exc.UserNotRegisteredError 
-            result = {"status": status, "user_dict": self.user_dict, 
-                  "userObj": user_from_db, "message": msg}          
-        except Exception as e:
-            result = e
-            print(result)
+        
+        if user and not email:  
+            user_from_db  = User.query.filter_by(username=user).first()
+        elif email and not user:
+            user_from_db = User.query.filter_by(email=email).first()
+        elif user and email:
+            user_from_db  = User.query.filter_by(username=user).first()
+        else:
+            raise exc.MissingAuthInfoError             
+        if user_from_db:
+            user_dict = user_from_db.to_dict()
+            self.user_dict = user_dict
+            self.userObj = user_from_db
+            status = True
+            msg = "found a valid user in database"
+        else:
+            raise exc.UserNotRegisteredError 
+        result = {"status": status, "user_dict": self.user_dict, 
+              "userObj": user_from_db, "message": msg}
+        
         return result
 
 

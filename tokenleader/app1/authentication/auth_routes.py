@@ -1,5 +1,6 @@
 from flask import request, Blueprint, jsonify, current_app,make_response
 from tokenleader.app1.authentication.authenticator import Authenticator
+from tokenleader.app1.authentication.tokenmanager import TokenManager
 
 token_login_bp = Blueprint('token_login_bp', __name__)
 
@@ -27,9 +28,10 @@ def verify_token():
     curl -H  "X-Auth-Token:<paste toekn here>"  localhost:5001/token/verify_token
     '''
     publickey = current_app.config.get('public_key')
-    if 'X-Auth-Token' in request.headers:
+    if 'X-Auth-Token' in request.headers:        
         auth_token = request.headers.get('X-Auth-Token')
-        responseObject = auth_token.decrypt_n_verify_token(auth_token, publickey)
+        tmObj = TokenManager()
+        responseObject = tmObj.decrypt_n_verify_token(auth_token, publickey)
     else:
         status = "request header  missing 'X-Auth-Token' key or token value"
         message = ("The request header must carry a 'X-Auth-Token'"

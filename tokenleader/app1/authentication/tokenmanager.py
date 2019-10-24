@@ -10,7 +10,7 @@ from tokenleader.app1 import exceptions as exc
 class TokenManager():
     '''
     '''
-    def __init__(self, user_dict_fm_db):
+    def __init__(self, user_dict_fm_db=None):
         self.user_dict_fm_db = user_dict_fm_db
         self.tokenexpiration=30
 #         print(current_app.config.get('token').get('tokenexpiration'))

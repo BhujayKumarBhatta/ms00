@@ -23,6 +23,11 @@ class InvalidInputForNameError(TLException):
     message = ("Incorrect Username has been entered, must be"
                "text within 40 caharacter and doesn't use "
                "these characters '!#$%^&*()<>?\/\|}{~:'")
+    
+class NoUserIdentifierInputError(TLException):
+    status = "NoUserIdentifierInputError"
+    message = ("either 'username' or 'email'  is required for login")
+
 
 
 class InvalidInputForEmailError(TLException):

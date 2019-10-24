@@ -84,7 +84,7 @@ class TestUserModel(BaseTestCase):
     def external_user_creation_for_test(self):
         self.role_for_external_user_creation_for_test()
         roles = ['role2',]        
-        u = af.register_user('u3', 'Srijib.Bhattacharyya@itc.in', 'secret', 
+        u = af.register_user('u3', 'u3@itc.in', 'secret', 
                              otp_mode='mail',
                              roles=roles,  
                              wfc_name='wfc2', allowemaillogin='Y')
