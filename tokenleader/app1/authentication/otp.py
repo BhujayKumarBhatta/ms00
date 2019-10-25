@@ -8,6 +8,7 @@ from flask import jsonify, make_response, current_app
 from  tokenleader.app1.kafka import kafka_producer as kp
 from tokenleaderclient.rbac.wfc import WorkFuncContext
 from tokenleader.app1 import exceptions as exc
+from tokenleader.app1.utils import common_utils
 
 
 class Otpmanager():
@@ -32,47 +33,48 @@ class Otpmanager():
 
 
     def despatch_otp(self):
+        reloaded_conf = common_utils.reload_configs()
         rand = str(random.random())
         num = rand[-4:]
         if self._save_otp_in_db(num) is True:
             org = self.userdict_fm_db.get('wfc').get('org')
-            if org in current_app.config['otp']:
-                otpvalidtime = current_app.config.get('otp').get('org') or self.otpvalidtime
+            if org in reloaded_conf.get('otp') and reloaded_conf.get('otp').get(org):
+                otpvalidtime = reloaded_conf.get('otp').get(org)
+                self.otpvalidtime = otpvalidtime
+            else:
+                otpvalidtime =  self.otpvalidtime
             mail_to = self.userdict_fm_db.get('email')
             sms_to = self.userdict_fm_db.get('mobile_num')
-            kafka_response = {'status': True, "otp": num,
+            kafka_response = {'status': 'OTP_SENT', "otp": num,
                               "otp_sending_method": self.OTP_MODE,
                               "mail_to": mail_to, "sms_to": sms_to,
                               'message': ("OTP: %s with validity: %s" 
                                           %(str(num), otpvalidtime)),}
-          
+
             conf = {"kafka_servers": current_app.config.get("kafka_servers")}
-        else:
-            raise exc.OTPGenerationError(message=self._save_otp_in_db(num))
-        try:
             kp.notify_kafka(conf, self._get_wfc(), 
                                 "topic_tokenleader", kafka_response)
-            
+
             response = {'status': 'OTP_SENT',
                         'message': ('OTP SENT to %s with %s seconds validity'
                                      %(self.OTP_MODE, str(otpvalidtime))) }
-        except Exception as e:
-            print(e)
-            response = {'status': 'OTP_FAILED', 'message': str(e)}
-
-        
+        else:
+            raise exc.OTPGenerationError(message=self._save_otp_in_db(num))
         return response
 
 
     def validate_otp(self, otp_input):
+        reloaded_conf = common_utils.reload_configs()
         creation_date = self.userObj_fm_db.otp.creation_date
+        current_date = datetime.datetime.utcnow()
         org_fm_db = self.userdict_fm_db.get('wfc').get('org')
-        if org_fm_db in current_app.config['otp']:
-            otpvalidtime = current_app.config.get('otp').get('org') or self.otpvalidtime
+        if org_fm_db in reloaded_conf.get('otp'):
+            otpvalidtime = reloaded_conf.get('otp').get('org')
         else:
+            otpvalidtime = self.otpvalidtime
             print("otp expiry for the domain %s not configured ,"
                   " failing back to default" %org_fm_db)
-        elapsed_time = (datetime.datetime.utcnow()-creation_date).total_seconds()/60.0
+        elapsed_time = (current_date-creation_date).total_seconds()/60.0
         if elapsed_time <= otpvalidtime:
             self.OTP_Validation_status = True
         else:
@@ -107,5 +109,8 @@ class Otpmanager():
             print (e)
             status = {"status": "OTPGeneratonFiled", "message": e}
         return status
+    
+    
+    
 
 

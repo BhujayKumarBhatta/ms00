@@ -12,6 +12,7 @@ import re
 from tokenleader.app1.authentication.otp import Otpmanager
 from tokenleader.app1.authentication.tokenmanager import TokenManager
 from tokenleader.app1 import exceptions as exc
+from tokenleader.app1.utils import common_utils
 
 
 class Authenticator():
@@ -135,7 +136,8 @@ class Authenticator():
         ''' doc string '''
         #KEEPING THIS LINE FOR  BACKWARD COMPATIBIITY, TO BE REMOVED AFTER DOMAIN ENTERING IS MADE COMPULSARY
         if self.ORG == None: self.ORG = 'default'
-        domain_list = current_app.config.get('domains')
+        reloaded_conf = common_utils.reload_configs()
+        domain_list = reloaded_conf.get('domains')
         for domain_dict in domain_list:
             if self.ORG  in domain_dict.keys():
                 print("found settings for domain: ", self.ORG )

@@ -127,4 +127,5 @@ test_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK
 test_configs_from_file = {**flask_default_setiings_map, **domains_default_settings_map, 
                           **token_settings_map, **tsplist_settings_map, 
                           **otp_settings_map, **test_db_conf}
-test_conf_list = [test_configs_from_file ,   ymldict ]
+test_conf_list = [test_configs_from_file ,   ymldict ,
+                  {"SERVER_SETTINGS_FILE": conf.config_file}]

@@ -4,6 +4,7 @@ from urllib.parse import quote_plus
 from tokenleader.app1.configs.config_handler import Configs
 must_have_keys_in_yml = {'flask_default',
                          'database',
+                         'kafka_servers',
                          'domains',
                          'listoftsp',
                          'mailservice',
@@ -111,4 +112,5 @@ prod_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK
 prod_configs_from_file = {**flask_default_setiings_map, **domains_default_settings_map, 
                           **token_settings_map, **tsplist_settings_map, 
                           **otp_settings_map, **prod_db_conf}
-prod_conf_list = [prod_configs_from_file ,   ymldict ]
+prod_conf_list = [prod_configs_from_file ,   ymldict ,
+                  {"SERVER_SETTINGS_FILE": conf.config_file}]

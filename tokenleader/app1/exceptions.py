@@ -114,6 +114,10 @@ class TokenleaderPrivateKeyNotFoundError(TLException):
     message = "RSA Private Key configuration error in the server"   
 
 
+class KafkaServerConfigError(TLException):
+    status = "KafkaServerConfigError"
+    message = "Kafka server not configured in tokenleader_configs"
+
 
 
 
