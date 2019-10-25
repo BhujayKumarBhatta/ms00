@@ -77,8 +77,11 @@ class Otpmanager():
                   " failing back to default" %org_fm_db)
         elapsed_time = (current_date-creation_date).total_seconds()/60.0
         print("time detials", elapsed_time, otpvalidtime)
-        if elapsed_time <= otpvalidtime and otp_input == otp_fm_db:
-            self.OTP_Validation_status = True
+        if elapsed_time <= otpvalidtime:
+            if  otp_input == otp_fm_db:
+                self.OTP_Validation_status = True
+            else:
+                raise exc.IncorrectOtpError
         else:
             raise exc.OTPExpiredError
         return self.OTP_Validation_status

@@ -96,12 +96,15 @@ class MissingAuthInfoError(TLException):
 
 class IncorrectOtpError(TLException):
     status = "IncorrectOtpError"
-    message = "Incorrect OTP"
+    message = ("Incorrect OTP, check the otp in your mail "
+               "or sms and  reenter the correct OTP")
 
 
 class OTPExpiredError(TLException):
     status = "OTPExpiredError"
-    message = "OTP has Expired"
+    message = ("OTP Expired, re login and enter the OTP within the time"
+               "validity time shown after login. You may contact administrator "
+               " to request increasing the expiry time, if needed")
 
 
 class OTPGenerationError(TLException):
