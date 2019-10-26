@@ -56,9 +56,11 @@ class Otpmanager():
                                 "topic_tokenleader", kafka_response)
 
             if self.OTP_MODE == "show":
-                message =  ('OTP: %s SENT to %s with %s seconds validity'
-                            %(self.OTP_MODE, str(otpvalidtime), num))
-            message =  ('OTP SENT to %s with %s seconds validity'
+                print("otp sending mode", self.OTP_MODE)
+                message =  ('OTP value : %s delivery method as  %s with %s seconds validity'
+                            %(str(num), self.OTP_MODE, str(otpvalidtime)))
+            else:
+                message =  ('OTP delivery method as %s with %s seconds validity'
                         %(self.OTP_MODE, str(otpvalidtime)))
             response = {'status': 'OTP_SENT', 'message': message }
         else:
