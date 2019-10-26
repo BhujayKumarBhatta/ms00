@@ -55,7 +55,7 @@ class Otpmanager():
             kp.notify_kafka(conf, self._get_wfc(), 
                                 "topic_tokenleader", kafka_response)
 
-            if self.OTP_MODE == "view":
+            if self.OTP_MODE == "show":
                 message =  ('OTP: %s SENT to %s with %s seconds validity'
                             %(self.OTP_MODE, str(otpvalidtime), num))
             message =  ('OTP SENT to %s with %s seconds validity'
