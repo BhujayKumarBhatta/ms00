@@ -17,6 +17,7 @@ def get_token():
      -H "Content-Type: Application/json"  localhost:5001/token/gettoken
  
     '''
+    print(request.json)
     authobj = Authenticator(request)
     responseObject = authobj.authenticate()
     return make_response(jsonify(responseObject)), 201

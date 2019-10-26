@@ -55,9 +55,12 @@ class Otpmanager():
             kp.notify_kafka(conf, self._get_wfc(), 
                                 "topic_tokenleader", kafka_response)
 
-            response = {'status': 'OTP_SENT',
-                        'message': ('OTP SENT to %s with %s seconds validity'
-                                     %(self.OTP_MODE, str(otpvalidtime))) }
+            if self.OTP_MODE == "display":
+                message =  ('OTP: %s SENT to %s with %s seconds validity'
+                            %(self.OTP_MODE, str(otpvalidtime), num))
+            message =  ('OTP SENT to %s with %s seconds validity'
+                        %(self.OTP_MODE, str(otpvalidtime)))
+            response = {'status': 'OTP_SENT', 'message': message }
         else:
             raise exc.OTPGenerationError(message=self._save_otp_in_db(num))
         return response
