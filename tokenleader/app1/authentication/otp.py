@@ -22,7 +22,7 @@ class Otpmanager():
     def __init__(self, userObj_fm_db):
         self.userObj_fm_db = userObj_fm_db
         self.userdict_fm_db = userObj_fm_db.to_dict()
-        self.otpvalidtime = 60
+        self.otpvalidtime = 1
         self.userid_db = self.userdict_fm_db.get('username')
         self.email_db = self.userdict_fm_db.get('email')
         self.OTP_MODE = self.userdict_fm_db.get('otp_mode')
@@ -57,10 +57,10 @@ class Otpmanager():
 
             if self.OTP_MODE == "show":
                 print("otp sending mode", self.OTP_MODE)
-                message =  ('OTP value : %s delivery method as  %s with %s seconds validity'
+                message =  ('OTP value : %s delivery method as  %s with %s minutes validity'
                             %(str(num), self.OTP_MODE, str(otpvalidtime)))
             else:
-                message =  ('OTP delivery method as %s with %s seconds validity'
+                message =  ('OTP delivery method as %s with %s minutes validity'
                         %(self.OTP_MODE, str(otpvalidtime)))
             response = {'status': 'OTP_SENT', 'message': message }
         else:
