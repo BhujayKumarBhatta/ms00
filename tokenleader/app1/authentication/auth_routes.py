@@ -16,8 +16,7 @@ def get_token():
     curl -X POST -d '{"email": "test@xyz.com", "otp": "3376"}'  \
      -H "Content-Type: Application/json"  localhost:5001/token/gettoken
  
-    '''
-    print(request.json)
+    '''    
     authobj = Authenticator(request)
     responseObject = authobj.authenticate()
     return make_response(jsonify(responseObject)), 201
