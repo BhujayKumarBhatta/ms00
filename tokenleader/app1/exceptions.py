@@ -123,6 +123,14 @@ class KafkaServerConfigError(TLException):
 
 
 
+class PasswordLengthError(TLException):    
+    def __init__(self, minl=7, maxl=50):
+        self.minl = minl
+        self.maxl = maxl
+    status = "PasswordMinLengthError"
+    message = ("Password minimum  length should be %d and max length"
+            "within %d" %(self.minl, self.maxl)
+        
 
 
 # def checkme(a, b):
