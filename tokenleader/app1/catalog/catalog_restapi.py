@@ -3,6 +3,7 @@ from tokenleader.app1.catalog import catalog_functions as cf
 from tokenleaderclient.configs.config_handler import Configs    
 from  tokenleaderclient.client.client import Client 
 from tokenleaderclient.rbac.enforcer import Enforcer
+import json
 #from tokenleader.tests.test_catalog_ops import TestCatalog
 
 
@@ -13,7 +14,7 @@ enforcer = Enforcer(tlclient)
 
 @catalog_bp.route('/list/services', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_services')
-def list_services():  
+def list_services(wfc):  
     '''
     the function must have a mandatory wfc paramater for applying enforcer decorator
     '''    
@@ -25,14 +26,14 @@ def list_services():
       
 @catalog_bp.route('/list/service/<srvname>', methods=['GET'])
 @enforcer.enforce_access_rule_with_token('tokenleader.list_services_byname')
-def list_services_byname(srvname):  
+def list_services_byname(wfc, srvname):  
     record = cf.list_services(srvname)
     response_obj = {"status": record}
     return jsonify(response_obj)
  
 @catalog_bp.route('/add/service', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_service')
-def add_service():
+def add_service(wfc):
     data_must_contain = ['name', 'urlint', 'urlext','urladmin']
     for k in data_must_contain:
         if k not in request.json:
@@ -44,20 +45,20 @@ def add_service():
     urlext = request.json['urlext']
     urladmin = request.json['urladmin']
     #print('i got the name from http argument {}'.format(username))
-    record = cf.add_service(name, urlint, urlext, urladmin)
+    record = cf.add_service(name, urlint=urlint, urlext=urlext, urladmin=urladmin)
     response_obj = {"status": record}
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service/<srvname>', methods=['DELETE'])
 @enforcer.enforce_access_rule_with_token('tokenleader.delete_service_byname')
-def delete_service_byname(srvname):   
+def delete_service_byname(wfc, srvname):   
     status = cf.delete_service(srvname)
     response_obj = {"status": status}
     return jsonify(response_obj)
 
 @catalog_bp.route('/delete/service', methods=['DELETE'])
 @enforcer.enforce_access_rule_with_token('tokenleader.delete_service')
-def delete_service():
+def delete_service(wfc):
     data_must_contain = ['name']
     for k in data_must_contain:
         if k not in request.json:

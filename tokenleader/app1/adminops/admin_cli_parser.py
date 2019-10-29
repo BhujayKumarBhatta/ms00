@@ -75,10 +75,8 @@ add_parser.add_argument('-n', '--name',
                   )
 add_parser.add_argument('--orgtype' , action = "store", dest = "orgtype",
                   required = False,
-                  help = "internal or external org , to be used while registtering org ",
+                  help = "internal or external org , to be used while registering org ",
                   default = "internal")
-                  
-
 
 addwfc_parser = subparser.add_parser('addwfc', help='add a wfc , work function context ')
 addwfc_parser.add_argument('-n', '--name', 
@@ -119,7 +117,15 @@ adduser_parser.add_argument('--rolenames' , action = "store", dest = "rolenames"
                   help = "comma separed names of roles which were already registered in the role db.\
                    there should not be any space beteween the role names. \
                    examaple  , --rolenames role1,role2,role3 " 
-                  )  
+                  )
+adduser_parser.add_argument('--otpmode' , action = "store", dest = "otpmode",
+                  required = False,
+                  help = "to be mentioned while adding user, so that user receives otp in either mail or sms or both",
+                  )                    
+adduser_parser.add_argument('--allowemaillogin' , action = "store", dest = "allowemaillogin",
+                  required = False,
+                  help = "to be mentioned while adding user, so that user can upload file from email",
+                  )                  
 adduser_parser.add_argument('--wfc' , action = "store", dest = "wfc",
                   required = True,
                   help = "wfc or work function context name " 
@@ -177,6 +183,8 @@ except:
     sys.exit(1)
 
 def main():
+    allowemaillogin = ''
+    otpmode = ''
     if len(sys.argv)==1:
         # display help message when no args are passed.
         parser.print_help()
@@ -193,8 +201,12 @@ def main():
     
     if  sys.argv[1] == 'add':
         
-        if options.entity == 'org':      
-            af.register_org(options.name)
+        if options.entity == 'org':
+            orgtype = options.orgtype
+            if orgtype:      
+                af.register_org(options.name, orgtype)
+            else:
+                af.register_org(options.name)
                 
         
         if options.entity == 'ou':      
@@ -216,15 +228,22 @@ def main():
         username = options.name
         emailid = options.emailid
         rolenames = options.rolenames
+        if options.allowemaillogin:
+            allowemaillogin = options.allowemaillogin
+        if options.otpmode:
+            otpmode = options.otpmode
+        '''
+        #TODO: otpmode is mandatory, check if user is external
+        '''
         if rolenames:
             role_list = []
             if  not ',' in rolenames:
                 role_list.append(rolenames)
             else:
                 role_list = rolenames.split(',')
-            af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc, roles=role_list,)
+            af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc, roles=role_list, allowemaillogin=allowemaillogin, otp_mode=otpmode)
         else:
-            af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc) 
+            af.register_user(username, email=emailid, pwd=password, wfc_name=options.wfc, allowemaillogin=allowemaillogin, otp_mode=otpmode) 
         #af.delete_user(options.name, options.email, options.password, options.roles)      
     
     

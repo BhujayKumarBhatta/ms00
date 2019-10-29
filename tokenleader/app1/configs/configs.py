@@ -11,9 +11,14 @@ apppath = (os.path.join(possible_topdir,
 
 sys.path.insert(0, apppath)
 from tokenleader.app1.configs.config_handler import Configs
+
 must_have_keys_in_yml = {'flask_default',
-                         'db',
+                         'database',
+                         'domains',
+                         'listoftsp',
+                         'mailservice',
                          'token',
+                         'otp',                         
                          'secrets'
                          }
 

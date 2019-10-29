@@ -3,16 +3,62 @@ flask_default:
   host_port: 5001
   ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
   ssl_settings: adhoc
-db:
-  database:
-     Server: tldbserver130
-     Port: 3306
-     Database: auth
-     UID: root
-     db_pwd_key_map: db_pwd
-     engine_connect_string: 'mssql+pymysql:///{0}'
+database:
+   Server: 10.174.112.130
+   Port: 3306
+   Database: auth
+   UID: root
+   db_pwd_key_map: db_pwd
+   #engine_connect_string: 'mssql+pymysql:///{0}'
+   
+domains:
+   - default:
+      auth_backend: default
+      otp_required: False
+   - itc:
+      auth_backend: ldap   
+      ldap_host: remote   # configure later with AD
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      O: itc   # configure later with AD
+      otp_required: False
+      
+   - tsp:
+      auth_backend: ldap   
+      ldap_host: localhost     #10.174.112.100 if localhost doesnt work
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      otp_required: True
+
+listoftsp:
+   - TATA
+   - RELIANCE
+   - BHARTI
+   - SIFY
+   - VODAFONE
+
+mailservice:
+   Server: 10.174.112.79         #localhost if CALDOMINO & BLRDOMINO has not got access from 79
+   Port: 5000
+
+otp:
+   TATA: 10
+   RELIANCE: 20
+   BHARTI: 30
+   SIFY: 20
+   VODAFONE: 20
+   org2: 10
 
 token:
+     tokenexpiration: 8
      #default will take the id_rsa keys from the  users home directory and .ssh directiry
      #put the file name here if  the file name is different
      #also the public ley need to be copied in the client settings file under /etc/tlclient
@@ -22,7 +68,7 @@ token:
      #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
      #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
 secrets:
-     secrets_file_location: tokenleader/tests/test_data/secrets.yml # where you have write access
-     fernet_key_location: tokenleader/tests/test_data/fernetkeys # where you have write access and preferebly separated from secrets_file_location
+     user_auth_info_file_location: tokenleader/tests/testdata/secrets.yml # where you have write access
+     fernet_key_file: tokenleader/tests/testdata/fernet_key_file.yml # where you have write access and preferebly separated from secrets_file_location
      db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
      tokenleader_pwd_key_map: tl_pwd

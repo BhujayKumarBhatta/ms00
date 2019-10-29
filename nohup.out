@@ -1,0 +1,30 @@
+ * Serving Flask app "smtpclient" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+send: 'ehlo [10.174.112.100]\r\n'
+reply: b'502 Error: command "EHLO" not implemented\r\n'
+reply: retcode (502); Msg: b'Error: command "EHLO" not implemented'
+send: 'helo [10.174.112.100]\r\n'
+reply: b'250 xrdp\r\n'
+reply: retcode (250); Msg: b'xrdp'
+send: 'mail FROM:<infobahnforotp@itc.in>\r\n'
+reply: b'250 Ok\r\n'
+reply: retcode (250); Msg: b'Ok'
+send: 'rcpt TO:<Srijib.Bhattacharyya@itc.in>\r\n'
+reply: b'250 Ok\r\n'
+reply: retcode (250); Msg: b'Ok'
+send: 'data\r\n'
+reply: b'354 End data with <CR><LF>.<CR><LF>\r\n'
+reply: retcode (354); Msg: b'End data with <CR><LF>.<CR><LF>'
+data: (354, b'End data with <CR><LF>.<CR><LF>')
+send: b'Content-Type: multipart/alternative; boundary="===============0450004428027887695=="\r\nMIME-Version: 1.0\r\nSubject: OTP\r\nFrom: infobahnforotp@itc.in\r\nTo: Srijib.Bhattacharyya@itc.in\r\n\r\n--===============0450004428027887695==\r\nContent-Type: text/html; charset="us-ascii"\r\nMIME-Version: 1.0\r\nContent-Transfer-Encoding: 7bit\r\n\r\n<html><body>Your OTP is <b><font color=blue>8723</font></b>. It is only valid for 10 minutes.</body></html>\r\n--===============0450004428027887695==--\r\n.\r\n'
+reply: b'250 Ok\r\n'
+reply: retcode (250); Msg: b'Ok'
+data: (250, b'Ok')
+send: 'quit\r\n'
+reply: b'221 Bye\r\n'
+reply: retcode (221); Msg: b'Bye'
+127.0.0.1 - - [10/Sep/2019 17:08:22] "POST /mail HTTP/1.1" 200 -

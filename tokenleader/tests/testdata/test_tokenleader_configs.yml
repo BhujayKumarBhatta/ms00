@@ -1,0 +1,85 @@
+flask_default:
+  host_name: '0.0.0.0' # for docker this should 0.0.0.0
+  host_port: 5001
+  ssl: disabled # not required other than testing the flaks own ssl. ssl should be handled by apache
+  ssl_settings: adhoc
+database:
+#    Server: 10.174.112.108
+   Server: localhost
+   Port: 3306
+   Database: test_auth
+   UID: root
+   db_pwd_key_map: db_pwd
+   #engine_connect_string: 'mssql+pymysql:///{0}'
+   
+kafka_servers:
+  - '10.174.112.150:9092'
+
+domains:
+   - default:
+      auth_backend: default
+      otp_required: False
+   - org1:
+      auth_backend: default
+      otp_required: False
+   - org2:
+      auth_backend: default
+      otp_required: True
+
+   - itc:
+      auth_backend: ldap   
+      ldap_host: remote   # configure later with AD
+      ldap_port: 389
+      ldap_version: 3 
+      DC1: test
+      DC2: tspbillldap
+      DC3: itc
+      OU: Users
+      O: itc   # configure later with AD
+      otp_required: False
+      
+#    - tsp:
+#       auth_backend: ldap   
+#       ldap_host: 10.174.112.100      #10.174.112.100 if localhost doesnt work
+#       ldap_port: 389
+#       ldap_version: 3 
+#       DC1: test
+#       DC2: tspbillldap
+#       DC3: itc
+#       OU: Users
+#       otp_required: True
+
+listoftsp:
+   - TATA
+   - RELIANCE
+   - BHARTI
+   - SIFY
+   - VODAFONE
+
+otp:
+   TATA: 10
+   RELIANCE: 20
+   BHARTI: 30
+   SIFY: 20
+   VODAFONE: 20
+   org2: 3600
+
+mailservice:
+   Server: 10.174.112.79
+   Port: 5000
+
+token:
+     tokenexpiration: 60
+     #default will take the id_rsa keys from the  users home directory and .ssh directiry
+     #put the file name here if  the file name is different
+     #also the public ley need to be copied in the client settings file under /etc/tlclient
+     private_key_file_location: testlocation
+     public_key_file_location: testlocation
+     #use full path when deployed with apache
+     #private_key_file_location: /home/sbhattacharyya/.ssh/id_rsa
+     #public_key_file_location: /home/sbhattacharyya/.ssh/id_rsa.pub
+secrets:
+     user_auth_info_file_location: testlocation # where you have write access
+     fernet_key_file: testlocation # where you have write access and preferebly separated from secrets_file_location
+     db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
+     tokenleader_pwd_key_map: tl_pwd

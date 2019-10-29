@@ -17,7 +17,7 @@ service_catalog = {'testservice': {'endpoint_url_internal': 'localhost/5005',
 
 class TestCatalog(BaseTestCase):
     
-    def  add_service(self):
+    def add_service(self):
         r =cf.add_service( service_name, urlint=url_int, urlext=url_ext, urladmin=url_admin)
         return r
         
@@ -32,7 +32,7 @@ class TestCatalog(BaseTestCase):
         return r        
     
     def test_add_service(self):
-        msg = self.add_service()        
+        msg = self.add_service()
         self.assertTrue(msg == "testservice has been registered.")
         
     def test_service_catalog_format(self):

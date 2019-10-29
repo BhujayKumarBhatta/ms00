@@ -1,0 +1,13 @@
+eclipse.preferences.version=1
+encoding//venv/lib/python3.5/site-packages/flask/__init__.py=utf-8
+encoding//venv/lib/python3.5/site-packages/flask/app.py=utf-8
+encoding//venv/lib/python3.5/site-packages/flask/blueprints.py=utf-8
+encoding//venv/lib/python3.5/site-packages/flask/helpers.py=utf-8
+encoding//venv/lib/python3.5/site-packages/flask/json/__init__.py=utf-8
+encoding//venv/lib/python3.5/site-packages/flask/testing.py=utf-8
+encoding//venv/lib/python3.5/site-packages/flask_sqlalchemy/__init__.py=utf-8
+encoding//venv/lib/python3.5/site-packages/flask_testing/utils.py=utf-8
+encoding//venv/lib/python3.5/site-packages/werkzeug/local.py=utf-8
+encoding//venv/lib/python3.5/site-packages/werkzeug/security.py=utf-8
+encoding//venv/lib/python3.5/site-packages/werkzeug/test.py=utf-8
+encoding//venv/lib/python3.5/site-packages/werkzeug/wrappers.py=utf-8

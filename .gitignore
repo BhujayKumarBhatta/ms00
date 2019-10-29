@@ -3,7 +3,10 @@
 .project
 .pydevproject
 venv
+.vscode
+.settings
 dist
 *.egg-info
-
-
+.jsdtscope
+org.eclipse.*
+nohup.out

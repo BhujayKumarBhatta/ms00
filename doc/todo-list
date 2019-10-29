@@ -1,3 +1,20 @@
+1)operation scope filtering based on users org, div, dept details 
+Todo:
+role and wfc shd not have any relation - done
+user can have only one wfc  - done 
+user to dict now gives wfc dictionary as well
+
+tesing to be done/changes to that affect  - upto verification unit test is passed 
+
+workcontext to be instantiated as a class 
+
+workcontext to be made avilable to  api route function when required
+
+ext  important works:
+
+2) centralized catalogue for all microservice endpoints and 
+3) client for tokenleader
+
 write tests
 handle authentication failure
 
