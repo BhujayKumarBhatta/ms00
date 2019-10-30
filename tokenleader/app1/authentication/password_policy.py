@@ -88,7 +88,7 @@ class Pwdpolicy:
         last_3_pwdhist = user_fm_db.pwdhistory
         for pwdhist in last_3_pwdhist:
             if check_password_hash(pwdhist.password_hash, new_pwd):
-                raise exc.PwdHistroyCheckError
+                raise exc.PwdHistroyCheckErrors
             break
         return True
 

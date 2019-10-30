@@ -154,7 +154,7 @@ class PwdWithoutUpperCaseError(TLException):
     message = "Password must have at least one  upper case character"
     
     
-class PwdWithoutUpperCaseError(TLException):
+class PwdHistroyCheckError(TLException):
     status = "PwdHistroyCheckError"
     message = "Last N number of password can not be used"
 
