@@ -1,5 +1,6 @@
 import json
 
+
 class TLException(Exception):
     status = "UNKNOWN_STATUS"
     message = "Unknown status"
@@ -7,8 +8,8 @@ class TLException(Exception):
     def __init__(self, status=None, message=None):
         if status:  self.status = status
         if message: self.message = message
-        self.ret_val = {"status": self.status, "message": self.message}
-#         super(MyException, self).__init__({"status": self.status, "message": self.message})
+        self.ret_val = {"status": self.status, "message": self.message }
+        super(TLException, self).__init__(self.status, self.message)
 
     def __str__(self):
         return json.dumps(self.ret_val)
@@ -123,14 +124,40 @@ class KafkaServerConfigError(TLException):
 
 
 
-class PasswordLengthError(TLException):    
-    def __init__(self, minl=7, maxl=50):
-        self.minl = minl
-        self.maxl = maxl
-    status = "PasswordMinLengthError"
-    message = ("Password minimum  length should be %d and max length"
-            "within %d" %(self.minl, self.maxl)
-        
+class PasswordLengthError(TLException):
+    status = "PasswordLengthError"
+    def __init__(self, pwd_length_min, pwd_length_max):
+        self.pwd_length_min = pwd_length_min
+        self.pwd_length_max = pwd_length_max
+        self.message = ("Password minimum  length should be %d and max length"
+            "within %d" %(self.pwd_length_min, self.pwd_length_max))
+        super(PasswordLengthError, self).__init__(self.status, self.message)
+
+
+class PwdWithoutSpecialCharError(TLException):
+    status = "PwdWithoutSpecialCharError"
+    message = "Password must have at least one special character"
+    
+
+class PwdWithoutNumberError(TLException):
+    status = "PwdWithoutNumberError"
+    message = "Password must have at least one numeric character"
+    
+    
+class PwdWithoutAlphabetError(TLException):
+    status = "PwdWithoutAlphabetError"
+    message = "Password must have at least one  character from Alphabet"
+
+
+class PwdWithoutUpperCaseError(TLException):
+    status = "PwdWithoutUpperCaseError"
+    message = "Password must have at least one  upper case character"
+    
+    
+class PwdWithoutUpperCaseError(TLException):
+    status = "PwdHistroyCheckError"
+    message = "Last N number of password can not be used"
+
 
 
 # def checkme(a, b):
@@ -145,3 +172,4 @@ class PasswordLengthError(TLException):
 #     print("only e:", e)
 #     print("repr:", e.__repr__())
 #     print(type(e))
+#

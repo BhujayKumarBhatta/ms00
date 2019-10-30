@@ -182,6 +182,13 @@ roles_n_user_map = db.Table('roles_n_user_map',
 )
 
 
+class Pwdhistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    password_hash = db.Column(db.String(128))
+    pwd_creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
+    last_used = db.Column(db.DateTime(timezone=True))
+
+
 class User(db.Model):
     '''
     ######################################################################################
@@ -212,12 +219,16 @@ class User(db.Model):
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     otp_mode = db.Column(db.String(20))
     allowemaillogin = db.Column(db.Enum('N','Y'), nullable=False, server_default=("N"))
-    is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     wfc_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
     wfc = db.relationship("Workfunctioncontext", backref="users")
     otp_id = db.Column(db.Integer, db.ForeignKey('otp.id'))
-    otp = db.relationship("Otp", backref="user", uselist=False)
+    otp = db.relationship("Otp", backref="user", uselist=False)    
     created_by = db.Column(db.String(24))
+    pwd_id = db.Column(db.Integer, db.ForeignKey('pwdhistory.id'))
+    pwdhistory = db.relationship("Pwdhistory", backref="user")
+    num_of_failed_attempt = db.Column(db.Integer)
+    is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
+    last_logged_in = db.Column(db.DateTime(timezone=True),)
     
 
 #     roles = db.relationship('Role', lazy='dynamic' ,

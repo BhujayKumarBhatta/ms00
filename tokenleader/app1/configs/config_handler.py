@@ -13,7 +13,7 @@ class Configs():
     def __init__(self, service_name, conf_file=None, must_have_keys_in_yml={} ):
         #    
         self.must_have_keys_in_yml = must_have_keys_in_yml 
-        
+        self.yml = dict()
         if conf_file:
             self.config_file = conf_file
         else:            
@@ -23,12 +23,18 @@ class Configs():
             print("no configuration file found. you need to create a config file "
                   "first in {} ".format(self.config_file))
             sys.exit()
-        else:            
-            self.yml = self.parse_yml(self.config_file)            
-#         print(self.general_config.keys()) 
-            if  sorted(self.yml.keys()) >= sorted(self.must_have_keys_in_yml):
-                pass                                    
-                
+        else:
+            self.yml = self.parse_yml(self.config_file)
+#         print(self.general_config.keys())
+            key_check = True
+            for k in self.must_have_keys_in_yml:
+                if k not in self.yml.keys():
+                    key_check = False
+                    break 
+            #if  sorted(self.yml.keys()) >= sorted(self.must_have_keys_in_yml):
+            if key_check is True:
+                copy_yml = self.yml.copy()
+
             else:
                 print("{} file must have the following sections {}".format(
                     self.config_file, self.must_have_keys_in_yml ))

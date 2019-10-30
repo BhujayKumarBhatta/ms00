@@ -83,3 +83,7 @@ secrets:
      fernet_key_file: testlocation # where you have write access and preferebly separated from secrets_file_location
      db_pwd_key_map: db_pwd # when using encrypt-pwd command use this value for --kemap
      tokenleader_pwd_key_map: tl_pwd
+     
+pwdpolicy:
+    pwd_length_min: 7
+    pwd_length_max: 10

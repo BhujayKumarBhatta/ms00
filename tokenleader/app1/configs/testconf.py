@@ -17,7 +17,7 @@ must_have_keys_in_yml = {'flask_default',
                          'listoftsp',
                          'mailservice',
                          'token',
-                         'otp',                         
+                         'otp',
                          'secrets'
                          }
 must_have_in_flask_default_section = {'host_name',
