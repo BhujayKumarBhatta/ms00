@@ -88,13 +88,14 @@ class PTesting(TestUserModel):
         pwd_policy.set_password('u1', 'password4')
         #USE A PASSWWORD OLDER THAN LAST 3 AND PASS
         pwd_policy._check_history('u1', 'password1') 
-        try:      
+        try:
             #USE A PASSWORD WOITHIN LAST LAST 3 AND FAIL
             pwd_policy._check_history('u1', 'password2')
         except Exception as e:
             self.assertTrue(e.status == "PwdHistroyCheckError")
-            
-        
+        #EXPIARY TEST CONSIDERIG DAYS AS SECONDS
+        pwd_policy._check_pwd_expiry('u1', count_seconds=True)
+
 
 
 

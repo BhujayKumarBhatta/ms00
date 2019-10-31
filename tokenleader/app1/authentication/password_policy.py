@@ -109,15 +109,21 @@ class Pwdpolicy:
         return status
 
 
-    def _check_pwd_expiry(self, username):
+    def _check_pwd_expiry(self, username, count_seconds=None):
         user_fm_db = self._get_userObj_from_db(username)
-        last_pwd_rec = user_fm_db.pwdhistory[-1:]
+        last_pwd_rec = user_fm_db.pwdhistory[-1]
         current_date = datetime.datetime.now()
-        creation_date = last_pwd_rec.pwd_creation_date
-        elapsed_days = (current_date - creation_date).days()
-        if elapsed_days > self.pwd_expiry_days:
+        creation_date= last_pwd_rec.pwd_creation_date
+        expiry_value = self.pwd_expiry_days*3600*24
+        grace_value = self.pwd_grace_period*3600*24
+        #FOR TESTING ONLY CONSIDER THE NUMBERS IN CONF FILE AS SECONDS
+        if count_seconds:
+            expiry_value = self.pwd_expiry_days
+            grace_value = self.pwd_grace_period
+        elapsed_seconds = (current_date - creation_date).total_seconds()
+        if elapsed_seconds > expiry_value:
             raise exc.PwdExpiryError(grace_period=self.pwd_grace_period)
-        if elapsed_days > (self.pwd_expiry_days + self.pwd_grace_period):
+        if elapsed_seconds > (expiry_value + grace_value):
             raise exc.PwdExpiredAccountLockedError()
         return False
 
@@ -171,8 +177,8 @@ class Pwdpolicy:
 
 
     def _get_userObj_from_db(self, username=None, email=None):
-        self.userObj_fm_db = uOb
-        if (uOb and  uOb.username ==  username or uOb.email == email):
+        uOb = self.userObj_fm_db
+        if uOb and  (uOb.username ==  username or uOb.email == email):
             user_fm_db = uOb
         else:
             if username:

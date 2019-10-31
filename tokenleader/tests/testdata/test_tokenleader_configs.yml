@@ -88,5 +88,5 @@ pwdpolicy:
     pwd_length_min: 7
     pwd_length_max: 10
     num_of_old_pwd_blocked: 3
-    pwd_expiry_days: 90
+    pwd_expiry_days: 50000
     pwd_grace_period: 7

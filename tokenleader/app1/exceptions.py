@@ -161,11 +161,11 @@ class PwdHistroyCheckError(TLException):
 
 class PwdExpiryError(TLException):
     status = "PwdExpiryError"
-    def __init__(self, grace_period=grace_period):
+    def __init__(self, grace_period=None):
         self.grace_period = grace_period
         self.message = ("password expired, change your password "
                         "within next %d days" % self.grace_period)
-        super(PwdExpiryError, self).__init__(self.status, self.message, self.ret_val)
+        super(PwdExpiryError, self).__init__(self.status, self.message)
 
 
 class PwdExpiredAccountLockedError(TLException):
