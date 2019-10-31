@@ -17,6 +17,7 @@ class Pwdpolicy:
         self.pwd_length_min = policy_config.get("pwd_length_min", 7)
         self.pwd_length_max = policy_config.get("pwd_length_max", 50)
         self.pwd = pwd
+        self.num_of_old_pwd_blocked = policy_config.get("num_of_old_pwd_blocked", 3)
 
 
     def validate_password(self, pwd):
@@ -85,11 +86,12 @@ class Pwdpolicy:
 
     def _check_history(self, username, new_pwd):
         user_fm_db = User.query.filter_by(username=username).first()
-        last_3_pwdhist = user_fm_db.pwdhistory
+        order = int(self.num_of_old_pwd_blocked)
+        last_3_pwdhist = user_fm_db.pwdhistory[-order:]
         for pwdhist in last_3_pwdhist:
             if check_password_hash(pwdhist.password_hash, new_pwd):
-                raise exc.PwdHistroyCheckErrors
-            break
+                raise exc.PwdHistroyCheckError
+                break
         return True
 
 
@@ -97,7 +99,7 @@ class Pwdpolicy:
         password_hash = generate_password_hash(new_pwd)   
         new_password = Pwdhistory(password_hash = password_hash)
         user_fm_db = User.query.filter_by(username=username).first()
-        user_fm_db.pwdhistory =  new_password
+        user_fm_db.pwdhistory.append(new_password)
         try:
             db.session.commit()
             status = user_fm_db

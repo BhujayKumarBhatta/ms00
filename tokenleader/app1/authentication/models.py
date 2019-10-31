@@ -187,6 +187,8 @@ class Pwdhistory(db.Model):
     password_hash = db.Column(db.String(128))
     pwd_creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     last_used = db.Column(db.DateTime(timezone=True))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User", backref="pwdhistory")
 
 
 class User(db.Model):
@@ -223,9 +225,7 @@ class User(db.Model):
     wfc = db.relationship("Workfunctioncontext", backref="users")
     otp_id = db.Column(db.Integer, db.ForeignKey('otp.id'))
     otp = db.relationship("Otp", backref="user", uselist=False)    
-    created_by = db.Column(db.String(24))
-    pwd_id = db.Column(db.Integer, db.ForeignKey('pwdhistory.id'))
-    pwdhistory = db.relationship("Pwdhistory", backref="user")
+    created_by = db.Column(db.String(24))    
     num_of_failed_attempt = db.Column(db.Integer)
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     last_logged_in = db.Column(db.DateTime(timezone=True),)

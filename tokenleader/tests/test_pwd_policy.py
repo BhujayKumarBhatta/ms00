@@ -2,12 +2,13 @@ from tokenleader.app1.configs.testconf import conf as tconf
 from tokenleader.app1.authentication.password_policy import Pwdpolicy
 from unittest import TestCase
 from tokenleader.tests.base_test import  BaseTestCase
+from tokenleader.tests.admin_ops import TestUserModel
 
 pwd_policy_conf = tconf.yml.get('pwdpolicy')
 pwd_policy = Pwdpolicy(pwd_policy_conf)
 
 
-class PTesting(TestCase):
+class PTesting(TestUserModel):
 
     def test_pwd(self):
         #MIN FAILURE
@@ -79,5 +80,21 @@ class PTesting(TestCase):
         except Exception as e:
             result = e
         self.assertTrue(result.status == "PwdWithoutAlphabetError")
+        #SET PASSWORD IN THE NEW TABLE
+        self.user_creation_for_test()
+        pwd_policy.set_password('u1', 'password1')
+        pwd_policy.set_password('u1', 'password2')
+        pwd_policy.set_password('u1', 'password3')
+        pwd_policy.set_password('u1', 'password4')
+        #USE A PASSWWORD OLDER THAN LAST 3 AND PASS
+        pwd_policy._check_history('u1', 'password1') 
+        try:      
+            #USE A PASSWORD WOITHIN LAST LAST 3 AND FAIL
+            pwd_policy._check_history('u1', 'password2')
+        except Exception as e:
+            self.assertTrue(e.status == "PwdHistroyCheckError")
+            
         
+
+
 
