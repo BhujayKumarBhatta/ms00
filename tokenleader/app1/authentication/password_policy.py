@@ -13,11 +13,14 @@ logger = logging.getLogger(__name__)
 class Pwdpolicy:
 
     def __init__(self, policy_config={}, pwd=None):
+        self.userObj_fm_db = None
         self.policy_config = policy_config
-        self.pwd_length_min = policy_config.get("pwd_length_min", 7)
-        self.pwd_length_max = policy_config.get("pwd_length_max", 50)
+        self.pwd_length_min = int(policy_config.get("pwd_length_min", 7))
+        self.pwd_length_max = int(policy_config.get("pwd_length_max", 50))
         self.pwd = pwd
-        self.num_of_old_pwd_blocked = policy_config.get("num_of_old_pwd_blocked", 3)
+        self.num_of_old_pwd_blocked = int(policy_config.get("num_of_old_pwd_blocked", 3))
+        self.pwd_expiry_days = int(policy_config.get("pwd_expiry_days", 90))
+        self.pwd_grace_period = int(policy_config.get("pwd_grace_period", 7))
 
 
     def validate_password(self, pwd):
@@ -80,12 +83,8 @@ class Pwdpolicy:
         return  result
 
 
-    def _check_expiry(self):
-        pass
-
-
     def _check_history(self, username, new_pwd):
-        user_fm_db = User.query.filter_by(username=username).first()
+        user_fm_db = self._get_userObj_from_db(username)
         order = int(self.num_of_old_pwd_blocked)
         last_3_pwdhist = user_fm_db.pwdhistory[-order:]
         for pwdhist in last_3_pwdhist:
@@ -98,7 +97,7 @@ class Pwdpolicy:
     def set_password(self, username, new_pwd): 
         password_hash = generate_password_hash(new_pwd)   
         new_password = Pwdhistory(password_hash = password_hash)
-        user_fm_db = User.query.filter_by(username=username).first()
+        user_fm_db = self._get_userObj_from_db(username)
         user_fm_db.pwdhistory.append(new_password)
         try:
             db.session.commit()
@@ -109,6 +108,29 @@ class Pwdpolicy:
             db.session.rollback()
         return status
 
+
+    def _check_pwd_expiry(self, username):
+        user_fm_db = self._get_userObj_from_db(username)
+        last_pwd_rec = user_fm_db.pwdhistory[-1:]
+        current_date = datetime.datetime.now()
+        creation_date = last_pwd_rec.pwd_creation_date
+        elapsed_days = (current_date - creation_date).days()
+        if elapsed_days > self.pwd_expiry_days:
+            raise exc.PwdExpiryError(grace_period=self.pwd_grace_period)
+        if elapsed_days > (self.pwd_expiry_days + self.pwd_grace_period):
+            raise exc.PwdExpiredAccountLockedError()
+        return False
+
+
+    def _lock_pwd_on_pwd_expiry(self, username):
+        try:
+            exp_result = self._check_pwd_expiry(username)
+        except Exception as e:
+            exp_result = e
+            if  exp_result is not False and hasattr(exp_result, "lock_account"):
+                self._lock_account(username)
+            raise Exception
+        return False
 
 
     def _check_wrong_attempt(self):
@@ -127,8 +149,17 @@ class Pwdpolicy:
         pass
 
 
-    def _lock_account(self):
-        pass
+    def _lock_account(self, username):
+        user_fm_db = self._get_userObj_from_db(username)
+        user_fm_db.is_active = "N"
+        try:
+            db.session.commit()
+            status = user_fm_db
+        except Exception as e:
+            print (e)
+            status = {"status": "failed_to_deactivate_user", "message": e}
+            db.session.rollback()
+            raise Exception
 
 
     def unlock_account(self):
@@ -137,5 +168,22 @@ class Pwdpolicy:
 
     def _lock_dormant(self):
         pass
+
+
+    def _get_userObj_from_db(self, username=None, email=None):
+        self.userObj_fm_db = uOb
+        if (uOb and  uOb.username ==  username or uOb.email == email):
+            user_fm_db = uOb
+        else:
+            if username:
+                user_fm_db = User.query.filter_by(username=username).first()
+            elif email:
+                user_fm_db = User.query.filter_by(email=email).first()
+            elif username and email:
+                user_fm_db = User.query.filter_by(email=email).first()
+            else:
+                user_fm_db = None
+            self.userObj_fm_db = user_fm_db
+        return user_fm_db
 
     

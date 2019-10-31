@@ -159,6 +159,24 @@ class PwdHistroyCheckError(TLException):
     message = "Last N number of password can not be used"
 
 
+class PwdExpiryError(TLException):
+    status = "PwdExpiryError"
+    def __init__(self, grace_period=grace_period):
+        self.grace_period = grace_period
+        self.message = ("password expired, change your password "
+                        "within next %d days" % self.grace_period)
+        super(PwdExpiryError, self).__init__(self.status, self.message, self.ret_val)
+
+
+class PwdExpiredAccountLockedError(TLException):
+    status = "PwdExpiredAccountLockedError"
+    message = ("Account Has been locked since  password has "
+               "not been changed within the grace period")
+    def __init__(self):
+        self.ret_val = {"status": self.status, "message": self.message, "lock_account": True}
+        super(PwdExpiredAccountLockedError, self).__init__(self.status, self.message, self.ret_val)
+
+
 
 # def checkme(a, b):
 #     if a==b:
