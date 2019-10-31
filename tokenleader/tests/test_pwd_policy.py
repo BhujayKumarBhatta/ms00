@@ -95,7 +95,8 @@ class PTesting(TestUserModel):
             self.assertTrue(e.status == "PwdHistroyCheckError")
         #EXPIARY TEST CONSIDERIG DAYS AS SECONDS
         pwd_policy._check_pwd_expiry('u1', count_seconds=True)
-
+        #LOCK USER ON PWD EXPIARY
+        
 
 
 
