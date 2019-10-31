@@ -121,22 +121,27 @@ class Pwdpolicy:
             expiry_value = self.pwd_expiry_days
             grace_value = self.pwd_grace_period
         elapsed_seconds = (current_date - creation_date).total_seconds()
-        if elapsed_seconds > expiry_value:
-            raise exc.PwdExpiryError(grace_period=self.pwd_grace_period)
         if elapsed_seconds > (expiry_value + grace_value):
+            #SHOULD I CALL LOCK ACCOUNT HERE ?
+            self._lock_account(username)
             raise exc.PwdExpiredAccountLockedError()
-        return False
+        elif elapsed_seconds > expiry_value:
+            raise exc.PwdExpiryError(grace_period=self.pwd_grace_period)
+
+        return False, elapsed_seconds
 
 
-    def _lock_pwd_on_pwd_expiry(self, username):
-        try:
-            exp_result = self._check_pwd_expiry(username)
-        except Exception as e:
-            exp_result = e
-            if  exp_result is not False and hasattr(exp_result, "lock_account"):
-                self._lock_account(username)
-            raise Exception
-        return False
+#     def _lock_pwd_on_pwd_expiry(self, username, count_seconds=None):
+#         try:
+#             exp_result = self._check_pwd_expiry(username)
+#             if count_seconds:
+#                 exp_result = self._check_pwd_expiry(username, count_seconds=True)
+#         except Exception as e:
+#             exp_result = e
+#             if  exp_result  and exp_result.status == "PwdExpiredAccountLockedError":
+#                 self._lock_account(username)
+#                 raise exc.PwdExpiredAccountLockedError
+#         return False
 
 
     def _check_wrong_attempt(self):

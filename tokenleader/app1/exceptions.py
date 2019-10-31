@@ -174,7 +174,7 @@ class PwdExpiredAccountLockedError(TLException):
                "not been changed within the grace period")
     def __init__(self):
         self.ret_val = {"status": self.status, "message": self.message, "lock_account": True}
-        super(PwdExpiredAccountLockedError, self).__init__(self.status, self.message, self.ret_val)
+        super(PwdExpiredAccountLockedError, self).__init__(self.status, self.message)
 
 
 
