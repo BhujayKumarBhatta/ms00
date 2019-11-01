@@ -12,25 +12,53 @@ logger = logging.getLogger(__name__)
 
 class Pwdpolicy:
 
-    def __init__(self, policy_config={}, pwd=None):
+    def __init__(self, policy_config={}, username=None, pwd=None):
         self.userObj_fm_db = None
+        self.pwd = pwd
+        self.username = username
         self.policy_config = policy_config
         self.pwd_length_min = int(policy_config.get("pwd_length_min", 7))
         self.pwd_length_max = int(policy_config.get("pwd_length_max", 50))
-        self.pwd = pwd
         self.num_of_old_pwd_blocked = int(policy_config.get("num_of_old_pwd_blocked", 3))
         self.pwd_expiry_days = int(policy_config.get("pwd_expiry_days", 90))
         self.pwd_grace_period = int(policy_config.get("pwd_grace_period", 7))
 
 
-    def validate_password(self, pwd):
-        self.pwd = pwd
+    def set_password(self, username, new_pwd):
+        result = self._validate_password_while_saving(username, new_pwd)
+        if result is True:
+            password_hash = generate_password_hash(new_pwd)
+            new_password = Pwdhistory(password_hash = password_hash)
+            user_fm_db = self._get_userObj_from_db(username)
+            user_fm_db.pwdhistory.append(new_password)
+            try:
+                db.session.commit()
+                result = user_fm_db
+            except Exception as e:
+                print (e)
+                result = {"status": "password_saving_failed", "message": e}
+                db.session.rollback()
+        return result
+
+
+    def authenticate_with_password(self, username, new_pwd):
+        '''1. user account is active 
+        2. check password_expiry
+        3. compare pwd digest 
+        '''
+        pass
+    
+    
+    def _validate_password_while_saving(self, username, new_pwd):
+        self.username = username
+        self.pwd = new_pwd
         try:
-            self._check_length(pwd)          
+            self._check_length(self.pwd)
             self._check_special_chars()
             self._check_numeric_chars()
-            self._check_upper_case()            
+            self._check_upper_case()
             self._check_lower_case()
+            self._check_history(self.username , self.pwd)
             result = True
         except Exception as err:
             result = err
@@ -94,21 +122,6 @@ class Pwdpolicy:
         return True
 
 
-    def set_password(self, username, new_pwd): 
-        password_hash = generate_password_hash(new_pwd)   
-        new_password = Pwdhistory(password_hash = password_hash)
-        user_fm_db = self._get_userObj_from_db(username)
-        user_fm_db.pwdhistory.append(new_password)
-        try:
-            db.session.commit()
-            status = user_fm_db
-        except Exception as e:
-            print (e)
-            status = {"status": "password_saving_failed", "message": e}
-            db.session.rollback()
-        return status
-
-
     def _check_pwd_expiry(self, username, count_seconds=None):
         user_fm_db = self._get_userObj_from_db(username)
         last_pwd_rec = user_fm_db.pwdhistory[-1]
@@ -121,13 +134,12 @@ class Pwdpolicy:
             expiry_value = self.pwd_expiry_days
             grace_value = self.pwd_grace_period
         elapsed_seconds = (current_date - creation_date).total_seconds()
-        if elapsed_seconds > (expiry_value + grace_value):
+        if elapsed_seconds in range(expiry_value, (expiry_value + grace_value)):
+            raise exc.PwdExpiryError(grace_period=self.pwd_grace_period)
+        elif elapsed_seconds > (expiry_value + grace_value):
             #SHOULD I CALL LOCK ACCOUNT HERE ?
             self._lock_account(username)
             raise exc.PwdExpiredAccountLockedError()
-        elif elapsed_seconds > expiry_value:
-            raise exc.PwdExpiryError(grace_period=self.pwd_grace_period)
-
         return False, elapsed_seconds
 
 
@@ -174,7 +186,16 @@ class Pwdpolicy:
 
 
     def unlock_account(self):
-        pass
+        user_fm_db = self._get_userObj_from_db(username)
+        user_fm_db.is_active = "Y"
+        try:
+            db.session.commit()
+            status = user_fm_db
+        except Exception as e:
+            print (e)
+            status = {"status": "failed_to_activate_user", "message": e}
+            db.session.rollback()
+            raise Exception
 
 
     def _lock_dormant(self):
