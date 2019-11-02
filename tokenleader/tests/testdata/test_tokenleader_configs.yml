@@ -90,3 +90,4 @@ pwdpolicy:
     num_of_old_pwd_blocked: 3
     pwd_expiry_days: 50
     pwd_grace_period: 7
+    num_of_failed_attempt: 3

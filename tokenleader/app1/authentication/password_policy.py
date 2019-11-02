@@ -6,6 +6,7 @@ from tokenleader.app1 import db
 from tokenleader.app1.authentication.models import User, Pwdhistory
 from tokenleader.app1 import exceptions as exc
 from werkzeug.security import generate_password_hash, check_password_hash
+from pygments.lexers._cocoa_builtins import res
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ class Pwdpolicy:
         self.num_of_old_pwd_blocked = int(policy_config.get("num_of_old_pwd_blocked", 3))
         self.pwd_expiry_days = int(policy_config.get("pwd_expiry_days", 90))
         self.pwd_grace_period = int(policy_config.get("pwd_grace_period", 7))
+        self.num_of_failed_attempt = int(policy_config.get("num_of_failed_attempt", 4))
 
 
     def set_password(self, username, new_pwd):
@@ -42,28 +44,27 @@ class Pwdpolicy:
 
 
     def authenticate_with_password(self, username, new_pwd):
-        '''1. user account is active 
-        2. check password_expiry
-        3. compare pwd digest 
-        '''
+        result = False
         user_fm_db = self._get_userObj_from_db(username)
-        if isinstance(user_fm_db, User):
-            if user_fm_db.is_active == "Y":
-                last_pwd_rec = user_fm_db.pwdhistory[-1]
-                pwd_hash = last_pwd_rec.password_hash
-                if check_password_hash(pwd_hash, new_pwd):
-                    result = True
-                else:
-                    #check number os failed attempt
-                    #if count is greater than conf lock account
-                    #increase the number os failed attempt
-                    
-                    raise exc.AuthenticationFailureError
-            else:
-                raise exc.UserIsDeactivatedError
+        self._check_active(username)
+        self._check_pwd_expiry(username)
+        last_pwd_rec = user_fm_db.pwdhistory[-1]
+        pwd_hash = last_pwd_rec.password_hash
+        if check_password_hash(pwd_hash, new_pwd):
+            result = True
+            user_fm_db.num_of_failed_attempt = 0
+            user_fm_db.last_logged_in = datetime.datetime.now()
+            self._db_commit("reset_failed_attempt", user_fm_db)
+        elif user_fm_db.num_of_failed_attempt > self.num_of_failed_attempt:
+            self._lock_account(username)
+            self._db_commit("lock_user", user_fm_db)
+            raise exc.AuthenticationFailureError
         else:
-            raise exc.UserNotRegisteredError
+            user_fm_db.num_of_failed_attempt = self.num_of_failed_attempt + 1
+            self._db_commit("increase_the_failed_attempt", user_fm_db)
+            raise exc.AuthenticationFailureError
         return result
+
 
     def _validate_password_while_saving(self, username, new_pwd):
         self.username = username
@@ -176,16 +177,17 @@ class Pwdpolicy:
         pass
 
 
-    def _check_active(self):
-        pass
-
-
-    def _check_last_login(self):
-        pass
-
-
-    def _record_wrong_attempt(self):
-        pass
+    def _check_active(self, username):
+        result = False
+        user_fm_db = self._get_userObj_from_db(username)
+        if isinstance(user_fm_db, User):
+            if user_fm_db.is_active == "Y":
+                result = True
+            else:
+                raise exc.UserIsDeactivatedError
+        else:
+            raise exc.UserNotRegisteredError
+        return result
 
 
     def _lock_account(self, username):
@@ -212,6 +214,10 @@ class Pwdpolicy:
             status = {"status": "failed_to_activate_user", "message": e}
             db.session.rollback()
             raise Exception
+        
+
+    def _check_last_login(self):
+        pass
 
 
     def _lock_dormant(self):
@@ -234,4 +240,13 @@ class Pwdpolicy:
             self.userObj_fm_db = user_fm_db
         return user_fm_db
 
-    
+
+    def _db_commit(self, status_on_fail, user_fm_db):
+        try:
+            db.session.commit()
+            status = user_fm_db
+        except Exception as e:
+            print (e)
+            status = {"status": ("DB_failure_%s" %status_on_fail), "message": e}
+            db.session.rollback()
+            raise Exception
