@@ -46,9 +46,25 @@ class Pwdpolicy:
         2. check password_expiry
         3. compare pwd digest 
         '''
-        pass
-    
-    
+        user_fm_db = self._get_userObj_from_db(username)
+        if isinstance(user_fm_db, User):
+            if user_fm_db.is_active == "Y":
+                last_pwd_rec = user_fm_db.pwdhistory[-1]
+                pwd_hash = last_pwd_rec.password_hash
+                if check_password_hash(pwd_hash, new_pwd):
+                    result = True
+                else:
+                    #check number os failed attempt
+                    #if count is greater than conf lock account
+                    #increase the number os failed attempt
+                    
+                    raise exc.AuthenticationFailureError
+            else:
+                raise exc.UserIsDeactivatedError
+        else:
+            raise exc.UserNotRegisteredError
+        return result
+
     def _validate_password_while_saving(self, username, new_pwd):
         self.username = username
         self.pwd = new_pwd

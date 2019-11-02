@@ -176,6 +176,10 @@ class PwdExpiredAccountLockedError(TLException):
         self.ret_val = {"status": self.status, "message": self.message, "lock_account": True}
         super(PwdExpiredAccountLockedError, self).__init__(self.status, self.message)
 
+class UserIsDeactivatedError(TLException):
+    status = "UserIsDeactivatedError"
+    message = "User account is locked, contact administrator"
+
 
 
 # def checkme(a, b):
