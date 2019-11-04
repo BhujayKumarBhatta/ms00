@@ -214,7 +214,7 @@ class Pwdpolicy:
             status = {"status": "failed_to_activate_user", "message": e}
             db.session.rollback()
             raise Exception
-        
+
 
     def _check_last_login(self):
         pass
