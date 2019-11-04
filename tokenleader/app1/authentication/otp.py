@@ -71,7 +71,7 @@ class Otpmanager():
     def validate_otp(self, otp_input):
         reloaded_conf = common_utils.reload_configs()
         creation_date = self.userObj_fm_db.otp.creation_date
-        current_date = datetime.datetime.now()
+        current_date = datetime.datetime.utcnow()
         org_fm_db = self.userdict_fm_db.get('wfc').get('org')
         otp_fm_db = self.userObj_fm_db.otp.otp
         if org_fm_db in reloaded_conf.get('otp'):
