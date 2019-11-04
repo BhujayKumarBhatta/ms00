@@ -80,7 +80,7 @@ class Otpmanager():
             otpvalidtime = self.otpvalidtime
             print("otp expiry for the domain %s not configured ,"
                   " failing back to default" %org_fm_db)
-        elapsed_time = (current_date-creation_date).total_seconds()/60.0
+        elapsed_time = (current_date-creation_date).total_seconds()
         print("time detials", elapsed_time, otpvalidtime)
         if elapsed_time <= otpvalidtime:
             if  otp_input == otp_fm_db:
