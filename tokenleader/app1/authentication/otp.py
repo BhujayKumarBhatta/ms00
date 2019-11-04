@@ -71,7 +71,7 @@ class Otpmanager():
     def validate_otp(self, otp_input):
         reloaded_conf = common_utils.reload_configs()
         creation_date = self.userObj_fm_db.otp.creation_date
-        current_date = datetime.datetime.utcnow()
+        current_date = datetime.datetime.now()
         org_fm_db = self.userdict_fm_db.get('wfc').get('org')
         otp_fm_db = self.userObj_fm_db.otp.otp
         if org_fm_db in reloaded_conf.get('otp'):
@@ -80,7 +80,7 @@ class Otpmanager():
             otpvalidtime = self.otpvalidtime
             print("otp expiry for the domain %s not configured ,"
                   " failing back to default" %org_fm_db)
-        elapsed_time = (current_date-creation_date).total_seconds()/60.0
+        elapsed_time = (current_date-creation_date).total_seconds()
         print("time detials", elapsed_time, otpvalidtime)
         if elapsed_time <= otpvalidtime:
             if  otp_input == otp_fm_db:
