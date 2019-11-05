@@ -26,10 +26,17 @@ class Pwdpolicy:
         self.num_of_failed_attempt = int(policy_config.get("num_of_failed_attempt", 4))
 
 
-    def set_password(self, username, new_pwd, disable_policy=False):
-        result = True
+    def set_password(self, username, new_pwd, old_password=None,
+                     initial=False, disable_policy=False):
+        result = False
         if not disable_policy:
             result = self._validate_password_while_saving(username, new_pwd)
+            #OLD PASSWORD CAN BE NONE ONLY WHEN INITIAL IS TRUE, ELSE OLD PASSWORD IS MUST
+            if initial is False and  old_password is None:
+                raise exc.PwdSetWihoutOldPasswordError
+            self.authenticate_with_password(username, old_password)
+        else: result = True
+        #SET THE PASSWORD ONCE OLD PASSWORD AUTHENTICATION IS DONE AND PASSWORD POLICY IS CHECKED
         if result is True:
             password_hash = generate_password_hash(new_pwd)
             new_password = Pwdhistory(password_hash = password_hash)

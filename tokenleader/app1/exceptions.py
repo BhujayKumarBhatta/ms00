@@ -181,6 +181,12 @@ class UserIsDeactivatedError(TLException):
     message = "User account is locked, contact administrator"
 
 
+class PwdSetWihoutOldPasswordError(TLException):
+    status = "PwdSetWihoutOldPasswordError"
+    message = "Old password must be provided before a new password can be set"
+
+
+
 
 # def checkme(a, b):
 #     if a==b:

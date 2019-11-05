@@ -83,10 +83,10 @@ class PTesting(TestUserModel):
         self.assertTrue(result.status == "PwdWithoutAlphabetError")
         #SET PASSWORD IN THE NEW TABLE
         self.user_creation_for_test()
-        pwd_policy.set_password('u1', 'password1', True)
-        pwd_policy.set_password('u1', 'password2', True)
-        pwd_policy.set_password('u1', 'password3', True)
-        pwd_policy.set_password('u1', 'password4', True)
+        pwd_policy.set_password('u1', 'password1', disable_policy=True)
+        pwd_policy.set_password('u1', 'password2', disable_policy=True)
+        pwd_policy.set_password('u1', 'password3', disable_policy=True)
+        pwd_policy.set_password('u1', 'password4', disable_policy=True)
         #USE A PASSWWORD OLDER THAN LAST 3 AND PASS
         try:
             pwd_policy._check_history('u1', 'password1')
