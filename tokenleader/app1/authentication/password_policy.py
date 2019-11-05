@@ -29,11 +29,11 @@ class Pwdpolicy:
     def set_password(self, username, new_pwd, old_password=None,
                      initial=False, disable_policy=False):
         result = False
+        #OLD PASSWORD CAN BE NONE ONLY WHEN INITIAL IS TRUE, ELSE OLD PASSWORD IS MUST
+        if initial is False and  old_password is None:
+            raise exc.PwdSetWihoutOldPasswordError
         if not disable_policy:
             result = self._validate_password_while_saving(username, new_pwd)
-            #OLD PASSWORD CAN BE NONE ONLY WHEN INITIAL IS TRUE, ELSE OLD PASSWORD IS MUST
-            if initial is False and  old_password is None:
-                raise exc.PwdSetWihoutOldPasswordError
             self.authenticate_with_password(username, old_password)
         else: result = True
         #SET THE PASSWORD ONCE OLD PASSWORD AUTHENTICATION IS DONE AND PASSWORD POLICY IS CHECKED
