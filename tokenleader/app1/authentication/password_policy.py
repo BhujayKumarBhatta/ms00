@@ -50,8 +50,10 @@ class Pwdpolicy:
         user_fm_db = self._get_userObj_from_db(username)
         self._check_active(username)
         self._check_pwd_expiry(username)
-        last_pwd_rec = user_fm_db.pwdhistory[-1]
-        pwd_hash = last_pwd_rec.password_hash
+        if len(user_fm_db.pwdhistory) > 0:
+            last_pwd_rec = user_fm_db.pwdhistory[-1]
+            pwd_hash = last_pwd_rec.password_hash
+        else: pwd_hash = ''
         if check_password_hash(pwd_hash, new_pwd):
             result = True
             user_fm_db.num_of_failed_attempt = 0
