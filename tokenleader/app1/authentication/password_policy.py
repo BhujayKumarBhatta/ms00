@@ -6,7 +6,7 @@ from tokenleader.app1 import db
 from tokenleader.app1.authentication.models import User, Pwdhistory
 from tokenleader.app1 import exceptions as exc
 from werkzeug.security import generate_password_hash, check_password_hash
-from pygments.lexers._cocoa_builtins import res
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +26,10 @@ class Pwdpolicy:
         self.num_of_failed_attempt = int(policy_config.get("num_of_failed_attempt", 4))
 
 
-    def set_password(self, username, new_pwd):
-        result = self._validate_password_while_saving(username, new_pwd)
+    def set_password(self, username, new_pwd, disable_policy=False):
+        result = True
+        if not disable_policy:
+            result = self._validate_password_while_saving(username, new_pwd)
         if result is True:
             password_hash = generate_password_hash(new_pwd)
             new_password = Pwdhistory(password_hash = password_hash)
@@ -139,11 +141,16 @@ class Pwdpolicy:
         return True
 
 
-    def _check_pwd_expiry(self, username, count_seconds=None):
-        user_fm_db = self._get_userObj_from_db(username)
-        last_pwd_rec = user_fm_db.pwdhistory[-1]
-        current_date = datetime.datetime.now()
-        creation_date= last_pwd_rec.pwd_creation_date
+    def _check_pwd_expiry(self, username, count_seconds=None, test_create_date=None):
+        user_fm_db = self._get_userObj_from_db(username)        
+        if len(user_fm_db.pwdhistory) > 0:
+            last_pwd_rec = user_fm_db.pwdhistory[-1]
+            creation_date= last_pwd_rec.pwd_creation_date
+        else:
+            creation_date = user_fm_db.creation_date
+        current_date = datetime.datetime.utcnow()
+        if test_create_date:
+            creation_date = test_create_date
         expiry_value = self.pwd_expiry_days*3600*24
         grace_value = self.pwd_grace_period*3600*24
         #FOR TESTING ONLY CONSIDER THE NUMBERS IN CONF FILE AS SECONDS
@@ -151,26 +158,14 @@ class Pwdpolicy:
             expiry_value = self.pwd_expiry_days
             grace_value = self.pwd_grace_period
         elapsed_seconds = (current_date - creation_date).total_seconds()
-        if elapsed_seconds in range(expiry_value, (expiry_value + grace_value)):
+        total_expiry_setting = expiry_value + grace_value
+        if expiry_value < elapsed_seconds < total_expiry_setting:
             raise exc.PwdExpiryError(grace_period=self.pwd_grace_period)
         elif elapsed_seconds > (expiry_value + grace_value):
             #SHOULD I CALL LOCK ACCOUNT HERE ?
             self._lock_account(username)
             raise exc.PwdExpiredAccountLockedError()
         return False, elapsed_seconds
-
-
-#     def _lock_pwd_on_pwd_expiry(self, username, count_seconds=None):
-#         try:
-#             exp_result = self._check_pwd_expiry(username)
-#             if count_seconds:
-#                 exp_result = self._check_pwd_expiry(username, count_seconds=True)
-#         except Exception as e:
-#             exp_result = e
-#             if  exp_result  and exp_result.status == "PwdExpiredAccountLockedError":
-#                 self._lock_account(username)
-#                 raise exc.PwdExpiredAccountLockedError
-#         return False
 
 
     def _check_wrong_attempt(self):
