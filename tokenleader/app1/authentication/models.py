@@ -229,7 +229,8 @@ class User(db.Model):
     num_of_failed_attempt = db.Column(db.Integer)
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     last_logged_in = db.Column(db.DateTime(timezone=True),)
-    
+    force_pwd_change = db.Column(db.Enum('N','Y'), server_default=("N"))
+
 
 #     roles = db.relationship('Role', lazy='dynamic' ,
 #         backref=db.backref('users', lazy='dynamic' ))
