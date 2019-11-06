@@ -37,13 +37,15 @@ class Pwdpolicy:
         #OLD PASSWORD CAN BE NONE ONLY WHEN INITIAL IS TRUE, ELSE OLD PASSWORD IS MUST
         if initial is False and  old_password is None:
             raise exc.PwdSetWihoutOldPasswordError
-        if not disable_policy:
+        if not (disable_policy and initial):
+            #IGNORE FORCE CHANGE WHEN USER IS CHANGING THE PASSWORD
+            self.authenticate_with_password(username, old_password, ignore_forece_change=True)
+            #DURING INITIAL PASSWORD , OLD PASSWORD IS NOT REQUIRED  
             result = self._validate_password_while_saving(username, new_pwd)
-            #DURING INITIAL PASSWORD , OLD PASSWORD IS NOT REQUIRED
-            if initial is False:
-                #IGNORE FORCE CHANGE WHEN USER IS CHANGING THE PASSWORD
-                self.authenticate_with_password(username, old_password, ignore_forece_change=True)
-        else: result = True
+        elif not disable_policy and initial:
+            result = self._validate_password_while_saving(username, new_pwd, initial=True)
+        else: 
+            result = True
         #SET THE PASSWORD ONCE OLD PASSWORD AUTHENTICATION IS DONE AND PASSWORD POLICY IS CHECKED
         if result is True:
             password_hash = generate_password_hash(new_pwd)
@@ -98,7 +100,8 @@ class Pwdpolicy:
         return result
 
 
-    def _validate_password_while_saving(self, username, new_pwd):
+    def _validate_password_while_saving(self, username, new_pwd, initial=False):
+        ''' history check is not required  when initial=True'''
         self.username = username
         self.pwd = new_pwd
         self._check_length(self.pwd)
@@ -106,7 +109,8 @@ class Pwdpolicy:
         self._check_numeric_chars()
         self._check_upper_case()
         self._check_lower_case()
-        self._check_history(self.username , self.pwd)
+        if initial is False:
+            self._check_history(self.username , self.pwd)
         result = True
         return result
 
