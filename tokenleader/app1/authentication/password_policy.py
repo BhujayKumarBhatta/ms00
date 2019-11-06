@@ -52,28 +52,37 @@ class Pwdpolicy:
         return result
 
 
-    def authenticate_with_password(self, username, new_pwd):
+    def authenticate_with_password(self, username, new_pwd, test=False):
         result = False
         user_fm_db = self._get_userObj_from_db(username)
         self._check_active(username)
-        self._check_pwd_expiry(username)
+        if test is True:
+            self._check_pwd_expiry(username, count_seconds=True)
+        else:
+            self._check_pwd_expiry(username)
         if len(user_fm_db.pwdhistory) > 0:
             last_pwd_rec = user_fm_db.pwdhistory[-1]
             pwd_hash = last_pwd_rec.password_hash
         else: pwd_hash = ''
-        if check_password_hash(pwd_hash, new_pwd):
+        if user_fm_db.num_of_failed_attempt:
+            num_of_failed_attempt = user_fm_db.num_of_failed_attempt
+        else:
+            num_of_failed_attempt = 0
+        if ( check_password_hash(pwd_hash, new_pwd) and
+             num_of_failed_attempt < self.num_of_failed_attempt ):
             result = True
             user_fm_db.num_of_failed_attempt = 0
-            user_fm_db.last_logged_in = datetime.datetime.now()
+            user_fm_db.last_logged_in = datetime.datetime.utcnow()
             self._db_commit("reset_failed_attempt", user_fm_db)
-        elif user_fm_db.num_of_failed_attempt > self.num_of_failed_attempt:
+        elif num_of_failed_attempt > self.num_of_failed_attempt:
             self._lock_account(username)
             self._db_commit("lock_user", user_fm_db)
-            raise exc.AuthenticationFailureError
+            raise exc.PwdWrongAttemptBeyondLimitError(self.num_of_failed_attempt)
         else:
-            user_fm_db.num_of_failed_attempt = self.num_of_failed_attempt + 1
+            user_fm_db.num_of_failed_attempt = num_of_failed_attempt + 1
             self._db_commit("increase_the_failed_attempt", user_fm_db)
-            raise exc.AuthenticationFailureError
+            remaining_attempt = self.num_of_failed_attempt - user_fm_db.num_of_failed_attempt
+            raise exc.AuthenticationFailureError(remaining_attempt)
         return result
 
 
@@ -150,16 +159,14 @@ class Pwdpolicy:
         return True
 
 
-    def _check_pwd_expiry(self, username, count_seconds=None, test_create_date=None):
-        user_fm_db = self._get_userObj_from_db(username)        
+    def _check_pwd_expiry(self, username, count_seconds=None):
+        user_fm_db = self._get_userObj_from_db(username)
         if len(user_fm_db.pwdhistory) > 0:
             last_pwd_rec = user_fm_db.pwdhistory[-1]
             creation_date= last_pwd_rec.pwd_creation_date
         else:
             creation_date = user_fm_db.creation_date
         current_date = datetime.datetime.utcnow()
-        if test_create_date:
-            creation_date = test_create_date
         expiry_value = self.pwd_expiry_days*3600*24
         grace_value = self.pwd_grace_period*3600*24
         #FOR TESTING ONLY CONSIDER THE NUMBERS IN CONF FILE AS SECONDS
@@ -170,7 +177,7 @@ class Pwdpolicy:
         total_expiry_setting = expiry_value + grace_value
         if expiry_value < elapsed_seconds < total_expiry_setting:
             raise exc.PwdExpiryError(grace_period=self.pwd_grace_period)
-        elif elapsed_seconds > (expiry_value + grace_value):
+        elif elapsed_seconds > total_expiry_setting:
             #SHOULD I CALL LOCK ACCOUNT HERE ?
             self._lock_account(username)
             raise exc.PwdExpiredAccountLockedError()
@@ -207,17 +214,10 @@ class Pwdpolicy:
             raise Exception
 
 
-    def unlock_account(self):
+    def unlock_account(self, username):
         user_fm_db = self._get_userObj_from_db(username)
         user_fm_db.is_active = "Y"
-        try:
-            db.session.commit()
-            status = user_fm_db
-        except Exception as e:
-            print (e)
-            status = {"status": "failed_to_activate_user", "message": e}
-            db.session.rollback()
-            raise Exception
+        self._db_commit("failed_to_activate_user", user_fm_db)
 
 
     def _check_last_login(self):

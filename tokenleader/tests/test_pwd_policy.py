@@ -91,15 +91,13 @@ class PTesting(TestUserModel):
         try:
             pwd_policy._check_history('u1', 'password1')
         except Exception as e:
-            print(e)
+            print(e, "this exception should not occur")
         try:
             #USE A PASSWORD WOITHIN LAST LAST 3 AND FAIL
             pwd_policy._check_history('u1', 'password2')
         except Exception as e:
             self.assertTrue(e.status == "PwdHistroyCheckError")
         #EXPIARY TEST CONSIDERING DAYS AS SECONDS that is 30+30 seconds as set in test_tokenleader_configs.yml
-        
-        
         try:
             #THE ELAPSED TIME IS TYPICALLY 14SEC FROM THE CREATION TIME AND HENCE
             #LESS THAN 30 SEC WHICH IS SET AS EXPIRY TIME , PASSWORD EXPIRY WILL FIND FALSE
@@ -110,15 +108,76 @@ class PTesting(TestUserModel):
             time.sleep(35)
             pwd_policy._check_pwd_expiry('u1', count_seconds=True)              
         except Exception as e:
-            print(e)
             self.assertTrue(e.status == "PwdExpiryError")
         try:
             #SLEEP MORE BEYOND 60 SEC , NOW LOCK USER ON PWD EXPIARY
             time.sleep(35)
             pwd_policy._check_pwd_expiry('u1', count_seconds=True)
         except Exception as e:
-            print(e)
             self.assertTrue(e.status == "PwdExpiredAccountLockedError")
+        #WITHOUT OLD PASSWORD PASSWORD CHANGE IS NOT ALLOWED
+        try:
+            pwd_policy.set_password('u1', 'password10')
+        except Exception as e:
+            self.assertTrue(e.status == "PwdSetWihoutOldPasswordError")
+        #EARLIER WE HAD SET PASSWORD AS password1, LETS TRY TO AUTHENTICATE WITH THIS
+        #AND GET ACCOUNT IS LOCKED ERROR
+        try:
+            result = pwd_policy.authenticate_with_password('u1', 'password1')
+        except Exception as e:
+            self.assertTrue(e.status == "UserIsDeactivatedError")
+        #LETS UNLOCK THE ACCOUNT AND TRY TO AUTHENTICATE. IT SHOULD LOCK THE ACCOUNT AGAIN
+        #SINCE THE CURRENT TIME IS STILL PAST THE GRACE PERIOD
+        try:
+            pwd_policy.unlock_account('u1')
+            result = pwd_policy.authenticate_with_password('u1', 'password1', test=True)
+        except Exception as e:
+            self.assertTrue(e.status == "PwdExpiredAccountLockedError")
+        #UNLOCK THE ACCOUNT, RESET PWD WITH INITIAL AND LET USER TRY TO AUTHENTICATE
+        try:
+            pwd_policy.unlock_account('u1')
+            pwd_policy.set_password('u1', 'password5', initial=True, disable_policy=True)#AT THIS STAGE WE SHOULD HAVE AN OPTION TO FORCE_CHANGE_PWD_NEXT_LOGIN
+            result = pwd_policy.authenticate_with_password('u1', 'password5')
+            self.assertTrue(result == True)
+        except Exception as e:
+            print(e, "this exception should not occur")
+        #LETS ATTEMPT WRONG PWD AND SEE THE COUNTER INCREASES
+        try:            
+            result = pwd_policy.authenticate_with_password('u1', 'passwordwrong')
+        except Exception as e:
+            self.assertTrue(e.status == "AuthenticationFailure")
+            self.assertTrue(pwd_policy.userObj_fm_db.num_of_failed_attempt == 1)
+        #ON SUCESSFUL LOGIN THE COUNTER SHOULD RESET
+        try:            
+            result = pwd_policy.authenticate_with_password('u1', 'password5')
+            self.assertTrue(result == True)
+            self.assertTrue(pwd_policy.userObj_fm_db.num_of_failed_attempt == 0)
+        except Exception as e:
+            print(e, "this exception should not occur")
+            
+        #KEEP ATTEPMITNG WRONG TILL IT LOCKS
+        try:
+            result = pwd_policy.authenticate_with_password('u1', 'passwordwrong')
+        except Exception as e:
+            self.assertTrue(e.status == "AuthenticationFailure")
+            self.assertTrue(pwd_policy.userObj_fm_db.num_of_failed_attempt == 1)
+        try:            
+            result = pwd_policy.authenticate_with_password('u1', 'passwordwrong')
+        except Exception as e:
+            self.assertTrue(e.status == "AuthenticationFailure")
+            self.assertTrue(pwd_policy.userObj_fm_db.num_of_failed_attempt == 2)
+        try:            
+            result = pwd_policy.authenticate_with_password('u1', 'passwordwrong')
+        except Exception as e:
+            self.assertTrue(e.status == "AuthenticationFailure")
+            self.assertTrue(pwd_policy.userObj_fm_db.num_of_failed_attempt == 3)
+        try:            
+            result = pwd_policy.authenticate_with_password('u1', 'password5')
+        except Exception as e:
+            self.assertTrue(e.status == "PwdWrongAttemptBeyondLimitError")
+
+
+
 
 
 

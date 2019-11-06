@@ -68,8 +68,12 @@ class DomainValidationError(TLException):
 
 
 class AuthenticationFailureError(TLException):
-    status = "AuthenticationFailure"
-    message = "Authentication Failure"
+    status = "AuthenticationFailure"    
+    def __init__(self, remaining_attempt):
+        self.remaining_attempt = remaining_attempt
+        self.message = ("Authentication Failure, remaining %d more times"
+                        " to attempt before lockout" %self.remaining_attempt)
+        super(AuthenticationFailureError, self).__init__(self.status, self.message)
 
 
 class PasswordVerificationError(TLException):
@@ -184,6 +188,14 @@ class UserIsDeactivatedError(TLException):
 class PwdSetWihoutOldPasswordError(TLException):
     status = "PwdSetWihoutOldPasswordError"
     message = "Old password must be provided before a new password can be set"
+    
+
+class PwdWrongAttemptBeyondLimitError(TLException):
+    status = "PwdWrongAttemptBeyondLimitError"
+    def __init__(self, limit):
+        self.message = "Account has been locked due to attempt exceeding beyond limit: %d" %limit
+        super(PwdWrongAttemptBeyondLimitError, self).__init__(self.status, self.message)
+        
 
 
 
