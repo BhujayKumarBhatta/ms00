@@ -175,7 +175,17 @@ class PTesting(TestUserModel):
             result = pwd_policy.authenticate_with_password('u1', 'password5')
         except Exception as e:
             self.assertTrue(e.status == "PwdWrongAttemptBeyondLimitError")
-
+        #FORCE USER TO CHANGE PASSWORD
+        try:
+            pwd_policy.unlock_account('u1')
+            pwd_policy.set_password('u1', 'Pasword@1', initial=True, force_change=True)
+            result = pwd_policy.authenticate_with_password('u1', 'Pasword@1')
+        except Exception as e:
+            self.assertTrue(e.status == "PwdNotChangedByFirstLoginError")
+        #FORCE CHANGE IS RESET AFTER USER CHANGES THE PASSWORD
+        pwd_policy.set_password('u1', 'Pasword@2', 'Pasword@1')
+        result = pwd_policy.authenticate_with_password('u1', 'Pasword@2')
+        self.assertTrue(result)
 
 
 

@@ -195,8 +195,12 @@ class PwdWrongAttemptBeyondLimitError(TLException):
     def __init__(self, limit):
         self.message = "Account has been locked due to attempt exceeding beyond limit: %d" %limit
         super(PwdWrongAttemptBeyondLimitError, self).__init__(self.status, self.message)
-        
 
+
+class PwdNotChangedByFirstLoginError(TLException):
+    status = "PwdNotChangedByFirstLoginError"
+    message = ("User must change the password before login, "
+               "This password might have been set by the administrator")
 
 
 

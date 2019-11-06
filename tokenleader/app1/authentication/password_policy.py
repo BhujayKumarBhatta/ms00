@@ -27,14 +27,22 @@ class Pwdpolicy:
 
 
     def set_password(self, username, new_pwd, old_password=None,
-                     initial=False, disable_policy=False):
+                     initial=False, force_change=False, disable_policy=False,):
+        ''' OLD PASSWORD CAN BE NONE ONLY WHEN INITIAL IS TRUE, ELSE OLD PASSWORD IS MUST
+        DURING INITIAL PASSWORD , OLD PASSWORD IS NOT REQUIRED
+        IGNORE FORCE CHANGE WHEN USER IS CHANGING THE PASSWORD
+        SET THE PASSWORD ONCE OLD PASSWORD AUTHENTICATION IS DONE AND PASSWORD POLICY IS CHECKED
+        '''
         result = False
         #OLD PASSWORD CAN BE NONE ONLY WHEN INITIAL IS TRUE, ELSE OLD PASSWORD IS MUST
         if initial is False and  old_password is None:
             raise exc.PwdSetWihoutOldPasswordError
         if not disable_policy:
             result = self._validate_password_while_saving(username, new_pwd)
-            self.authenticate_with_password(username, old_password)
+            #DURING INITIAL PASSWORD , OLD PASSWORD IS NOT REQUIRED
+            if initial is False:
+                #IGNORE FORCE CHANGE WHEN USER IS CHANGING THE PASSWORD
+                self.authenticate_with_password(username, old_password, ignore_forece_change=True)
         else: result = True
         #SET THE PASSWORD ONCE OLD PASSWORD AUTHENTICATION IS DONE AND PASSWORD POLICY IS CHECKED
         if result is True:
@@ -42,17 +50,16 @@ class Pwdpolicy:
             new_password = Pwdhistory(password_hash = password_hash)
             user_fm_db = self._get_userObj_from_db(username)
             user_fm_db.pwdhistory.append(new_password)
-            try:
-                db.session.commit()
-                result = user_fm_db
-            except Exception as e:
-                print (e)
-                result = {"status": "password_saving_failed", "message": e}
-                db.session.rollback()
+            user_fm_db.force_pwd_change = "N"
+            if force_change:
+                user_fm_db.force_pwd_change = "Y"
+            result = self._db_commit("password_saving_failed", user_fm_db)
         return result
 
 
-    def authenticate_with_password(self, username, new_pwd, test=False):
+    def authenticate_with_password(self, username, new_pwd, ignore_forece_change=False, test=False):
+        '''test=True to consider expiry time settings as seconds
+        ignore_force_change=True while authentication is called from set_password method'''
         result = False
         user_fm_db = self._get_userObj_from_db(username)
         self._check_active(username)
@@ -70,10 +77,15 @@ class Pwdpolicy:
             num_of_failed_attempt = 0
         if ( check_password_hash(pwd_hash, new_pwd) and
              num_of_failed_attempt < self.num_of_failed_attempt ):
-            result = True
-            user_fm_db.num_of_failed_attempt = 0
-            user_fm_db.last_logged_in = datetime.datetime.utcnow()
-            self._db_commit("reset_failed_attempt", user_fm_db)
+            if (user_fm_db.force_pwd_change and 
+                user_fm_db.force_pwd_change == "N" or
+                ignore_forece_change):
+                result = True
+                user_fm_db.num_of_failed_attempt = 0
+                user_fm_db.last_logged_in = datetime.datetime.utcnow()
+                self._db_commit("reset_failed_attempt", user_fm_db)
+            else:
+                raise exc.PwdNotChangedByFirstLoginError
         elif num_of_failed_attempt > self.num_of_failed_attempt:
             self._lock_account(username)
             self._db_commit("lock_user", user_fm_db)
@@ -89,16 +101,13 @@ class Pwdpolicy:
     def _validate_password_while_saving(self, username, new_pwd):
         self.username = username
         self.pwd = new_pwd
-        try:
-            self._check_length(self.pwd)
-            self._check_special_chars()
-            self._check_numeric_chars()
-            self._check_upper_case()
-            self._check_lower_case()
-            self._check_history(self.username , self.pwd)
-            result = True
-        except Exception as err:
-            result = err
+        self._check_length(self.pwd)
+        self._check_special_chars()
+        self._check_numeric_chars()
+        self._check_upper_case()
+        self._check_lower_case()
+        self._check_history(self.username , self.pwd)
+        result = True
         return result
 
 
@@ -217,6 +226,7 @@ class Pwdpolicy:
     def unlock_account(self, username):
         user_fm_db = self._get_userObj_from_db(username)
         user_fm_db.is_active = "Y"
+        user_fm_db.num_of_failed_attempt = 0
         self._db_commit("failed_to_activate_user", user_fm_db)
 
 
@@ -254,3 +264,4 @@ class Pwdpolicy:
             status = {"status": ("DB_failure_%s" %status_on_fail), "message": e}
             db.session.rollback()
             raise Exception
+        return status
