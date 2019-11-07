@@ -188,7 +188,9 @@ class Pwdhistory(db.Model):
     pwd_creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
     last_used = db.Column(db.DateTime(timezone=True))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User", backref="pwdhistory")
+    #THIS IS MANY TO ONE, IF USER HAS PWHISTORY AS RELATION - THAT IS ONE TO MANY
+    #INCLUDED IN USER TABLE REALTION TO PWDHISTORY AND BACKREF TO USER, NO MIGRATION CHANGE IS DETECTED
+    #user = db.relationship("User", backref="pwdhistory")
 
 
 class User(db.Model):
@@ -223,13 +225,21 @@ class User(db.Model):
     allowemaillogin = db.Column(db.Enum('N','Y'), nullable=False, server_default=("N"))
     wfc_id = db.Column(db.Integer, db.ForeignKey('workfunctioncontext.id'), nullable=False)
     wfc = db.relationship("Workfunctioncontext", backref="users")
+    #IN ONE TO MANY RELATION THE OTP_ID MAY NOT BE REQUIRED IN PARENT TABBLE, TO BE TESTED AND CONFIRMED
     otp_id = db.Column(db.Integer, db.ForeignKey('otp.id'))
-    otp = db.relationship("Otp", backref="user", uselist=False)    
+    otp = db.relationship("Otp", backref="user", uselist=False)
+    #THIS IS ONE TO MANY RELATIONSHIP ONE USER TO MANY PASSWORDS, 
+    #THE FOREIGNKEY IS PLACED AT PWDHISTORY TABLE
+    #THIS LOOKS LIKE A CLASS LEVEL CHANGES REQUIRED TO ADD user.pwdhistroy.append(pwd) for a new user
+    #user.pwdhistroy.append(pwd) was working for an existing user , before applying this change
+    #NO MIGRATION WAS DETECTED AFTER APPLYING THIS CHANGE
+    pwdhistory = db.relationship("Pwdhistory", backref="user")   
     created_by = db.Column(db.String(24))    
     num_of_failed_attempt = db.Column(db.Integer)
     is_active = db.Column(db.Enum('N','Y'), nullable=False, server_default=("Y"))
     last_logged_in = db.Column(db.DateTime(timezone=True),)
     force_pwd_change = db.Column(db.Enum('N','Y'), server_default=("N"))
+    
 
 
 #     roles = db.relationship('Role', lazy='dynamic' ,

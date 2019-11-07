@@ -4,6 +4,7 @@ from tokenleader.app1.authentication.password_policy import Pwdpolicy
 from tokenleader.app1 import db
 from sqlalchemy import exc
 from tokenleader.app1.configs.testconf import conf as tconf
+from werkzeug.security import generate_password_hash
 
 pwd_policy_conf = tconf.yml.get('pwdpolicy')
 pwdpolicy = Pwdpolicy(pwd_policy_conf)
@@ -83,8 +84,16 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
                     record = User(username=cname, email=email, otp_mode=otp_mode, roles=valid_role_objects, wfc=wfc, allowemaillogin=allowemaillogin, created_by=created_by)
                 else:
                     record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, created_by=created_by)
-                #pwdpolicy._validate_password_while_saving(cname, pwd, initial=True)
-                record.set_password(pwd)
+                try:
+                    pwdpolicy._validate_password_while_saving(cname, pwd, initial=True)
+                    #record.set_password(pwd)                
+                    #Pwdhistory object to be passed within append
+                    password_hash = generate_password_hash(pwd)
+                    passwordObj = Pwdhistory(password_hash = password_hash)
+                    record.pwdhistory.append(passwordObj)
+                except Exception as e:
+                    record = None
+                    msg = e
             else:
                 msg = "user registration aborted"  
         else:
@@ -92,8 +101,15 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
                 record = User(username=cname, email=email,otp_mode=otp_mode, allowemaillogin=allowemaillogin, created_by=created_by)
             else:
                 record = User(username=cname, email=email, created_by=created_by)
-            #pwdpolicy._validate_password_while_saving(cname, pwd, initial=True)
-            record.set_password(pwd)   
+            try:
+                pwdpolicy._validate_password_while_saving(cname, pwd, initial=True)
+                #record.set_password(pwd)
+                password_hash = generate_password_hash(pwd)
+                passwordObj = Pwdhistory(password_hash = password_hash)
+                record.pwdhistory.append(passwordObj)
+            except Exception as e:
+                record = None
+                msg = e
                    
     if record:
         try:
