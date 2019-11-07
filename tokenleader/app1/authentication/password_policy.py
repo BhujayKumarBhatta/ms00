@@ -25,7 +25,11 @@ class Pwdpolicy:
         self.pwd_grace_period = int(policy_config.get("pwd_grace_period", 7))
         self.num_of_failed_attempt = int(policy_config.get("num_of_failed_attempt", 4))
 
-
+    def create_user_with_pwd(self, UserModelClass):
+        #record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, created_by=created_by)
+        pass
+    
+    
     def set_password(self, username, new_pwd, old_password=None,
                      initial=False, force_change=False, disable_policy=False,):
         ''' OLD PASSWORD CAN BE NONE ONLY WHEN INITIAL IS TRUE, ELSE OLD PASSWORD IS MUST

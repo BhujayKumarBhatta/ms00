@@ -1,6 +1,12 @@
 from tokenleader.app1.authentication.models import Organization, Orgunit, Department, Workfunctioncontext, Role, User, Otp
+from tokenleader.app1.authentication.models import Pwdhistory
+from tokenleader.app1.authentication.password_policy import Pwdpolicy
 from tokenleader.app1 import db
 from sqlalchemy import exc
+from tokenleader.app1.configs.testconf import conf as tconf
+
+pwd_policy_conf = tconf.yml.get('pwdpolicy')
+pwdpolicy = Pwdpolicy(pwd_policy_conf)
 
 def get_input(text):
     return input(text)
@@ -77,6 +83,7 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
                     record = User(username=cname, email=email, otp_mode=otp_mode, roles=valid_role_objects, wfc=wfc, allowemaillogin=allowemaillogin, created_by=created_by)
                 else:
                     record = User(username=cname, email=email, roles=valid_role_objects, wfc=wfc, created_by=created_by)
+                #pwdpolicy._validate_password_while_saving(cname, pwd, initial=True)
                 record.set_password(pwd)
             else:
                 msg = "user registration aborted"  
@@ -85,6 +92,7 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
                 record = User(username=cname, email=email,otp_mode=otp_mode, allowemaillogin=allowemaillogin, created_by=created_by)
             else:
                 record = User(username=cname, email=email, created_by=created_by)
+            #pwdpolicy._validate_password_while_saving(cname, pwd, initial=True)
             record.set_password(pwd)   
                    
     if record:
