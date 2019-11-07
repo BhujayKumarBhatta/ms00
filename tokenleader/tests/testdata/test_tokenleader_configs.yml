@@ -62,7 +62,7 @@ otp:
    BHARTI: 30
    SIFY: 20
    VODAFONE: 20
-   org2: 3600
+   org2: 56000
 
 mailservice:
    Server: 10.174.112.79

@@ -13,6 +13,7 @@ from tokenleader.app1.authentication.otp import Otpmanager
 from tokenleader.app1.authentication.tokenmanager import TokenManager
 from tokenleader.app1 import exceptions as exc
 from tokenleader.app1.utils import common_utils
+from tokenleader.app1.authentication.password_policy import Pwdpolicy
 
 
 class Authenticator():
@@ -228,13 +229,22 @@ class Authenticator():
         return self.domain_validtion_status
 
 
-    def _password_authenticate(self):
-        ''' WE HAVE TO AUTHENTICATE USING PASSWORD POLICY'''
-        if self.userObj.check_password(self.PASSWORD):
+    def _password_authenticate(self, apply_pwd_policy=True):
+        '''TODO: apply_pwd_policy=Flase to  authenticate with password which is stored without policy
+        True is by default'''
+        if apply_pwd_policy is True:
+            reloaded_conf = common_utils.reload_configs()
+            policy_configs = reloaded_conf.get('pwdpolicy')
+            pwdpolicyObj = Pwdpolicy(policy_configs)
+            pwdpolicyObj.authenticate_with_password(self.USERNAME, self.PASSWORD)
             self.password_authenticate = True
         else:
-            raise exc.PasswordVerificationError
+            if self.userObj.check_password(self.PASSWORD):
+                self.password_authenticate = True
+            else:
+                raise exc.PasswordVerificationError
         return self.password_authenticate
+        
 
 
     def _get_usr_info_fm_ldap(self):
