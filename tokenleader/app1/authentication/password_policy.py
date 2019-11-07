@@ -37,15 +37,15 @@ class Pwdpolicy:
         #OLD PASSWORD CAN BE NONE ONLY WHEN INITIAL IS TRUE, ELSE OLD PASSWORD IS MUST
         if initial is False and  old_password is None:
             raise exc.PwdSetWihoutOldPasswordError
-        if not (disable_policy and initial):
+        if  disable_policy is False and initial is False:
             #IGNORE FORCE CHANGE WHEN USER IS CHANGING THE PASSWORD
             self.authenticate_with_password(username, old_password, ignore_forece_change=True)
             #DURING INITIAL PASSWORD , OLD PASSWORD IS NOT REQUIRED  
             result = self._validate_password_while_saving(username, new_pwd)
-        elif not disable_policy and initial:
+        elif  disable_policy is False and initial is True:
             result = self._validate_password_while_saving(username, new_pwd, initial=True)
         else: 
-            result = True
+            result = True #TODO: WE SHOULD HAVE EXCEPTION HERE INSTEAD OF TRUE
         #SET THE PASSWORD ONCE OLD PASSWORD AUTHENTICATION IS DONE AND PASSWORD POLICY IS CHECKED
         if result is True:
             password_hash = generate_password_hash(new_pwd)
