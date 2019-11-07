@@ -77,14 +77,15 @@ class TestUserModel(BaseTestCase):
     
     def user_creation_for_test(self):
         self.role_creation_for_test()
-        roles = ['role1',]        
-        u = af.register_user('u1', 'u1@abc.com', 'secret', roles=roles, wfc_name='wfc1')
+        roles = ['role1',]
+        #CHANGING PWD TO COMPLY WITH POLICY
+        u = af.register_user('u1', 'u1@abc.com', 'Secret@12', roles=roles, wfc_name='wfc1')
         return u
 
     def external_user_creation_for_test(self):
         self.role_for_external_user_creation_for_test()
         roles = ['role2',]        
-        u = af.register_user('u3', 'u3@itc.in', 'secret', 
+        u = af.register_user('u3', 'u3@itc.in', 'Secret@12', 
                              otp_mode='mail',
                              roles=roles,  
                              wfc_name='wfc2', allowemaillogin='Y')
@@ -93,7 +94,7 @@ class TestUserModel(BaseTestCase):
     def user_default_domain_creation_for_test(self):
         self.role_default_user_creation_for_test()
         roles = ['default_role',]        
-        u = af.register_user('user_default_domain', 'user_default_domain@itc.in', 'secret', 
+        u = af.register_user('user_default_domain', 'user_default_domain@itc.in', 'Secret@12', 
                              otp_mode='mail',
                              roles=roles,
                              wfc_name='wfc_default', allowemaillogin='Y')

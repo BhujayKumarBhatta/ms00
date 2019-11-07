@@ -33,7 +33,7 @@ def get_validated_roles(roles):
         print(msg)    
     if valid_role_list:
         return valid_role_list
-
+#TODO: DELETE - WE MAY NOT BE USING THIS OLDER MODEL ANYMORE
 def create_otp(num, userid):
     generated = Otp(otp=int(num),userid=userid)
     db.session.add(generated)

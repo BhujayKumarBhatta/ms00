@@ -229,6 +229,7 @@ class Authenticator():
 
 
     def _password_authenticate(self):
+        ''' WE HAVE TO AUTHENTICATE USING PASSWORD POLICY'''
         if self.userObj.check_password(self.PASSWORD):
             self.password_authenticate = True
         else:

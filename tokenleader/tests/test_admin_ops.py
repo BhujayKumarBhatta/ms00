@@ -15,22 +15,9 @@ class TestUserModel(BaseTestCase):
          from the api_function
     '''
 
-    def create_otp_for_test(self, num):
-        if not User.query.filter_by(username='u3').first():
-            self.external_user_creation_for_test()
-        else:
-            print('u3 was registered before.')
-        user = User.query.filter_by(username='u3').first()
-        userid = user.to_dict()['id']
-        otp = af.create_otp(num, userid)
-        return otp
+    
 
-    def test_create_otp(self):
-        rand = str(random.random())
-        num = rand[-4:]
-        otp = self.create_otp_for_test(num)
-        self.assertTrue(otp.get('otp'), num)
-        
+           
     def create_org_for_test(self):
         return af.register_org('org1')
 
@@ -71,13 +58,13 @@ class TestUserModel(BaseTestCase):
     def user_creation_for_test(self):
         self.role_creation_for_test()
         roles = ['role1',]        
-        u = af.register_user('u1', 'u1@abc.com', 'secret', roles=roles, wfc_name='wfc1')
+        u = af.register_user('u1', 'u1@abc.com', 'Secret@12', roles=roles, wfc_name='wfc1')
         return u
 
     def external_user_creation_for_test(self):
         self.role_for_external_user_creation_for_test()
         roles = ['role2',]        
-        u = af.register_user('u3', 'Srijib.Bhattacharyya@itc.in', 'secret', 
+        u = af.register_user('u3', 'Srijib.Bhattacharyya@itc.in', 'Secret@12', 
                              otp_mode='mail',
                              roles=roles,  
                              wfc_name='wfc2', allowemaillogin='Y')
