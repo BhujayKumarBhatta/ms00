@@ -103,8 +103,11 @@ def add_user(wfc):
         else:
             record = af.register_user(uname, email, pwd, wfc_name, roles=roles, created_by=created_by)
         print('i got the name {0}, created_by {1} from http argument'.format(uname, created_by))
-    response_obj = {"status": record}
-    print(record)
+    if isinstance(record, dict) and "status" in record.keys():
+        response_obj = record
+    else:
+        response_obj = {"status": record}
+    print(type(response_obj))
     return jsonify(response_obj)
 
 @adminops_bp.route('/add/wfc', methods=['POST'])

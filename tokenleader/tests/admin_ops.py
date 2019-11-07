@@ -13,15 +13,15 @@ class TestUserModel(BaseTestCase):
          from the api_function
     '''
 
-    def create_otp_for_test(self, num):
-        if not User.query.filter_by(username='u3').first():
-            self.external_user_creation_for_test()
-        else:
-            print('u3 was registered before.')
-        user = User.query.filter_by(username='u3').first()
-        userid = user.to_dict()['id']
-        otp = af.create_otp(num, userid)
-        return otp
+#     def create_otp_for_test(self, num):
+#         if not User.query.filter_by(username='u3').first():
+#             self.external_user_creation_for_test()
+#         else:
+#             print('u3 was registered before.')
+#         user = User.query.filter_by(username='u3').first()
+#         userid = user.to_dict()['id']
+#         otp = af.create_otp(num, userid)
+#         return otp
 
     
     def create_default_org_for_test(self):

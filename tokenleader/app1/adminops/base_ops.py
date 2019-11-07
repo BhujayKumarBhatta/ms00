@@ -96,9 +96,9 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
                     password_hash = generate_password_hash(pwd)
                     passwordObj = Pwdhistory(password_hash = password_hash)
                     record.pwdhistory.append(passwordObj)
-                except Exception as e:
+                except Exception as excerr:
                     record = None
-                    msg = e
+                    msg = excerr.__repr__()
             else:
                 msg = "user registration aborted"  
         else:
@@ -112,9 +112,9 @@ def register_ops1(obj, cname, otype=None, allowemaillogin=None, orgname=None, ou
                 password_hash = generate_password_hash(pwd)
                 passwordObj = Pwdhistory(password_hash = password_hash)
                 record.pwdhistory.append(passwordObj)
-            except Exception as e:
+            except Exception as excerr:
                 record = None
-                msg = e
+                msg = excerr.__repr__()
                    
     if record:
         try:
