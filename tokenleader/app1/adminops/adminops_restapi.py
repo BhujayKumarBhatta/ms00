@@ -311,7 +311,7 @@ def  unlock_user(wfc):
 
 
 
-@adminops_bp.route('/reset_pwd', methods=['POST'])
+@adminops_bp.route('/reset_password', methods=['POST'])
 @enforcer.enforce_access_rule_with_token('tokenleader.add_user')
 def  reset_pwd(wfc):
     cfg = common_utils.reload_configs()
