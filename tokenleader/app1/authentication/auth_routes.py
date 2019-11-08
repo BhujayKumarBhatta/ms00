@@ -75,11 +75,9 @@ def  change_password(wfc):
         result = pwdpolicyObj.set_password(username, new_password, old_password)
         if result: result = "Password has been changed successfully"
     except Exception as err:
-        print("got poicy exception", err)
-        print("instance type", type(err))
-        if isinstance(err.__repr__(), dict) and 'status' in err.__repr__().keys():
-            print("are we inside instance type checking? type", type(err))
+        if isinstance(err.__repr__(), dict) and 'status' in err.__repr__().keys():            
             result = err.__repr__()
+            print("got poicy exception", err)
         else:
             result = {'status': err}
     return jsonify(result)

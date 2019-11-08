@@ -303,8 +303,8 @@ def  unlock_user(wfc):
         pwdpolicyObj.unlock_account(username)        
         result = "Account  has been unlcoked successfully"
     except Exception as err:
-        if isinstance(err, dict) and 'status' in err.keys():
-            result = err
+        if isinstance(err.__repr__(), dict) and 'status' in err.__repr__().keys():
+            result = err.__repr__()
         else:
             result = {'status': err}
     return jsonify(result)
@@ -328,8 +328,8 @@ def  reset_pwd(wfc):
         pwdpolicyObj.set_password(username, new_password, initial=True, force_change=True)
         result = "Password  has been reset successfully"
     except Exception as err:
-        if isinstance(err, dict) and 'status' in err.keys():
-            result = err
+        if isinstance(err.__repr__(), dict) and 'status' in err.__repr__().keys():
+            result = err.__repr__()
         else:
             result = {'status': err}
     return jsonify(result)
