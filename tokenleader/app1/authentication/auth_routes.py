@@ -58,8 +58,7 @@ def verify_token():
 #
 
 @token_login_bp.route('/change_password', methods=['POST'])
-@enforcer.enforce_access_rule_with_token('tokenleader.change_password')
-def  change_password(wfc):
+def  change_password():
     cfg = common_utils.reload_configs()
     policy_config = cfg.get('pwdpolicy')
     pwdpolicyObj = Pwdpolicy(policy_config)
@@ -77,7 +76,7 @@ def  change_password(wfc):
     except Exception as err:
         if isinstance(err.__repr__(), dict) and 'status' in err.__repr__().keys():            
             result = err.__repr__()
-            print("got poicy exception", err)
+            print("got policy exception", err)
         else:
             result = {'status': err}
     return jsonify(result)
