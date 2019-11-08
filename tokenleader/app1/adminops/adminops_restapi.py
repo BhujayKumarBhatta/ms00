@@ -4,6 +4,8 @@ from tokenleaderclient.configs.config_handler import Configs
 from  tokenleaderclient.client.client import Client
 from tokenleaderclient.rbac.enforcer import Enforcer
 import json
+from tokenleader.app1.utils import common_utils
+from tokenleader.app1.authentication.password_policy import Pwdpolicy
 
 adminops_bp = Blueprint('adminops_bp', __name__)
 auth_config = Configs()
@@ -283,3 +285,51 @@ def delete_wfc(wfc):
     record = af.delete_wfc(wfcname)
     response_obj = {"status": record}
     return jsonify(response_obj)
+
+
+@adminops_bp.route('/unlock_user', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.add_user')
+def  unlock_user(wfc):
+    cfg = common_utils.reload_configs()
+    policy_config = cfg.get('pwdpolicy')
+    pwdpolicyObj = Pwdpolicy(policy_config)
+    data_must_contain = ['username',]
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    username = request.json['username']
+    try:
+        pwdpolicyObj.unlock_account(username)        
+        result = "Account  has been unlcoked successfully"
+    except Exception as err:
+        if isinstance(err, dict) and 'status' in err.keys():
+            result = err
+        else:
+            result = {'status': err}
+    return jsonify(result)
+
+
+
+@adminops_bp.route('/reset_pwd', methods=['POST'])
+@enforcer.enforce_access_rule_with_token('tokenleader.add_user')
+def  reset_pwd(wfc):
+    cfg = common_utils.reload_configs()
+    policy_config = cfg.get('pwdpolicy')
+    pwdpolicyObj = Pwdpolicy(policy_config)
+    data_must_contain = ['username', 'new_password']
+    for k in data_must_contain:
+        if k not in request.json:
+            return jsonify({"status": " the request must have the following \
+            information {}".format(json.dumps(data_must_contain))})
+    username = request.json['username']
+    new_password = request.json['new_password']
+    try:
+        pwdpolicyObj.set_password(username, new_password, initial=True, force_change=True)
+        result = "Password  has been reset successfully"
+    except Exception as err:
+        if isinstance(err, dict) and 'status' in err.keys():
+            result = err
+        else:
+            result = {'status': err}
+    return jsonify(result)

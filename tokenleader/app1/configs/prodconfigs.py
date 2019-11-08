@@ -6,11 +6,10 @@ must_have_keys_in_yml = {'flask_default',
                          'database',
                          'kafka_servers',
                          'domains',
-                         'listoftsp',
-                         'mailservice',
                          'token',
-                         'otp',                         
-                         'secrets'
+                         'otp',
+                         'secrets',
+                         'pwdpolicy'
                          }
 must_have_in_flask_default_section = {'host_name',
                              'host_port',
@@ -38,9 +37,7 @@ try:
     conf = Configs('tokenleader', must_have_keys_in_yml=must_have_keys_in_yml)
     ymldict = conf.yml
     flask_default_setiings_map = ymldict.get('flask_default')
-    domains_default_settings_map = {'domains': ymldict.get('domains')}
-    mailservice_default_settings_map = ymldict.get('mailservice')
-    tsplist_settings_map = {'listoftsp': ymldict.get('listoftsp')}    
+    domains_default_settings_map = {'domains': ymldict.get('domains')}        
     token_settings_map = ymldict.get('token')
     dbs = ymldict.get('database')
     #print(dbs)
@@ -61,10 +58,6 @@ if not flask_default_setiings_map.keys() >= must_have_in_flask_default_section:
 #        conf.config_file, must_have_in_domain_default_section ))
 #     sys.exit()
 
-if not mailservice_default_settings_map.keys() >= must_have_in_mail_default_section:
-    print("{} must have  the following parameters {}  under the flask_default section".format(
-       conf.config_file, must_have_in_mail_default_section ))
-    sys.exit()
     
 if not token_settings_map.keys() >= must_have_in_token_section:
     print("{} must have  the following parameters {}  under the flask_default section".format(
@@ -105,12 +98,12 @@ connection_string = ('mysql+pymysql://{0}:{1}@{2}:{3}/{4}'
                                                dbs.get('Server'), dbs.get('Port'), 
                                                dbs.get('Database')))
 #print(connection_string)
-mail_service_for_otp = 'http://{0}:{1}/mail'.format(mailservice_default_settings_map.get('Server'), mailservice_default_settings_map.get('Port'))
+
 # converted_safe_uri #use quote_plus to construct the uri
-prod_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, 'MAIL_SERVICE_URI': mail_service_for_otp}
+prod_db_conf = { 'SQLALCHEMY_DATABASE_URI': connection_string, 'SQLALCHEMY_TRACK_MODIFICATIONS': False, }
 # pick up values from yml and construct other confs here
 prod_configs_from_file = {**flask_default_setiings_map, **domains_default_settings_map, 
-                          **token_settings_map, **tsplist_settings_map, 
+                          **token_settings_map, 
                           **otp_settings_map, **prod_db_conf}
 prod_conf_list = [prod_configs_from_file ,   ymldict ,
                   {"SERVER_SETTINGS_FILE": conf.config_file}]
