@@ -636,6 +636,10 @@ from tokenleader.app1.adminops.adminops_restapi import adminops_bp
 this necessitates all the config files under /etc/tokenleader as well 
 
 
+ver 3.0
+----
+buildig pip from bhujay branch on commit id 2f7286d8cf0f528d89e55cc877b2dc0fb255c4ee
+
 version 2.3
 -----
 
@@ -695,4 +699,5 @@ ver 0.5
 1. introduction of /etc/tokenleader/tokenleader_settings.ini for hostname, port etc.  
 2. tokenleader-start  to start the service  
 3. service can be started with ssl - although this will be mostly done by a nginx or apache in a production setup.  
+
 

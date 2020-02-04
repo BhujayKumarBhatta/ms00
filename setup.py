@@ -8,8 +8,8 @@ def readme():
 
 
 setup(name='tokenleader',
-      version='2.2',
-      description='tokenleader server can be used by other microservices for token based  authentication and authorization',
+      version='3.0',
+      description='tokenleader building pkg after otp based login feature ',
       long_description=readme(),
       url='https://github.com/microservice-tsp-billing/tokenleader',
       author='Bhujay Kumar Bhatta',
