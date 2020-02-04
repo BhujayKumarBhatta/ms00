@@ -57,6 +57,7 @@ def verify_token():
     return make_response(jsonify(responseObject)), 201
 #
 
+
 @token_login_bp.route('/change_password', methods=['POST'])
 def  change_password():
     cfg = common_utils.reload_configs()
